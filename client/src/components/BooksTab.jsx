@@ -60,8 +60,15 @@ export default function BooksTab({ ownerId }) {
     </div>
   );
 
-  const thisYear = new Date().getFullYear();
+  const now = new Date();
+  const thisYear = now.getFullYear();
   const doneThisYear = books.filter(b => b.status === 'done' && b.doneDate && new Date(b.doneDate).getFullYear() === thisYear).length;
+  const yearlyGoal = settings.booksYearlyGoal || 100;
+  const monthsLeft = Math.max(1, 12 - now.getMonth()); // getMonth() is 0-indexed; current month still counts as available
+  const remainingBooks = Math.max(0, yearlyGoal - doneThisYear);
+  const paceLine = remainingBooks === 0
+    ? 'цель уже выполнена! 🎉'
+    : `нужно ≈${Math.ceil(remainingBooks / monthsLeft)} кн./мес, чтобы успеть`;
 
   const update = async (book, patch) => {
     try {
@@ -89,12 +96,12 @@ export default function BooksTab({ ownerId }) {
           <span>книг</span>
         </div>
         <div style={{ fontSize: 12.5, color: 'var(--ink-soft)', fontWeight: 700 }}>
-          Прочитано в {thisYear} году: {doneThisYear} / {settings.booksYearlyGoal}
+          Прочитано в {thisYear} году: {doneThisYear} / {yearlyGoal} · {paceLine}
         </div>
       </div>
 
       <div style={{ marginBottom: 18 }}>
-        <BooksYearTracker books={books} goal={settings.booksYearlyGoal || 100} />
+        <BooksYearTracker books={books} goal={yearlyGoal} />
       </div>
 
       <div className="mama-table-wrap">
