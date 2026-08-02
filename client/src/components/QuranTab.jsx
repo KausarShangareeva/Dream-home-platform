@@ -6,6 +6,13 @@ const STATUS_LABEL = { todo: 'Не начато', learning: 'Учу сейчас
 const STATUS_EMOJI = { todo: '', learning: '📖 ', done: '✅ ' };
 const FILTERS = [['all', 'Все'], ['todo', 'Не начато'], ['learning', 'Учу'], ['done', 'Выучено']];
 
+// Number of days between two ISO date strings, or null if either is missing.
+function daysBetween(start, end) {
+  if (!start || !end) return null;
+  const ms = new Date(end) - new Date(start);
+  return Math.max(0, Math.round(ms / (1000 * 60 * 60 * 24)));
+}
+
 export default function QuranTab({ ownerId }) {
   const [surahs, setSurahs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,25 +77,24 @@ export default function QuranTab({ ownerId }) {
             <tr>
               <th className="col-num">#</th>
               <th className="col-title">Сура</th>
-              <th className="mobile-hide">Аятов</th>
+              <th className="mobile-hide">Прочитана раз</th>
               <th className="mobile-hide">Страниц</th>
               <th>Статус</th>
               <th className="mobile-hide">Начало</th>
-              <th>За сколько</th>
-              <th className="mobile-hide finish-cell">Аятов/день</th>
               <th className="mobile-hide">Дата готовности</th>
+              <th>За сколько</th>
             </tr>
           </thead>
           <tbody>
-            {visibleSurahs.length === 0 && <tr><td colSpan={9} className="empty-state">Ничего не найдено</td></tr>}
+            {visibleSurahs.length === 0 && <tr><td colSpan={8} className="empty-state">Ничего не найдено</td></tr>}
             {visibleSurahs.map(s => {
               const done = s.status === 'done';
-              const pace = s.days ? Math.max(1, Math.ceil(s.ayahs / Math.max(1, s.days))) : null;
+              const daysTaken = daysBetween(s.learningStartDate, s.doneDate);
               return (
                 <tr key={s._id} className={`qstatus-${s.status}`}>
                   <td className="col-num"><span className="seq-badge">{s.num}</span></td>
                   <td className="col-title">{STATUS_EMOJI[s.status]}{s.name}</td>
-                  <td className="mobile-hide">{s.ayahs}</td>
+                  <td className="mobile-hide"><span className="read-count-badge">{s.readCount || 0}×</span></td>
                   <td className="mobile-hide">{s.pages}</td>
                   <td>
                     <select value={s.status} className={`qstatus-select qstatus-${s.status}`} onChange={e => update(s, { status: e.target.value })}>
@@ -96,15 +102,8 @@ export default function QuranTab({ ownerId }) {
                     </select>
                   </td>
                   <td className="mobile-hide"><input type="date" value={s.learningStartDate || ''} disabled={done} onChange={e => update(s, { learningStartDate: e.target.value })} /></td>
-                  <td>
-                    <input
-                      type="number" min="1" style={{ maxWidth: 60 }} value={s.days || ''} disabled={done}
-                      placeholder="дн."
-                      onChange={e => update(s, { days: e.target.value ? Number(e.target.value) : null })}
-                    /> дн.
-                  </td>
-                  <td className="mobile-hide finish-cell">{pace ? `${pace} ая́т/день` : '—'}</td>
                   <td className="mobile-hide"><input type="date" value={s.doneDate || ''} onChange={e => update(s, { doneDate: e.target.value })} /></td>
+                  <td className="finish-cell">{daysTaken !== null ? `${daysTaken} дн.` : '—'}</td>
                 </tr>
               );
             })}

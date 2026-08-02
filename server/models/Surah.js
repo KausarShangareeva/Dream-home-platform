@@ -10,6 +10,7 @@ const surahSchema = new mongoose.Schema({
   learningStartDate: { type: String, default: null },
   doneDate: { type: String, default: null },
   days: { type: Number, default: null }, // "за сколько дней" планирует выучить
+  readCount: { type: Number, default: 0 }, // сколько раз прочитана — считается автоматически
 }, { timestamps: true });
 
 export default mongoose.model('Surah', surahSchema);

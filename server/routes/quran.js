@@ -25,6 +25,14 @@ router.patch('/:ownerId/quran/:id', async (req, res) => {
   ['status', 'learningStartDate', 'doneDate', 'days'].forEach(f => {
     if (req.body[f] !== undefined) update[f] = req.body[f];
   });
+
+  if (update.status === 'done') {
+    const current = await Surah.findOne({ _id: req.params.id, ownerId: req.params.ownerId });
+    if (current && current.status !== 'done') {
+      update.readCount = (current.readCount || 0) + 1;
+    }
+  }
+
   const surah = await Surah.findOneAndUpdate({ _id: req.params.id, ownerId: req.params.ownerId }, update, { new: true });
   res.json(surah);
 });
