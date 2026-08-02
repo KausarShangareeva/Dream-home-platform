@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Same 5 mood themes from the original single-file version.
 const MOODS = [
@@ -9,17 +9,28 @@ const MOODS = [
   { id: 'jungle', name: 'Джунгли', hint: 'Тёмный, роскошный', emoji: '🌴' },
 ];
 
+const MOOD_STORAGE_KEY = 'appMood';
+
 export default function Topbar() {
   const [moodOpen, setMoodOpen] = useState(false);
-  const [mood, setMood] = useState('cotton');
+  const [mood, setMood] = useState(() => {
+    try { return localStorage.getItem(MOOD_STORAGE_KEY) || 'cotton'; }
+    catch { return 'cotton'; }
+  });
   const [soundOn, setSoundOn] = useState(false);
 
   const currentMood = MOODS.find(m => m.id === mood);
 
+  // Apply the theme attribute whenever the mood changes — including right after mount,
+  // so a restored (or default) mood is actually reflected on the page, not just in state.
+  useEffect(() => {
+    document.body.setAttribute('data-theme', mood === 'cotton' ? '' : mood);
+  }, [mood]);
+
   const applyMood = (id) => {
     setMood(id);
     setMoodOpen(false);
-    document.body.setAttribute('data-theme', id === 'cotton' ? '' : id);
+    try { localStorage.setItem(MOOD_STORAGE_KEY, id); } catch { /* ignore (private mode etc.) */ }
   };
 
   return (
