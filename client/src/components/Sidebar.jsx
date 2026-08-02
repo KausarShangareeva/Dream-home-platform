@@ -1,6 +1,8 @@
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Главная', icon: '🏠' },
   { id: 'dreams', label: 'Другие мечты', icon: '✨' },
+  { id: 'travel', label: 'Путешествия', icon: '✈️' },
+  { id: 'debts', label: 'Долги', icon: '💳' },
   { id: 'sadaqa', label: 'Садака', icon: '💝' },
   { id: 'hadith', label: 'Хадисы', icon: '📿' },
   { id: 'tips', label: 'Что учесть', icon: '🧭' },

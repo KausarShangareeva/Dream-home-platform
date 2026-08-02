@@ -10,6 +10,8 @@ import personalRouter from './routes/personal.js';
 import booksRouter from './routes/books.js';
 import quranRouter from './routes/quran.js';
 import growthRouter from './routes/growth.js';
+import tripsRouter from './routes/trips.js';
+import debtsRouter from './routes/debts.js';
 
 const app = express();
 
@@ -25,6 +27,8 @@ app.use('/api/personal', personalRouter);
 app.use('/api/personal', booksRouter);
 app.use('/api/personal', quranRouter);
 app.use('/api/personal', growthRouter);
+app.use('/api/trips', tripsRouter);
+app.use('/api/debts', debtsRouter);
 
 const PORT = process.env.PORT || 4000;
 

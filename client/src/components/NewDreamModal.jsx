@@ -22,8 +22,11 @@ function compressImage(file) {
   });
 }
 
-export default function NewDreamModal({ open, onClose, onSave }) {
-  const [title, setTitle] = useState('');
+export default function NewDreamModal({
+  open, onClose, onSave,
+  modalTitle = '✨ Новая мечта', saveLabel = 'Добавить мечту', namePlaceholder = 'Название мечты',
+}) {
+  const [name, setName] = useState('');
   const [icon, setIcon] = useState(RANDOM_ICONS[Math.floor(Math.random() * RANDOM_ICONS.length)]);
   const [target, setTarget] = useState('');
   const [photo, setPhoto] = useState(null);
@@ -38,20 +41,20 @@ export default function NewDreamModal({ open, onClose, onSave }) {
   };
 
   const save = () => {
-    if (!title.trim()) return alert('Впишите название мечты');
+    if (!name.trim()) return alert('Впишите название');
     if (!target || Number(target) <= 0) return alert('Укажите цель больше 0');
-    onSave({ title: title.trim(), target: Number(target), icon: icon || '🎯', photo });
-    setTitle(''); setTarget(''); setPhoto(null);
+    onSave({ title: name.trim(), target: Number(target), icon: icon || '🎯', photo });
+    setName(''); setTarget(''); setPhoto(null);
     setIcon(RANDOM_ICONS[Math.floor(Math.random() * RANDOM_ICONS.length)]);
   };
 
   return (
     <div className="modal-backdrop open" onClick={onClose}>
       <div className="modal-card" onClick={e => e.stopPropagation()}>
-        <h3>✨ Новая мечта</h3>
+        <h3>{modalTitle}</h3>
 
         <div className="modal-section field">
-          <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Название мечты" />
+          <input value={name} onChange={e => setName(e.target.value)} placeholder={namePlaceholder} />
         </div>
 
         <div className="modal-section form-row" style={{ margin: 0 }}>
@@ -77,7 +80,7 @@ export default function NewDreamModal({ open, onClose, onSave }) {
 
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>Отмена</button>
-          <button className="btn btn-primary" onClick={save}>Добавить мечту</button>
+          <button className="btn btn-primary" onClick={save}>{saveLabel}</button>
         </div>
       </div>
     </div>

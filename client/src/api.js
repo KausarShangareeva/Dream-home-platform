@@ -79,4 +79,18 @@ export const api = {
   addCareerGoal: (ownerId, data) => request(`/personal/${ownerId}/career`, { method: 'POST', body: JSON.stringify(data) }),
   updateCareerGoal: (ownerId, id, data) => request(`/personal/${ownerId}/career/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteCareerGoal: (ownerId, id) => request(`/personal/${ownerId}/career/${id}`, { method: 'DELETE' }),
+
+  // Trips
+  getTrips: () => request('/trips'),
+  addTrip: (data) => request('/trips', { method: 'POST', body: JSON.stringify(data) }),
+  deleteTrip: (id) => request(`/trips/${id}`, { method: 'DELETE' }),
+  getTripDeposits: (tripId) => request(`/trips/${tripId}/deposits`),
+  addTripDeposit: (tripId, data) => request(`/trips/${tripId}/deposits`, { method: 'POST', body: JSON.stringify(data) }),
+  deleteTripDeposit: (tripId, depositId) => request(`/trips/${tripId}/deposits/${depositId}`, { method: 'DELETE' }),
+
+  // Debts
+  getDebts: () => request('/debts'),
+  addDebt: (data) => request('/debts', { method: 'POST', body: JSON.stringify(data) }),
+  updateDebt: (id, data) => request(`/debts/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteDebt: (id) => request(`/debts/${id}`, { method: 'DELETE' }),
 };

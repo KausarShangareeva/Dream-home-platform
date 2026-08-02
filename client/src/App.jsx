@@ -2,6 +2,8 @@ import { useState } from 'react';
 import Sidebar from './components/Sidebar.jsx';
 import DashboardTab from './components/DashboardTab.jsx';
 import DreamsTab from './components/DreamsTab.jsx';
+import TravelTab from './components/TravelTab.jsx';
+import DebtsTab from './components/DebtsTab.jsx';
 import SadaqaTab from './components/SadaqaTab.jsx';
 import PersonalPanel from './components/PersonalPanel.jsx';
 import HadithTab from './components/HadithTab.jsx';
@@ -16,6 +18,8 @@ export default function App() {
       <main>
         {activeTab === 'dashboard' && <DashboardTab />}
         {activeTab === 'dreams' && <DreamsTab />}
+        {activeTab === 'travel' && <TravelTab />}
+        {activeTab === 'debts' && <DebtsTab />}
         {activeTab === 'sadaqa' && <SadaqaTab />}
         {activeTab === 'hadith' && <HadithTab />}
         {activeTab === 'tips' && <TipsTab />}
