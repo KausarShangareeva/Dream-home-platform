@@ -124,7 +124,7 @@ export default function LanguagesTab({ ownerId }) {
                   <td className="finish-cell">{fmtDate(sc.finish)}</td>
                   <td>
                     <select value={lang.status} onChange={e => updateStatus(lang, e.target.value)} className={`qstatus-select qstatus-${lang.status}`}>
-                      {Object.entries(STATUS_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+                      {Object.entries(STATUS_LABEL).map(([k, label]) => <option key={k} value={k}>{STATUS_EMOJI[k]}{label}</option>)}
                     </select>
                   </td>
                   <td className="col-del">

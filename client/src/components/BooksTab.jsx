@@ -4,7 +4,7 @@ import DeleteButton from './ui/DeleteButton.jsx';
 import BooksYearTracker from './ui/BooksYearTracker.jsx';
 import LevelSelect from './ui/LevelSelect.jsx';
 import LanguageSelect from './ui/LanguageSelect.jsx';
-import { GENRE_LABEL, BOOK_STATUS_LABEL } from '../data/bookLabels.js';
+import { GENRE_LABEL, BOOK_STATUS_LABEL, BOOK_STATUS_EMOJI } from '../data/bookLabels.js';
 import { KNOWN_READING_LANGUAGES } from '../data/readingLanguages.js';
 import { useDragReorder } from '../hooks/useDragReorder.js';
 
@@ -131,7 +131,7 @@ export default function BooksTab({ ownerId }) {
                 <tr key={b._id} {...getRowProps(b)} className={`qstatus-${b.status}`}>
                   <td className="col-num"><span className="drag-handle">⋮⋮</span><span className="seq-badge">{idx + 1}</span></td>
                   <td className="col-title">
-                    <b>{b.title}</b>
+                    <b>{BOOK_STATUS_EMOJI[b.status]}{b.title}</b>
                     {b.author && <span className="bridge-note">{b.author}</span>}
                   </td>
                   <td className="mobile-hide col-lang">
@@ -172,7 +172,7 @@ export default function BooksTab({ ownerId }) {
                       className={`qstatus-select qstatus-${b.status}${locked ? ' qstatus-locked' : ''}`}
                       onChange={e => update(b, { status: e.target.value, doneDate: e.target.value === 'done' ? new Date().toISOString().slice(0, 10) : null })}
                     >
-                      {Object.entries(BOOK_STATUS_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+                      {Object.entries(BOOK_STATUS_LABEL).map(([k, label]) => <option key={k} value={k}>{BOOK_STATUS_EMOJI[k]}{label}</option>)}
                     </select>
                     {locked && <span className="lock-hint" title="Сначала дочитайте предыдущую книгу по списку">🔒</span>}
                   </td>

@@ -3,7 +3,7 @@ import { api } from '../api.js';
 import QuranBeadsTracker from './ui/QuranBeadsTracker.jsx';
 
 const STATUS_LABEL = { todo: 'Не начато', learning: 'Учу сейчас', done: 'Выучено' };
-const STATUS_EMOJI = { todo: '', learning: '📖 ', done: '✅ ' };
+const STATUS_EMOJI = { todo: '', learning: '⏳ ', done: '✅ ' };
 const FILTERS = [['all', 'Все'], ['todo', 'Не начато'], ['learning', 'Учу'], ['done', 'Выучено']];
 
 // Number of days between two ISO date strings, or null if either is missing.
@@ -98,7 +98,7 @@ export default function QuranTab({ ownerId }) {
                   <td className="mobile-hide">{s.pages}</td>
                   <td>
                     <select value={s.status} className={`qstatus-select qstatus-${s.status}`} onChange={e => update(s, { status: e.target.value })}>
-                      {Object.entries(STATUS_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+                      {Object.entries(STATUS_LABEL).map(([k, label]) => <option key={k} value={k}>{STATUS_EMOJI[k]}{label}</option>)}
                     </select>
                   </td>
                   <td className="mobile-hide"><input type="date" value={s.learningStartDate || ''} disabled={done} onChange={e => update(s, { learningStartDate: e.target.value })} /></td>

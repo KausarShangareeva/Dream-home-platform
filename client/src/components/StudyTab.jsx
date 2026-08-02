@@ -3,7 +3,8 @@ import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import { useDragReorder } from '../hooks/useDragReorder.js';
 
-const STATUS_LABEL = { todo: 'Не начато', learning: 'Изучаю', done: 'Готово' };
+const STATUS_LABEL = { todo: 'Не начато', learning: 'Изучаю', done: 'Изучено' };
+const STATUS_EMOJI = { todo: '', learning: '⏳ ', done: '✅ ' };
 const EDU_LEVEL_LABEL = { todo: 'Не начато', applying: 'Подаю документы', studying: 'Учусь', done: 'Готово' };
 const EXAM_STATUS_LABEL = { todo: 'Не начато', studying: 'Готовлюсь', done: 'Сдано' };
 
@@ -174,7 +175,7 @@ function StudySection({ title, addLabel, items, onUpdate, onDelete, onAdd, onReo
               <tr key={item._id} {...getRowProps(item)} className={`qstatus-${item.status}`}>
                 <td className="col-num"><span className="drag-handle">⋮⋮</span><span className="seq-badge">{idx + 1}</span></td>
                 <td className="col-title">
-                  {item.icon} {item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.name}</a> : item.name}
+                  {STATUS_EMOJI[item.status]}{item.icon} {item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.name}</a> : item.name}
                   {item.platform && <span className="bridge-note">{item.platform}</span>}
                 </td>
                 <td>{item.approx ? '≈' : ''}{item.hours} ч</td>
@@ -186,7 +187,7 @@ function StudySection({ title, addLabel, items, onUpdate, onDelete, onAdd, onReo
                 </td>
                 <td>
                   <select value={item.status} className={`qstatus-select qstatus-${item.status}`} onChange={e => onUpdate(item, { status: e.target.value })}>
-                    {Object.entries(STATUS_LABEL).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+                    {Object.entries(STATUS_LABEL).map(([k, l]) => <option key={k} value={k}>{STATUS_EMOJI[k]}{l}</option>)}
                   </select>
                 </td>
                 <td className="col-del"><DeleteButton onConfirm={() => onDelete(item)} /></td>

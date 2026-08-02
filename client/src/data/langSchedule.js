@@ -56,4 +56,4 @@ export function fmtDate(d) {
 }
 
 export const STATUS_LABEL = { todo: 'Не начато', learning: 'Изучаю', done: 'Готово' };
-export const STATUS_EMOJI = { todo: '', learning: '📖 ', done: '✅ ' };
+export const STATUS_EMOJI = { todo: '', learning: '⏳ ', done: '✅ ' };

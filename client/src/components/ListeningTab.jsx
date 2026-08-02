@@ -10,6 +10,7 @@ import { TYPE_LABEL, THEME_LABEL } from '../data/listeningLabels.js';
 import { useDragReorder } from '../hooks/useDragReorder.js';
 
 const STATUS_LABEL = { todo: 'В планах', learning: 'Слушаю', done: 'Прослушано' };
+const STATUS_EMOJI = { todo: '', learning: '⏳ ', done: '✅ ' };
 
 export default function ListeningTab({ ownerId }) {
   const [items, setItems] = useState([]);
@@ -130,7 +131,7 @@ export default function ListeningTab({ ownerId }) {
                 <td className="col-num"><span className="drag-handle">⋮⋮</span><span className="seq-badge">{idx + 1}</span></td>
                 <td className="col-title">
                   <button type="button" className="listening-title-btn" onClick={() => setSessionsModalId(item._id)}>
-                    <b>{item.title}</b>
+                    <b>{STATUS_EMOJI[item.status]}{item.title}</b>
                   </button>
                   {item.sessions.length > 0 && (
                     <span className="bridge-note">{item.sessions.filter(s => s.done).length}/{item.sessions.length} эпизодов</span>
@@ -155,7 +156,7 @@ export default function ListeningTab({ ownerId }) {
                 </td>
                 <td>
                   <select value={item.status} className={`qstatus-select qstatus-${item.status}`} onChange={e => update(item, { status: e.target.value })}>
-                    {Object.entries(STATUS_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+                    {Object.entries(STATUS_LABEL).map(([k, label]) => <option key={k} value={k}>{STATUS_EMOJI[k]}{label}</option>)}
                   </select>
                 </td>
                 <td className="col-del"><DeleteButton onConfirm={async () => { await api.deleteListeningItem(ownerId, item._id); load(); }} /></td>

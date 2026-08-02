@@ -15,3 +15,4 @@ export const GENRE_LABEL = {
 };
 
 export const BOOK_STATUS_LABEL = { todo: 'В планах', learning: 'Читаю', done: 'Прочитано' };
+export const BOOK_STATUS_EMOJI = { todo: '', learning: '⏳ ', done: '✅ ' };
