@@ -1,0 +1,30 @@
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import { connectDB } from './db.js';
+
+import depositsRouter from './routes/deposits.js';
+import dreamsRouter from './routes/dreams.js';
+import sadaqaRouter from './routes/sadaqa.js';
+
+const app = express();
+
+app.use(cors({ origin: process.env.CLIENT_ORIGIN || '*' }));
+app.use(express.json({ limit: '5mb' })); // 5mb so custom-dream photos (data URLs) fit
+
+app.get('/', (req, res) => res.json({ ok: true, service: 'dream-home-server' }));
+
+app.use('/api/deposits', depositsRouter);
+app.use('/api/dreams', dreamsRouter);
+app.use('/api/sadaqa', sadaqaRouter);
+
+const PORT = process.env.PORT || 4000;
+
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  })
+  .catch(err => {
+    console.error('❌ Failed to connect to MongoDB:', err.message);
+    process.exit(1);
+  });
