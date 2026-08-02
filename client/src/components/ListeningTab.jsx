@@ -3,7 +3,6 @@ import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import Flag from './ui/Flag.jsx';
 import ListeningTypeStats from './ui/ListeningTypeStats.jsx';
-import ListeningSessionsModal from './ListeningSessionsModal.jsx';
 import { TYPE_LABEL, TYPE_DOT } from '../data/listeningLabels.js';
 import { useDragReorder } from '../hooks/useDragReorder.js';
 
@@ -16,7 +15,6 @@ export default function ListeningTab({ ownerId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(null);
-  const [sessionsModalId, setSessionsModalId] = useState(null);
 
   const [newTitle, setNewTitle] = useState('');
   const [newLang, setNewLang] = useState('');
@@ -70,10 +68,7 @@ export default function ListeningTab({ ownerId }) {
 
   const addItem = async () => {
     if (!newTitle.trim()) return alert('Впишите название');
-    await api.addListeningItem(ownerId, {
-      title: newTitle.trim(), language: newLang, type: newType || null,
-      link: newLink.trim(),
-    });
+    await api.addListeningItem(ownerId, { title: newTitle.trim(), language: newLang, type: newType || null, link: newLink.trim() });
     setNewTitle(''); setNewLink('');
     load();
   };
@@ -82,8 +77,6 @@ export default function ListeningTab({ ownerId }) {
   languages.forEach(l => { totalsByLanguage[l.name] = 0; });
   items.forEach(i => { totalsByLanguage[i.language] = (totalsByLanguage[i.language] || 0) + i.hours; });
   const grandTotal = items.reduce((sum, i) => sum + i.hours, 0);
-
-  const sessionsModalItem = items.find(i => i._id === sessionsModalId) || null;
 
   return (
     <div>
@@ -124,12 +117,7 @@ export default function ListeningTab({ ownerId }) {
               <tr key={item._id} {...getRowProps(item)} className={`qstatus-${item.status}`}>
                 <td className="col-num"><span className="drag-handle">⋮⋮</span><span className="seq-badge">{idx + 1}</span></td>
                 <td className="col-title">
-                  <button type="button" className="listening-title-btn" onClick={() => setSessionsModalId(item._id)}>
-                    <b>{STATUS_EMOJI[item.status]}{item.title}</b>
-                  </button>
-                  {(item.sessions?.length || 0) > 0 && (
-                    <span className="bridge-note">{item.sessions.filter(s => s.done).length}/{item.sessions.length} эпизодов</span>
-                  )}
+                  <b>{STATUS_EMOJI[item.status]}{item.title}</b>
                 </td>
                 <td className="mobile-hide">
                   <select value={item.type || ''} onChange={e => update(item, { type: e.target.value || null })}>
@@ -137,9 +125,26 @@ export default function ListeningTab({ ownerId }) {
                     {Object.entries(TYPE_LABEL).map(([k, label]) => <option key={k} value={k}>{TYPE_DOT[k]} {label}</option>)}
                   </select>
                 </td>
-                <td className="finish-cell">{item.hours} ч</td>
+                <td>
+                  <input
+                    type="number" min="0" step="0.5" defaultValue={item.hours}
+                    onBlur={e => {
+                      const v = Number(e.target.value);
+                      if (v >= 0 && v !== item.hours) update(item, { hours: v });
+                    }}
+                  />
+                </td>
                 <td className="mobile-hide">
-                  {item.link ? <a href={item.link} target="_blank" rel="noreferrer" title={item.link}>🔗</a> : '—'}
+                  <div className="listening-link-cell">
+                    <input
+                      type="url" placeholder="ссылка" defaultValue={item.link || ''}
+                      onBlur={e => {
+                        const v = e.target.value.trim();
+                        if (v !== (item.link || '')) update(item, { link: v });
+                      }}
+                    />
+                    {item.link && <a href={item.link} target="_blank" rel="noreferrer" title="Перейти на сайт">↗</a>}
+                  </div>
                 </td>
                 <td>
                   <select value={item.status} className={`qstatus-select qstatus-${item.status}`} onChange={e => update(item, { status: e.target.value })}>
@@ -165,15 +170,6 @@ export default function ListeningTab({ ownerId }) {
           <button className="btn btn-sm btn-primary" onClick={addItem} type="button">+ Добавить</button>
         </div>
       </div>
-
-      {sessionsModalItem && (
-        <ListeningSessionsModal
-          ownerId={ownerId}
-          item={sessionsModalItem}
-          onClose={() => setSessionsModalId(null)}
-          onChange={load}
-        />
-      )}
     </div>
   );
 }

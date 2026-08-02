@@ -691,19 +691,15 @@
   .listening-lang-pill.active{background:var(--purple);border-color:var(--purple);color:var(--on-accent);}
   .listening-lang-pill.active span{color:var(--on-accent);}
 
-  /* LISTENING — clickable item title + episode/session modal */
-  .listening-title-btn{background:none;border:none;padding:0;margin:0;cursor:pointer;text-align:left;font:inherit;color:var(--ink);}
-  .listening-title-btn:hover b{text-decoration:underline;color:var(--purple-deep);}
-  .listening-episode-list{display:flex;flex-direction:column;gap:2px;}
-  .listening-episode-row{
-    display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line);font-size:13.5px;
+  /* LISTENING — link cell: editable URL input + a small button to actually open it */
+  .listening-link-cell{display:flex;align-items:center;gap:6px;}
+  .listening-link-cell input{flex:1;min-width:0;}
+  .listening-link-cell a{
+    flex:none;font-weight:900;color:var(--purple);text-decoration:none;font-size:14px;
+    width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+    border-radius:50%;background:var(--card-soft);
   }
-  .listening-episode-row:last-child{border-bottom:none;}
-  .listening-episode-row label{display:flex;align-items:center;gap:9px;flex:1;cursor:pointer;}
-  .listening-episode-row input[type=checkbox]{width:17px;height:17px;accent-color:var(--purple);cursor:pointer;}
-  .listening-episode-hours{font-weight:700;color:var(--ink-soft);font-size:12px;}
-  .listening-quick-log{background:var(--card-soft);border-radius:14px;padding:14px;}
-  .listening-modal-total{text-align:center;font-size:15px;font-weight:700;color:var(--ink);margin:18px 0 6px;}
+  .listening-link-cell a:hover{background:var(--purple);color:var(--on-accent);}
   .mama-pace-hint{font-size:12px;font-weight:800;color:var(--purple-deep);background:var(--card);border-radius:999px;padding:6px 14px;}
   .mama-add-book-block{background:var(--card-soft);border-radius:16px;padding:18px;margin:18px 0 24px;}
 

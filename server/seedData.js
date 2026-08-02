@@ -221,14 +221,7 @@ export function defaultCareerGoalsFor(ownerId) {
 export function defaultListeningItemsFor(ownerId) {
   if (ownerId !== 'kausar') return []; // starter set below is Kausar's own roadmap; mama adds her own
   return [
-    {
-      title: 'Atrium Explores', language: 'Английский', type: 'stories', theme: 'history', order: 1,
-      sessions: [
-        { name: 'Escape from Alcatraz', hours: 1 },
-        { name: 'Great Train Robbery', hours: 1 },
-        { name: 'Pablo Escobar', hours: 1 },
-      ].map(s => ({ ...s, done: false })),
-    },
+    { title: 'Atrium Explores', language: 'Английский', type: 'stories', order: 1 },
     { title: 'BBC Learning English — 6 Minute English', language: 'Английский', type: 'podcast_interview', order: 2 },
     { title: 'TED-Ed', language: 'Английский', type: 'ted_lectures', order: 3 },
   ];
