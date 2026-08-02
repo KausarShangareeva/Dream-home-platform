@@ -8,7 +8,7 @@ function CareerSection({ title, items, onToggle, onDelete, onAdd, onReorder }) {
   const { ordered, getRowProps } = useDragReorder(items, onReorder);
 
   return (
-    <div style={{ flex: 1, minWidth: 260 }}>
+    <div className="mama-col">
       <div style={{ fontWeight: 700, marginBottom: 10 }}>{title}</div>
       <div className="mama-table-wrap">
         <table className="mama-table">
@@ -74,7 +74,7 @@ export default function CareerTab({ ownerId }) {
   const reorder = async (ids) => { await api.reorderCareerGoals(ownerId, ids); load(); };
 
   return (
-    <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+    <div className="mama-two-col">
       <CareerSection title="💼 Основная работа" items={main} onToggle={toggle} onDelete={remove} onAdd={n => add('main', n)} onReorder={reorder} />
       <CareerSection title="🧩 Подработка" items={side} onToggle={toggle} onDelete={remove} onAdd={n => add('side', n)} onReorder={reorder} />
     </div>

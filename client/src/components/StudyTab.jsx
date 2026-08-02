@@ -85,7 +85,7 @@ function StudySection({ title, addLabel, items, onUpdate, onDelete, onAdd, onReo
   const { ordered, getRowProps } = useDragReorder(items, onReorder);
 
   return (
-    <div style={{ flex: 1, minWidth: 260 }}>
+    <div className="mama-col">
       <div style={{ fontWeight: 700, marginBottom: 10 }}>{title}</div>
       <div className="mama-table-wrap">
         <table className="mama-table">
@@ -179,7 +179,7 @@ export default function StudyTab({ ownerId }) {
   return (
     <div>
       <EducationSection items={education} onToggle={toggleEdu} onUpdate={updateEdu} onDelete={removeEdu} onAdd={addEdu} onReorder={reorderEdu} />
-      <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+      <div className="mama-two-col">
         <StudySection title="📚 Учебные дисциплины" addLabel="Добавить дисциплину" items={subjects} onUpdate={update} onDelete={remove} onAdd={d => add('subject', d)} onReorder={reorderStudy} />
         <StudySection title="🧶 Хобби" addLabel="Добавить хобби" items={hobbies} onUpdate={update} onDelete={remove} onAdd={d => add('hobby', d)} onReorder={reorderStudy} />
       </div>
