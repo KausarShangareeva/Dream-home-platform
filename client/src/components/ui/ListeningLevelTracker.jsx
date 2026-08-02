@@ -1,7 +1,6 @@
 import { DIFF_LABEL } from '../../data/bookLabels.js';
 
-// Hour targets per CEFR level, per the listening roadmap: each level needs this many
-// *additional* hours on top of every level before it (cumulative, not a total from zero).
+// Hour targets per CEFR level, per the listening roadmap.
 const LEVEL_TARGETS = [
   ['B1', 140],
   ['B1+', 150],
@@ -12,15 +11,18 @@ const LEVEL_TARGETS = [
 const HOURS_PER_BEAD = 10;
 
 export default function ListeningLevelTracker({ items }) {
-  const totalHours = items.filter(i => i.status === 'done').reduce((sum, i) => sum + i.hours, 0);
-  const grandTotal = LEVEL_TARGETS.reduce((sum, [, target]) => sum + target, 0);
+  const done = items.filter(i => i.status === 'done');
 
-  let cursor = 0; // hours consumed by levels already accounted for
+  // Each level's progress comes only from items actually tagged at that level —
+  // not a shared pool that fills B1 first regardless of what you marked done.
   const segments = LEVEL_TARGETS.map(([level, target]) => {
-    const hoursInLevel = Math.min(target, Math.max(0, totalHours - cursor));
-    cursor += target;
+    const raw = done.filter(i => i.difficulty === level).reduce((sum, i) => sum + i.hours, 0);
+    const hoursInLevel = Math.min(target, raw);
     return { level, target, hoursInLevel, done: hoursInLevel >= target };
   });
+
+  const totalHours = segments.reduce((sum, s) => sum + s.hoursInLevel, 0);
+  const grandTotal = LEVEL_TARGETS.reduce((sum, [, target]) => sum + target, 0);
 
   // The level currently being worked on — first one that isn't finished yet (or the last if all are).
   const currentIdx = segments.findIndex(s => !s.done);
@@ -34,12 +36,11 @@ export default function ListeningLevelTracker({ items }) {
       </div>
 
       <div className="listening-levels">
-        {segments.map((s, idx) => {
+        {segments.map(s => {
           const beadsTotal = Math.ceil(s.target / HOURS_PER_BEAD);
           const beadsFilled = Math.floor(s.hoursInLevel / HOURS_PER_BEAD);
-          const locked = idx > 0 && !segments[idx - 1].done && s.hoursInLevel === 0;
           return (
-            <div className={`listening-level${s.done ? ' done' : ''}${locked ? ' locked' : ''}`} key={s.level}>
+            <div className={`listening-level${s.done ? ' done' : ''}`} key={s.level}>
               <div className="listening-level-head">
                 <span>{DIFF_LABEL[s.level]}</span>
                 <span className="listening-level-hours">{s.hoursInLevel} / {s.target} ч{s.done ? ' ✅' : ''}</span>

@@ -645,7 +645,6 @@
     border-radius:14px;padding:10px 12px;
   }
   .listening-level.done{border-color:var(--teal);background:color-mix(in srgb, var(--teal) 12%, var(--card-soft));}
-  .listening-level.locked{opacity:.5;}
   .listening-level-head{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:8px;}
   .listening-level-hours{font-weight:700;color:var(--ink-soft);font-size:11.5px;}
   .mama-beads-sm{gap:4px;}
