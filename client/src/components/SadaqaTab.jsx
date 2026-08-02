@@ -98,8 +98,6 @@ export default function SadaqaTab() {
 
   return (
     <div className="card">
-      <h2 style={{ marginBottom: 18 }}>💝 Садака</h2>
-
       {/* ---- who deposited how much ---- */}
       <div className="mama-table-wrap">
         <table className="mama-table">

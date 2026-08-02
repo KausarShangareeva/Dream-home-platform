@@ -51,7 +51,6 @@ export default function DebtsTab() {
 
   return (
     <div className="card">
-      <h2 style={{ marginBottom: 6 }}>💳 Долги</h2>
       <p style={{ margin: '0 0 18px', fontSize: 13, color: 'var(--ink-soft)' }}>То, что семья должна другим. Итого осталось выплатить: <b style={{ color: 'var(--ink)' }}>{fmt(totalOwed)}</b></p>
 
       <div className="mama-table-wrap">
