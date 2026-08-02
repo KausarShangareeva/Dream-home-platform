@@ -26,7 +26,7 @@ export default function BooksYearTracker({ books, goal }) {
         const emptyCount = isCurrent ? Math.max(0, goal - list.length) : 0;
         return (
           <div className="mama-year-block" key={y}>
-            <div className="mama-year-head">🏆 {y} год <span className="count">{list.length}</span></div>
+            <div className="mama-year-head">🏆 {y} год <span className="count">{isCurrent ? `${list.length}/${goal}` : list.length}</span></div>
             <div className="mama-beads">
               {list.map(b => {
                 const days = daysBetween(b.startDate || b.doneDate, b.doneDate);
