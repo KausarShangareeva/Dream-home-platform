@@ -8,6 +8,7 @@ import dreamsRouter from './routes/dreams.js';
 import sadaqaRouter from './routes/sadaqa.js';
 import personalRouter from './routes/personal.js';
 import booksRouter from './routes/books.js';
+import quranRouter from './routes/quran.js';
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use('/api/dreams', dreamsRouter);
 app.use('/api/sadaqa', sadaqaRouter);
 app.use('/api/personal', personalRouter);
 app.use('/api/personal', booksRouter);
+app.use('/api/personal', quranRouter);
 
 const PORT = process.env.PORT || 4000;
 

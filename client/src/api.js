@@ -56,4 +56,7 @@ export const api = {
   addBook: (ownerId, data) => request(`/personal/${ownerId}/books`, { method: 'POST', body: JSON.stringify(data) }),
   updateBook: (ownerId, id, data) => request(`/personal/${ownerId}/books/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteBook: (ownerId, id) => request(`/personal/${ownerId}/books/${id}`, { method: 'DELETE' }),
+
+  getSurahs: (ownerId) => request(`/personal/${ownerId}/quran`),
+  updateSurah: (ownerId, id, data) => request(`/personal/${ownerId}/quran/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
 };

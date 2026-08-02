@@ -4,12 +4,15 @@ import { api } from '../api.js';
 export default function OverviewTab({ ownerId }) {
   const [languages, setLanguages] = useState([]);
   const [books, setBooks] = useState([]);
+  const [surahs, setSurahs] = useState([]);
   const [settings, setSettings] = useState({ booksYearlyGoal: 100 });
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
-    const [langs, b, s] = await Promise.all([api.getLanguages(ownerId), api.getBooks(ownerId), api.getSettings(ownerId)]);
-    setLanguages(langs); setBooks(b); setSettings(s); setLoading(false);
+    const [langs, b, s, surahs] = await Promise.all([
+      api.getLanguages(ownerId), api.getBooks(ownerId), api.getSettings(ownerId), api.getSurahs(ownerId),
+    ]);
+    setLanguages(langs); setBooks(b); setSettings(s); setSurahs(surahs); setLoading(false);
   }, [ownerId]);
 
   useEffect(() => { load(); }, [load]);
@@ -22,10 +25,13 @@ export default function OverviewTab({ ownerId }) {
 
   const pct = (done, total) => (total > 0 ? Math.round((done / total) * 100) : 0);
 
+  const quranDone = surahs.filter(s => s.status === 'done').length;
+
   const rows = [
     { icon: '🗣️', label: 'Языки', done: langsDone, total: languages.length },
     { icon: '📖', label: 'Книги', done: doneThisYear, total: settings.booksYearlyGoal || 0 },
-    // Коран, Учиться, Образование, Профессия will show up here once those tabs exist
+    { icon: '📿', label: 'Коран', done: quranDone, total: 114 },
+    // Учиться, Образование, Профессия will show up here once those tabs exist
   ];
 
   const validRows = rows.filter(r => r.total > 0);

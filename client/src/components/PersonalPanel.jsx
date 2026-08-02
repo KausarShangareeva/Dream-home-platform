@@ -2,12 +2,14 @@ import { useState } from 'react';
 import OverviewTab from './OverviewTab.jsx';
 import LanguagesTab from './LanguagesTab.jsx';
 import BooksTab from './BooksTab.jsx';
+import QuranTab from './QuranTab.jsx';
 
 const SUB_TABS = [
   { id: 'overview', label: '🧭 Обзор' },
   { id: 'languages', label: '🗣️ Языки' },
   { id: 'books', label: '📖 Книги' },
-  // 'learn', 'career', 'quran' will be added in follow-up iterations
+  { id: 'quran', label: '📿 Коран' },
+  // 'learn', 'career' will be added in follow-up iterations
 ];
 
 export default function PersonalPanel({ ownerId, title }) {
@@ -30,6 +32,7 @@ export default function PersonalPanel({ ownerId, title }) {
       {subTab === 'overview' && <OverviewTab ownerId={ownerId} />}
       {subTab === 'languages' && <LanguagesTab ownerId={ownerId} />}
       {subTab === 'books' && <BooksTab ownerId={ownerId} />}
+      {subTab === 'quran' && <QuranTab ownerId={ownerId} />}
     </div>
   );
 }
