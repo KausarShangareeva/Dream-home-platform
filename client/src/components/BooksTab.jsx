@@ -132,6 +132,7 @@ export default function BooksTab({ ownerId }) {
                       value={b.language || KNOWN_READING_LANGUAGES[0].name}
                       options={KNOWN_READING_LANGUAGES}
                       onChange={val => update(b, { language: val })}
+                      compact
                     />
                   </td>
                   <td className="mobile-hide">

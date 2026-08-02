@@ -712,6 +712,7 @@
   .lang-select-trigger span:first-of-type{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .lang-select-caret{font-size:9px;color:var(--ink-soft);flex:none;}
   .lang-select-item{display:flex;align-items:center;gap:8px;}
+  .lang-select-trigger.compact{width:auto;min-width:0;justify-content:center;gap:4px;padding:5px 8px;}
 
   .mama-goals-list{display:flex;flex-direction:column;gap:8px;}
   .mama-two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}

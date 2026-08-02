@@ -4,7 +4,7 @@ import Flag from './Flag.jsx';
 // A dropdown that looks and behaves like a <select> but isn't one — native <option>
 // elements can only render plain text, so flag icons (SVG or emoji) never show up
 // reliably inside them across platforms. This renders real <Flag> icons instead.
-export default function LanguageSelect({ value, options, onChange, returnField = 'name', style }) {
+export default function LanguageSelect({ value, options, onChange, returnField = 'name', compact = false, style }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
   const current = options.find(o => o.name === value || o.key === value) || options[0];
@@ -19,9 +19,14 @@ export default function LanguageSelect({ value, options, onChange, returnField =
 
   return (
     <div className="lang-select ac-wrap" ref={wrapRef} style={style}>
-      <button type="button" className="lang-select-trigger" onClick={() => setOpen(o => !o)}>
+      <button
+        type="button"
+        className={`lang-select-trigger${compact ? ' compact' : ''}`}
+        onClick={() => setOpen(o => !o)}
+        title={compact ? current?.name : undefined}
+      >
         {current?.key && current.key !== '__custom' && <Flag langKey={current.key} />}
-        <span>{current?.name || 'Выберите...'}</span>
+        {!compact && <span>{current?.name || 'Выберите...'}</span>}
         <span className="lang-select-caret">▾</span>
       </button>
       <div className={`ac-dropdown${open ? ' open' : ''}`}>
