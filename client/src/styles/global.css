@@ -591,6 +591,8 @@
   }
   table.mama-table select{padding-right:22px;background-position:right 6px center;background-size:9px;}
   table.mama-table input[type=number]{max-width:64px;}
+  table.mama-table .lang-select{width:100%;}
+  table.mama-table .lang-select-trigger{padding:5px 7px;font-size:12px;background-color:var(--card-soft);}
   table.mama-table .finish-cell{font-weight:600;color:var(--purple-deep);}
   .hist-del-btn{flex:none;align-self:center;}
   table.mama-table .book-done{width:18px;height:18px;cursor:pointer;accent-color:var(--purple);}
@@ -624,6 +626,7 @@
   }
   .mama-add-row select{padding-right:30px;}
   .mama-add-row input:focus, .mama-add-row select:focus{border-color:var(--purple);outline:none;}
+  .mama-add-row .lang-select{flex:1;min-width:110px;}
 
   .mama-year-block{margin-bottom:14px;}
   .mama-year-head{font-weight:700;color:var(--purple-deep);font-size:14px;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
@@ -697,6 +700,18 @@
   .ac-item .act{font-weight:800;color:var(--ink);display:block;}
   .ac-item .aca{font-size:11px;color:var(--ink-soft);}
   .ac-loading{padding:9px 12px;font-size:12px;color:var(--ink-soft);}
+
+  /* Custom language dropdown (real flag icons — native <option> can't render them) */
+  .lang-select-trigger{
+    display:flex;align-items:center;gap:7px;width:100%;
+    border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;
+    background-color:var(--card);font-family:'Montserrat';font-size:12.5px;font-weight:600;color:var(--ink);
+    cursor:pointer;text-align:left;
+  }
+  .lang-select-trigger:hover{border-color:var(--purple);}
+  .lang-select-trigger span:first-of-type{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .lang-select-caret{font-size:9px;color:var(--ink-soft);flex:none;}
+  .lang-select-item{display:flex;align-items:center;gap:8px;}
 
   .mama-goals-list{display:flex;flex-direction:column;gap:8px;}
   .mama-two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}

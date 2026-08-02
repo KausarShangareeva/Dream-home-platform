@@ -10,7 +10,8 @@ const COUNTRY_CODE = {
 };
 
 // Arabic isn't tied to one country flag in this context — keep the mosque emoji.
-const EMOJI_FALLBACK = { arabic: '🕌' };
+// Tatar has no ISO country code either (Tatarstan isn't a country) — keep a neutral glyph.
+const EMOJI_FALLBACK = { arabic: '🕌', tatar: '🔤' };
 
 export default function Flag({ langKey }) {
   if (EMOJI_FALLBACK[langKey]) return <span>{EMOJI_FALLBACK[langKey]}</span>;

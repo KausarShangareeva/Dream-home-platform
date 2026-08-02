@@ -3,6 +3,7 @@ import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import BooksYearTracker from './ui/BooksYearTracker.jsx';
 import LevelSelect from './ui/LevelSelect.jsx';
+import LanguageSelect from './ui/LanguageSelect.jsx';
 import { GENRE_LABEL, BOOK_STATUS_LABEL } from '../data/bookLabels.js';
 import { KNOWN_READING_LANGUAGES } from '../data/readingLanguages.js';
 import { useDragReorder } from '../hooks/useDragReorder.js';
@@ -92,6 +93,10 @@ export default function BooksTab({ ownerId }) {
         </div>
       </div>
 
+      <div style={{ marginBottom: 18 }}>
+        <BooksYearTracker books={books} goal={settings.booksYearlyGoal || 100} />
+      </div>
+
       <div className="mama-table-wrap">
         <table className="mama-table">
           <thead>
@@ -123,9 +128,11 @@ export default function BooksTab({ ownerId }) {
                     {b.author && <span className="bridge-note">{b.author}</span>}
                   </td>
                   <td className="mobile-hide">
-                    <select value={b.language || KNOWN_READING_LANGUAGES[0].name} onChange={e => update(b, { language: e.target.value })}>
-                      {KNOWN_READING_LANGUAGES.map(l => <option key={l.name} value={l.name}>{l.flag} {l.name}</option>)}
-                    </select>
+                    <LanguageSelect
+                      value={b.language || KNOWN_READING_LANGUAGES[0].name}
+                      options={KNOWN_READING_LANGUAGES}
+                      onChange={val => update(b, { language: val })}
+                    />
                   </td>
                   <td className="mobile-hide">
                     <select value={b.genre || ''} onChange={e => update(b, { genre: e.target.value || null })} className="genre-select">
@@ -133,7 +140,12 @@ export default function BooksTab({ ownerId }) {
                       {Object.entries(GENRE_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
                     </select>
                   </td>
-                  <td className="mobile-hide">{b.pages} стр</td>
+                  <td className="mobile-hide">
+                    <input
+                      type="number" min="1" style={{ maxWidth: 64 }} value={b.pages}
+                      onChange={e => update(b, { pages: Number(e.target.value) })}
+                    /> стр
+                  </td>
                   <td>
                     <LevelSelect value={b.difficulty} onChange={val => update(b, { difficulty: val })} allowNone />
                   </td>
@@ -174,16 +186,10 @@ export default function BooksTab({ ownerId }) {
         <div className="mama-add-row">
           <input placeholder="Название" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
           <input placeholder="Автор" value={newAuthor} onChange={e => setNewAuthor(e.target.value)} />
-          <select value={newLang} onChange={e => setNewLang(e.target.value)} style={{ maxWidth: 150 }}>
-            {KNOWN_READING_LANGUAGES.map(l => <option key={l.name} value={l.name}>{l.flag} {l.name}</option>)}
-          </select>
+          <LanguageSelect value={newLang} options={KNOWN_READING_LANGUAGES} onChange={setNewLang} style={{ maxWidth: 150 }} />
           <input type="number" min="1" placeholder="Страниц" style={{ maxWidth: 90 }} value={newPages} onChange={e => setNewPages(e.target.value)} />
           <button className="btn btn-sm btn-primary" onClick={addBook} type="button">+ Добавить</button>
         </div>
-      </div>
-
-      <div style={{ marginTop: 18 }}>
-        <BooksYearTracker books={books} goal={settings.booksYearlyGoal || 100} />
       </div>
 
       <div className="tip-card" style={{ marginTop: 18 }}>

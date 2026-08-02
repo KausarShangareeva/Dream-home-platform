@@ -1,8 +1,8 @@
 export const KNOWN_READING_LANGUAGES = [
-  { name: 'Русский', flag: '🇷🇺' },
-  { name: 'Татарский', flag: '🔤' },
-  { name: 'Арабский', flag: '🕌' },
-  { name: 'Английский', flag: '🇬🇧' },
+  { name: 'Русский', key: 'russian', flag: '🇷🇺' },
+  { name: 'Татарский', key: 'tatar', flag: '🔤' },
+  { name: 'Арабский', key: 'arabic', flag: '🕌' },
+  { name: 'Английский', key: 'english', flag: '🇬🇧' },
 ];
 
 export function readingLangFlag(name) {
