@@ -22,7 +22,7 @@ router.get('/:ownerId/quran', async (req, res) => {
 // PATCH /api/personal/:ownerId/quran/:id  { status?, learningStartDate?, doneDate? }
 router.patch('/:ownerId/quran/:id', async (req, res) => {
   const update = {};
-  ['status', 'learningStartDate', 'doneDate'].forEach(f => {
+  ['status', 'learningStartDate', 'doneDate', 'days'].forEach(f => {
     if (req.body[f] !== undefined) update[f] = req.body[f];
   });
   const surah = await Surah.findOneAndUpdate({ _id: req.params.id, ownerId: req.params.ownerId }, update, { new: true });

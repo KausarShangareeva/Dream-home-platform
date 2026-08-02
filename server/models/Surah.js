@@ -9,6 +9,7 @@ const surahSchema = new mongoose.Schema({
   status: { type: String, default: 'todo' }, // todo | learning | done
   learningStartDate: { type: String, default: null },
   doneDate: { type: String, default: null },
+  days: { type: Number, default: null }, // "за сколько дней" планирует выучить
 }, { timestamps: true });
 
 export default mongoose.model('Surah', surahSchema);

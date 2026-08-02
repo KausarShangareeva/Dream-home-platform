@@ -1,29 +1,40 @@
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
+import { useDragReorder } from '../hooks/useDragReorder.js';
 
-function CareerSection({ title, items, onToggle, onDelete, onAdd }) {
+function CareerSection({ title, items, onToggle, onDelete, onAdd, onReorder }) {
   const [name, setName] = useState('');
+  const { ordered, getRowProps } = useDragReorder(items, onReorder);
+
   return (
     <div style={{ flex: 1, minWidth: 260 }}>
       <div style={{ fontWeight: 700, marginBottom: 10 }}>{title}</div>
       <div className="mama-table-wrap">
         <table className="mama-table">
-          <thead><tr><th>✓</th><th className="col-title">Профессия</th><th></th></tr></thead>
+          <thead>
+            <tr>
+              <th className="col-num">#</th>
+              <th className="col-check">✓</th>
+              <th className="col-title">Профессия</th>
+              <th className="col-del"></th>
+            </tr>
+          </thead>
           <tbody>
-            {items.length === 0 && <tr><td colSpan={3} className="empty-state">Пусто</td></tr>}
-            {items.map(item => (
-              <tr key={item._id}>
-                <td><input type="checkbox" checked={item.done} onChange={() => onToggle(item)} /></td>
+            {ordered.length === 0 && <tr><td colSpan={4} className="empty-state">Пусто</td></tr>}
+            {ordered.map((item, idx) => (
+              <tr key={item._id} {...getRowProps(item)} className={item.done ? 'book-row-done' : ''}>
+                <td className="col-num"><span className="drag-handle">⋮⋮</span><span className="seq-badge">{idx + 1}</span></td>
+                <td className="col-check"><input type="checkbox" className="book-done" checked={item.done} onChange={() => onToggle(item)} /></td>
                 <td className="col-title">{item.icon} {item.name}</td>
-                <td><DeleteButton onConfirm={() => onDelete(item)} /></td>
+                <td className="col-del"><DeleteButton onConfirm={() => onDelete(item)} /></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <div className="form-row" style={{ marginTop: 10 }}>
-        <div className="field"><input placeholder="Название профессии" value={name} onChange={e => setName(e.target.value)} /></div>
+      <div className="mama-add-row">
+        <input placeholder="Название профессии" value={name} onChange={e => setName(e.target.value)} />
         <button className="btn btn-sm btn-primary" type="button" onClick={() => { if (!name.trim()) return; onAdd(name.trim()); setName(''); }}>+</button>
       </div>
     </div>
@@ -58,11 +69,12 @@ export default function CareerTab({ ownerId }) {
   const toggle = async (item) => { await api.updateCareerGoal(ownerId, item._id, { done: !item.done }); load(); };
   const remove = async (item) => { await api.deleteCareerGoal(ownerId, item._id); load(); };
   const add = async (category, name) => { await api.addCareerGoal(ownerId, { category, name }); load(); };
+  const reorder = async (ids) => { await api.reorderCareerGoals(ownerId, ids); load(); };
 
   return (
     <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-      <CareerSection title="💼 Основная работа" items={main} onToggle={toggle} onDelete={remove} onAdd={n => add('main', n)} />
-      <CareerSection title="🧩 Подработка" items={side} onToggle={toggle} onDelete={remove} onAdd={n => add('side', n)} />
+      <CareerSection title="💼 Основная работа" items={main} onToggle={toggle} onDelete={remove} onAdd={n => add('main', n)} onReorder={reorder} />
+      <CareerSection title="🧩 Подработка" items={side} onToggle={toggle} onDelete={remove} onAdd={n => add('side', n)} onReorder={reorder} />
     </div>
   );
 }
