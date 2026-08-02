@@ -1,15 +1,17 @@
 import { useState } from 'react';
+import OverviewTab from './OverviewTab.jsx';
 import LanguagesTab from './LanguagesTab.jsx';
 import BooksTab from './BooksTab.jsx';
 
 const SUB_TABS = [
+  { id: 'overview', label: '🧭 Обзор' },
   { id: 'languages', label: '🗣️ Языки' },
   { id: 'books', label: '📖 Книги' },
   // 'learn', 'career', 'quran' will be added in follow-up iterations
 ];
 
 export default function PersonalPanel({ ownerId, title }) {
-  const [subTab, setSubTab] = useState('languages');
+  const [subTab, setSubTab] = useState('overview');
 
   return (
     <div className="card">
@@ -25,6 +27,7 @@ export default function PersonalPanel({ ownerId, title }) {
           </button>
         ))}
       </div>
+      {subTab === 'overview' && <OverviewTab ownerId={ownerId} />}
       {subTab === 'languages' && <LanguagesTab ownerId={ownerId} />}
       {subTab === 'books' && <BooksTab ownerId={ownerId} />}
     </div>
