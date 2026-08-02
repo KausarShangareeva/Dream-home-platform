@@ -87,7 +87,7 @@ router.post('/:ownerId/listening/:id/sessions', async (req, res) => {
 
   const newSessions = [];
   // Preserve hours logged before this feature existed, the first time a session is added.
-  if (current.sessions.length === 0 && current.hours > 0) {
+  if ((current.sessions?.length || 0) === 0 && current.hours > 0) {
     newSessions.push({ _id: new mongoose.Types.ObjectId(), name: 'Ранее отмечено', hours: current.hours, done: true });
   }
   newSessions.push({ _id: new mongoose.Types.ObjectId(), name: name || null, hours: Number(hours), done: done !== undefined ? done : true });

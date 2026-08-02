@@ -43,7 +43,7 @@ export default function ListeningSessionsModal({ ownerId, item, onClose, onChang
       <div className="modal-card form-modal" onClick={e => e.stopPropagation()}>
         <h3>{item.title}</h3>
 
-        {item.sessions.length > 0 && (
+        {(item.sessions?.length || 0) > 0 && (
           <div className="modal-section listening-episode-list">
             {item.sessions.map(s => (
               <div className="listening-episode-row" key={s._id}>

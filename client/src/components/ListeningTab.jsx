@@ -127,7 +127,7 @@ export default function ListeningTab({ ownerId }) {
                   <button type="button" className="listening-title-btn" onClick={() => setSessionsModalId(item._id)}>
                     <b>{STATUS_EMOJI[item.status]}{item.title}</b>
                   </button>
-                  {item.sessions.length > 0 && (
+                  {(item.sessions?.length || 0) > 0 && (
                     <span className="bridge-note">{item.sessions.filter(s => s.done).length}/{item.sessions.length} эпизодов</span>
                   )}
                 </td>
