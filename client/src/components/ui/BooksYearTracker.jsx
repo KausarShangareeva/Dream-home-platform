@@ -18,10 +18,6 @@ export default function BooksYearTracker({ books, goal }) {
 
   const years = Object.keys(byYear).map(Number).sort((a, b) => b - a);
 
-  if (years.every(y => byYear[y].length === 0)) {
-    return <div className="empty-state">Пока нет завершённых книг — начните первую! 📖</div>;
-  }
-
   return (
     <div>
       {years.map(y => {

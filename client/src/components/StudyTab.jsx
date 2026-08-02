@@ -25,57 +25,60 @@ function EducationSection({ items, onToggle, onUpdate, onDelete, onAdd, onReorde
               <th className="col-num">#</th>
               <th className="col-check">✓</th>
               <th className="col-title">Программа</th>
-              <th className="mobile-hide">Язык</th>
-              <th className="mobile-hide">Лет</th>
               <th>Уровень</th>
-              <th className="mobile-hide">Ссылка</th>
+              <th className="mobile-hide">🔗</th>
               <th className="col-del"></th>
             </tr>
           </thead>
           <tbody>
-            {ordered.length === 0 && <tr><td colSpan={8} className="empty-state">Пока пусто — добавьте программу, которую рассматриваете</td></tr>}
+            {ordered.length === 0 && <tr><td colSpan={6} className="empty-state">Пока пусто — добавьте программу, которую рассматриваете</td></tr>}
             {ordered.map((item, idx) => (
               <tr key={item._id} {...getRowProps(item)} className={item.done ? 'book-row-done' : ''}>
                 <td className="col-num"><span className="drag-handle">⋮⋮</span><span className="seq-badge">{idx + 1}</span></td>
                 <td className="col-check"><input type="checkbox" className="book-done" checked={item.done} onChange={() => onToggle(item)} /></td>
                 <td className="col-title">
                   <b>{item.faculty}</b>
-                  {item.university && <span className="bridge-note">{item.university}</span>}
+                  {(item.university || item.language || item.years) && (
+                    <span className="bridge-note">
+                      {[item.university, item.language, item.years ? `${item.years} лет` : null].filter(Boolean).join(' · ')}
+                    </span>
+                  )}
                 </td>
-                <td className="mobile-hide">{item.language || '—'}</td>
-                <td className="mobile-hide">{item.years || '—'}</td>
                 <td>
                   <select value={item.level || 'todo'} className={`qstatus-select qstatus-${item.level === 'done' ? 'done' : item.level === 'studying' ? 'learning' : 'todo'}`} onChange={e => onUpdate(item, { level: e.target.value })}>
                     {Object.entries(EDU_LEVEL_LABEL).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
                   </select>
                 </td>
-                <td className="mobile-hide">{item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer">ссылка ↗</a> : '—'}</td>
+                <td className="mobile-hide">{item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer" title={item.url}>🔗</a> : '—'}</td>
                 <td className="col-del"><DeleteButton onConfirm={() => onDelete(item)} /></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <div className="mama-add-row">
-        <input placeholder="Факультет / программа" value={faculty} onChange={e => setFaculty(e.target.value)} />
-        <input placeholder="Университет" value={university} onChange={e => setUniversity(e.target.value)} />
-        <input placeholder="Язык обучения" value={language} onChange={e => setLanguage(e.target.value)} style={{ maxWidth: 130 }} />
-        <input type="number" min="0" placeholder="Лет" value={years} onChange={e => setYears(e.target.value)} style={{ maxWidth: 70 }} />
-        <input placeholder="Ссылка на университет" value={url} onChange={e => setUrl(e.target.value)} style={{ maxWidth: 180 }} />
-        <button
-          className="btn btn-sm btn-primary" type="button"
-          onClick={() => {
-            if (!faculty.trim()) return;
-            onAdd({ faculty: faculty.trim(), university: university.trim(), language: language.trim(), years: Number(years) || 0, url: url.trim() });
-            setFaculty(''); setUniversity(''); setLanguage(''); setYears(''); setUrl('');
-          }}
-        >+ Добавить</button>
+      <div className="mama-add-book-block">
+        <div className="mama-strip-title" style={{ margin: '0 0 12px' }}>Добавить высшее образование</div>
+        <div className="mama-add-row">
+          <input placeholder="Факультет / программа" value={faculty} onChange={e => setFaculty(e.target.value)} />
+          <input placeholder="Университет" value={university} onChange={e => setUniversity(e.target.value)} />
+          <input placeholder="Язык обучения" value={language} onChange={e => setLanguage(e.target.value)} style={{ maxWidth: 130 }} />
+          <input type="number" min="0" placeholder="Лет" value={years} onChange={e => setYears(e.target.value)} style={{ maxWidth: 70 }} />
+          <input placeholder="Ссылка на университет" value={url} onChange={e => setUrl(e.target.value)} style={{ maxWidth: 180 }} />
+          <button
+            className="btn btn-sm btn-primary" type="button"
+            onClick={() => {
+              if (!faculty.trim()) return;
+              onAdd({ faculty: faculty.trim(), university: university.trim(), language: language.trim(), years: Number(years) || 0, url: url.trim() });
+              setFaculty(''); setUniversity(''); setLanguage(''); setYears(''); setUrl('');
+            }}
+          >+ Добавить</button>
+        </div>
       </div>
     </div>
   );
 }
 
-function StudySection({ title, items, onUpdate, onDelete, onAdd, onReorder }) {
+function StudySection({ title, addLabel, items, onUpdate, onDelete, onAdd, onReorder }) {
   const [name, setName] = useState('');
   const [hours, setHours] = useState('');
 
@@ -116,10 +119,13 @@ function StudySection({ title, items, onUpdate, onDelete, onAdd, onReorder }) {
           </tbody>
         </table>
       </div>
-      <div className="mama-add-row">
-        <input placeholder="Название" value={name} onChange={e => setName(e.target.value)} />
-        <input type="number" min="0" step="0.5" placeholder="Часов" style={{ maxWidth: 80 }} value={hours} onChange={e => setHours(e.target.value)} />
-        <button className="btn btn-sm btn-primary" type="button" onClick={() => { if (!name.trim()) return; onAdd({ name: name.trim(), hours: Number(hours) || 0 }); setName(''); setHours(''); }}>+</button>
+      <div className="mama-add-book-block">
+        <div className="mama-strip-title" style={{ margin: '0 0 12px' }}>{addLabel}</div>
+        <div className="mama-add-row">
+          <input placeholder="Название" value={name} onChange={e => setName(e.target.value)} />
+          <input type="number" min="0" step="0.5" placeholder="Часов" style={{ maxWidth: 80 }} value={hours} onChange={e => setHours(e.target.value)} />
+          <button className="btn btn-sm btn-primary" type="button" onClick={() => { if (!name.trim()) return; onAdd({ name: name.trim(), hours: Number(hours) || 0 }); setName(''); setHours(''); }}>+ Добавить</button>
+        </div>
       </div>
     </div>
   );
@@ -174,8 +180,8 @@ export default function StudyTab({ ownerId }) {
     <div>
       <EducationSection items={education} onToggle={toggleEdu} onUpdate={updateEdu} onDelete={removeEdu} onAdd={addEdu} onReorder={reorderEdu} />
       <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-        <StudySection title="📚 Учебные дисциплины" items={subjects} onUpdate={update} onDelete={remove} onAdd={d => add('subject', d)} onReorder={reorderStudy} />
-        <StudySection title="🧶 Хобби" items={hobbies} onUpdate={update} onDelete={remove} onAdd={d => add('hobby', d)} onReorder={reorderStudy} />
+        <StudySection title="📚 Учебные дисциплины" addLabel="Добавить дисциплину" items={subjects} onUpdate={update} onDelete={remove} onAdd={d => add('subject', d)} onReorder={reorderStudy} />
+        <StudySection title="🧶 Хобби" addLabel="Добавить хобби" items={hobbies} onUpdate={update} onDelete={remove} onAdd={d => add('hobby', d)} onReorder={reorderStudy} />
       </div>
     </div>
   );
