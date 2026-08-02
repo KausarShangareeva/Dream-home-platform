@@ -96,6 +96,7 @@ export const api = {
   updateListeningItem: (ownerId, id, data) => request(`/personal/${ownerId}/listening/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteListeningItem: (ownerId, id) => request(`/personal/${ownerId}/listening/${id}`, { method: 'DELETE' }),
   reorderListeningItems: (ownerId, ids) => request(`/personal/${ownerId}/listening/reorder`, { method: 'PATCH', body: JSON.stringify({ ids }) }),
+  getYoutubePlaylistInfo: (url) => request(`/youtube/playlist-info?url=${encodeURIComponent(url)}`),
 
   // Trips
   getTrips: () => request('/trips'),

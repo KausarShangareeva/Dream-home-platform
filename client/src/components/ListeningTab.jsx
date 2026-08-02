@@ -9,6 +9,16 @@ import { useDragReorder } from '../hooks/useDragReorder.js';
 const STATUS_LABEL = { todo: 'В планах', learning: 'Слушаю', done: 'Прослушано' };
 const STATUS_EMOJI = { todo: '', learning: '⏳ ', done: '✅ ' };
 
+function isYoutubePlaylistUrl(url) {
+  if (!url) return false;
+  try {
+    const u = new URL(url);
+    return /(^|\.)youtube\.com$/.test(u.hostname) && u.searchParams.has('list');
+  } catch {
+    return false;
+  }
+}
+
 export default function ListeningTab({ ownerId }) {
   const [items, setItems] = useState([]);
   const [languages, setLanguages] = useState([]);
@@ -20,6 +30,9 @@ export default function ListeningTab({ ownerId }) {
   const [newLang, setNewLang] = useState('');
   const [newType, setNewType] = useState('');
   const [newLink, setNewLink] = useState('');
+  const [newHours, setNewHours] = useState('');
+  const [fetchingNew, setFetchingNew] = useState(false);
+  const [fetchingRowId, setFetchingRowId] = useState(null);
 
   const loadedOnceRef = useRef(false);
   const load = useCallback(async () => {
@@ -68,9 +81,43 @@ export default function ListeningTab({ ownerId }) {
 
   const addItem = async () => {
     if (!newTitle.trim()) return alert('Впишите название');
-    await api.addListeningItem(ownerId, { title: newTitle.trim(), language: newLang, type: newType || null, link: newLink.trim() });
-    setNewTitle(''); setNewLink('');
+    await api.addListeningItem(ownerId, {
+      title: newTitle.trim(), language: newLang, type: newType || null, link: newLink.trim(),
+      hours: Number(newHours) || 0,
+    });
+    setNewTitle(''); setNewLink(''); setNewHours('');
     load();
+  };
+
+  const handleNewLinkBlur = async (e) => {
+    const url = e.target.value.trim();
+    if (!isYoutubePlaylistUrl(url)) return;
+    setFetchingNew(true);
+    try {
+      const info = await api.getYoutubePlaylistInfo(url);
+      setNewTitle(info.title);
+      setNewHours(String(info.hours));
+    } catch (err) {
+      alert(`Не удалось получить данные плейлиста: ${err.message}`);
+    } finally {
+      setFetchingNew(false);
+    }
+  };
+
+  const handleRowLinkBlur = async (item, e) => {
+    const url = e.target.value.trim();
+    if (url !== (item.link || '')) update(item, { link: url });
+    if (!isYoutubePlaylistUrl(url)) return;
+    setFetchingRowId(item._id);
+    try {
+      const info = await api.getYoutubePlaylistInfo(url);
+      await api.updateListeningItem(ownerId, item._id, { title: info.title, hours: info.hours, link: url });
+      load();
+    } catch (err) {
+      alert(`Не удалось получить данные плейлиста: ${err.message}`);
+    } finally {
+      setFetchingRowId(null);
+    }
   };
 
   const totalsByLanguage = {};
@@ -137,13 +184,12 @@ export default function ListeningTab({ ownerId }) {
                 <td className="mobile-hide">
                   <div className="listening-link-cell">
                     <input
-                      type="url" placeholder="ссылка" defaultValue={item.link || ''}
-                      onBlur={e => {
-                        const v = e.target.value.trim();
-                        if (v !== (item.link || '')) update(item, { link: v });
-                      }}
+                      type="url" placeholder="ссылка на плейлист" defaultValue={item.link || ''}
+                      onBlur={e => handleRowLinkBlur(item, e)}
                     />
-                    {item.link && <a href={item.link} target="_blank" rel="noreferrer" title="Перейти на сайт">↗</a>}
+                    {fetchingRowId === item._id
+                      ? <span className="listening-fetching" title="Ищу данные плейлиста…">⏳</span>
+                      : item.link && <a href={item.link} target="_blank" rel="noreferrer" title="Перейти на сайт">↗</a>}
                   </div>
                 </td>
                 <td>
@@ -160,13 +206,18 @@ export default function ListeningTab({ ownerId }) {
 
       <div className="mama-add-book-block">
         <div className="mama-strip-title" style={{ margin: '0 0 12px' }}>Добавить аудиокнигу / подкаст / канал</div>
+        <p style={{ margin: '0 0 12px', fontSize: 11.5, color: 'var(--ink-soft)' }}>
+          Вставь ссылку на плейлист YouTube — название и часы подставятся сами.
+        </p>
         <div className="mama-add-row">
+          <input placeholder="Ссылка на плейлист (необязательно)" value={newLink} onChange={e => setNewLink(e.target.value)} onBlur={handleNewLinkBlur} />
+          {fetchingNew && <span className="listening-fetching" title="Ищу данные плейлиста…">⏳ ищу...</span>}
           <input placeholder="Название" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
           <select value={newType} onChange={e => setNewType(e.target.value)}>
             <option value="">Тематика...</option>
             {Object.entries(TYPE_LABEL).map(([k, label]) => <option key={k} value={k}>{TYPE_DOT[k]} {label}</option>)}
           </select>
-          <input placeholder="Ссылка (необязательно)" value={newLink} onChange={e => setNewLink(e.target.value)} />
+          <input type="number" min="0" step="0.5" placeholder="Часов" style={{ maxWidth: 90 }} value={newHours} onChange={e => setNewHours(e.target.value)} />
           <button className="btn btn-sm btn-primary" onClick={addItem} type="button">+ Добавить</button>
         </div>
       </div>
