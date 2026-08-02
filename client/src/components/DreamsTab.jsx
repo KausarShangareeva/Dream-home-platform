@@ -8,6 +8,7 @@ export default function DreamsTab() {
   const [customDreams, setCustomDreams] = useState([]);
   const [depositsByDream, setDepositsByDream] = useState({}); // dreamId -> [deposits]
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingDream, setEditingDream] = useState(null); // dream being edited, or null when adding new
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -32,10 +33,20 @@ export default function DreamsTab() {
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
-  const handleAddDream = async (data) => {
-    await api.addDream(data);
+  const handleSaveDream = async (data) => {
+    if (editingDream) {
+      await api.updateDream(editingDream.id, data);
+    } else {
+      await api.addDream(data);
+    }
     setModalOpen(false);
+    setEditingDream(null);
     loadAll();
+  };
+
+  const openEdit = (dream) => {
+    setEditingDream(dream);
+    setModalOpen(true);
   };
 
   const handleDeleteDream = async (id) => {
@@ -85,16 +96,24 @@ export default function DreamsTab() {
               onUpdateDeposit={(depositId, amount) => handleUpdateDeposit(dream.id, depositId, amount)}
               onDeleteDeposit={(depositId) => handleDeleteDeposit(dream.id, depositId)}
               onDeleteDream={() => handleDeleteDream(dream.id)}
+              onEdit={dream.isCustom ? () => openEdit(dream) : null}
             />
           );
         })}
-        <button className="dream-add-card" onClick={() => setModalOpen(true)}>
+        <button className="dream-add-card" onClick={() => { setEditingDream(null); setModalOpen(true); }}>
           <span style={{ fontSize: 28 }}>＋</span>
           <span>Добавить свою мечту</span>
         </button>
       </div>
 
-      <NewDreamModal open={modalOpen} onClose={() => setModalOpen(false)} onSave={handleAddDream} />
+      <NewDreamModal
+        open={modalOpen}
+        onClose={() => { setModalOpen(false); setEditingDream(null); }}
+        onSave={handleSaveDream}
+        editingDream={editingDream}
+        modalTitle={editingDream ? '✏️ Изменить мечту' : '✨ Новая мечта'}
+        saveLabel={editingDream ? 'Сохранить' : 'Добавить мечту'}
+      />
     </div>
   );
 }

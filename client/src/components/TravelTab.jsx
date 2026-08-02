@@ -7,6 +7,7 @@ export default function TravelTab() {
   const [trips, setTrips] = useState([]);
   const [depositsByTrip, setDepositsByTrip] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingTrip, setEditingTrip] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -38,10 +39,21 @@ export default function TravelTab() {
     </div>
   );
 
-  const handleAddTrip = async (data) => {
-    await api.addTrip({ ...data, icon: data.icon || '✈️' });
+  const handleSaveTrip = async (data) => {
+    const payload = { ...data, icon: data.icon || '✈️' };
+    if (editingTrip) {
+      await api.updateTrip(editingTrip.id, payload);
+    } else {
+      await api.addTrip(payload);
+    }
     setModalOpen(false);
+    setEditingTrip(null);
     loadAll();
+  };
+
+  const openEdit = (trip) => {
+    setEditingTrip(trip);
+    setModalOpen(true);
   };
 
   return (
@@ -51,10 +63,11 @@ export default function TravelTab() {
         {trips.map(trip => {
           const deposits = depositsByTrip[trip._id] || [];
           const total = deposits.reduce((s, d) => s + d.amount, 0);
+          const dreamShape = { id: trip._id, title: trip.title, target: trip.target, icon: trip.icon, photo: trip.photo, pos: trip.pos };
           return (
             <DreamCard
               key={trip._id}
-              dream={{ id: trip._id, title: trip.title, target: trip.target, icon: trip.icon, photo: trip.photo }}
+              dream={dreamShape}
               total={total}
               deposits={deposits}
               isCustom
@@ -62,20 +75,22 @@ export default function TravelTab() {
               onUpdateDeposit={(depositId, amount) => api.updateTripDeposit(trip._id, depositId, { amount }).then(loadAll)}
               onDeleteDeposit={(depositId) => api.deleteTripDeposit(trip._id, depositId).then(loadAll)}
               onDeleteDream={() => api.deleteTrip(trip._id).then(loadAll)}
+              onEdit={() => openEdit(dreamShape)}
             />
           );
         })}
-        <button className="dream-add-card" onClick={() => setModalOpen(true)}>
+        <button className="dream-add-card" onClick={() => { setEditingTrip(null); setModalOpen(true); }}>
           <span style={{ fontSize: 28 }}>＋</span>
           <span>Добавить поездку</span>
         </button>
       </div>
       <NewDreamModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSave={handleAddTrip}
-        modalTitle="✈️ Новая поездка"
-        saveLabel="Добавить поездку"
+        onClose={() => { setModalOpen(false); setEditingTrip(null); }}
+        onSave={handleSaveTrip}
+        editingDream={editingTrip}
+        modalTitle={editingTrip ? '✏️ Изменить поездку' : '✈️ Новая поездка'}
+        saveLabel={editingTrip ? 'Сохранить' : 'Добавить поездку'}
         namePlaceholder="Куда едем"
       />
     </div>

@@ -381,6 +381,9 @@
   .dream-contrib-edit{width:64px;border:1.5px solid var(--purple);border-radius:7px;padding:3px 6px;font-size:11px;font-family:'Montserrat';}
   .dream-contrib-icon{background:none;border:none;cursor:pointer;color:var(--ink-soft);font-size:12px;padding:2px;}
   .dream-contrib-icon:hover{color:var(--purple-deep);}
+
+  .dream-photo-preview{width:100%;height:140px;border-radius:14px;overflow:hidden;background:var(--card-soft);margin-top:6px;}
+  .dream-photo-preview img{width:100%;height:100%;object-fit:cover;display:block;}
   .dream-actions{display:flex;gap:6px;margin-top:2px;}
   .dream-actions select,.dream-actions input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:9px;padding:7px 8px;font-size:12px;font-family:'Montserrat';background:var(--card);color:var(--ink);}
   .dream-actions select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:none;padding-right:8px;}

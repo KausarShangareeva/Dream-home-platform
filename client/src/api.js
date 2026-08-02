@@ -27,6 +27,7 @@ export const api = {
   // Custom dreams
   getDreams: () => request('/dreams'),
   addDream: (data) => request('/dreams', { method: 'POST', body: JSON.stringify(data) }),
+  updateDream: (id, data) => request(`/dreams/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteDream: (id) => request(`/dreams/${id}`, { method: 'DELETE' }),
 
   // Deposits toward any dream (built-in id or custom dream _id)
@@ -84,6 +85,7 @@ export const api = {
   // Trips
   getTrips: () => request('/trips'),
   addTrip: (data) => request('/trips', { method: 'POST', body: JSON.stringify(data) }),
+  updateTrip: (id, data) => request(`/trips/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteTrip: (id) => request(`/trips/${id}`, { method: 'DELETE' }),
   getTripDeposits: (tripId) => request(`/trips/${tripId}/deposits`),
   addTripDeposit: (tripId, data) => request(`/trips/${tripId}/deposits`, { method: 'POST', body: JSON.stringify(data) }),

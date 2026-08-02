@@ -11,13 +11,20 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { title, target, icon, photo } = req.body;
+    const { title, target, icon, photo, pos } = req.body;
     if (!title || !target) return res.status(400).json({ error: 'title and target are required' });
-    const trip = await Trip.create({ title, target, icon, photo });
+    const trip = await Trip.create({ title, target, icon, photo, pos });
     res.status(201).json(trip);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+});
+
+router.patch('/:id', async (req, res) => {
+  const update = {};
+  ['title', 'target', 'icon', 'photo', 'pos'].forEach(f => { if (req.body[f] !== undefined) update[f] = req.body[f]; });
+  const trip = await Trip.findByIdAndUpdate(req.params.id, update, { new: true });
+  res.json(trip);
 });
 
 router.delete('/:id', async (req, res) => {

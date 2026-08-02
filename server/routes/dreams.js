@@ -12,16 +12,24 @@ router.get('/', async (req, res) => {
   res.json(dreams);
 });
 
-// POST /api/dreams  { title, target, icon?, photo? }
+// POST /api/dreams  { title, target, icon?, photo?, pos? }
 router.post('/', async (req, res) => {
   try {
-    const { title, target, icon, photo } = req.body;
+    const { title, target, icon, photo, pos } = req.body;
     if (!title || !target) return res.status(400).json({ error: 'title and target are required' });
-    const dream = await Dream.create({ title, target, icon, photo });
+    const dream = await Dream.create({ title, target, icon, photo, pos });
     res.status(201).json(dream);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+});
+
+// PATCH /api/dreams/:id  { title?, target?, icon?, photo?, pos? }
+router.patch('/:id', async (req, res) => {
+  const update = {};
+  ['title', 'target', 'icon', 'photo', 'pos'].forEach(f => { if (req.body[f] !== undefined) update[f] = req.body[f]; });
+  const dream = await Dream.findByIdAndUpdate(req.params.id, update, { new: true });
+  res.json(dream);
 });
 
 // DELETE /api/dreams/:id

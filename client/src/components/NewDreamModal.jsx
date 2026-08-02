@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 const RANDOM_ICONS = ['🎯', '⭐', '🌟', '🎁', '🏆', '🎈', '🌈', '💎', '🚀', '🎨', '🏕️', '🎪'];
 
@@ -22,15 +22,40 @@ function compressImage(file) {
   });
 }
 
+// Parses a CSS object-position string like "50% 30%" or "center" into {x, y} percentages.
+function parsePos(pos) {
+  if (!pos || pos === 'center') return { x: 50, y: 50 };
+  const parts = pos.trim().split(/\s+/).map(v => parseFloat(v));
+  return { x: Number.isFinite(parts[0]) ? parts[0] : 50, y: Number.isFinite(parts[1]) ? parts[1] : 50 };
+}
+
 export default function NewDreamModal({
   open, onClose, onSave,
   modalTitle = '✨ Новая мечта', saveLabel = 'Добавить мечту', namePlaceholder = 'Название мечты',
+  editingDream = null, // pass an existing dream/trip object to edit it instead of creating a new one
 }) {
   const [name, setName] = useState('');
   const [icon, setIcon] = useState(RANDOM_ICONS[Math.floor(Math.random() * RANDOM_ICONS.length)]);
   const [target, setTarget] = useState('');
   const [photo, setPhoto] = useState(null);
+  const [posX, setPosX] = useState(50);
+  const [posY, setPosY] = useState(50);
   const fileInput = useRef(null);
+
+  // Pre-fill fields when opening in edit mode.
+  useEffect(() => {
+    if (open && editingDream) {
+      setName(editingDream.title || '');
+      setIcon(editingDream.icon || '🎯');
+      setTarget(editingDream.target ? String(editingDream.target) : '');
+      setPhoto(editingDream.photo || null);
+      const { x, y } = parsePos(editingDream.pos);
+      setPosX(x); setPosY(y);
+    } else if (open && !editingDream) {
+      setName(''); setTarget(''); setPhoto(null); setPosX(50); setPosY(50);
+      setIcon(RANDOM_ICONS[Math.floor(Math.random() * RANDOM_ICONS.length)]);
+    }
+  }, [open, editingDream]);
 
   if (!open) return null;
 
@@ -38,14 +63,19 @@ export default function NewDreamModal({
     const file = e.target.files[0];
     if (!file) return;
     setPhoto(await compressImage(file));
+    setPosX(50); setPosY(50); // reset focal point for the new photo
   };
 
   const save = () => {
     if (!name.trim()) return alert('Впишите название');
     if (!target || Number(target) <= 0) return alert('Укажите цель больше 0');
-    onSave({ title: name.trim(), target: Number(target), icon: icon || '🎯', photo });
-    setName(''); setTarget(''); setPhoto(null);
-    setIcon(RANDOM_ICONS[Math.floor(Math.random() * RANDOM_ICONS.length)]);
+    onSave({
+      title: name.trim(),
+      target: Number(target),
+      icon: icon || '🎯',
+      photo,
+      pos: photo ? `${posX}% ${posY}%` : 'center',
+    });
   };
 
   return (
@@ -77,6 +107,21 @@ export default function NewDreamModal({
             📷 Загрузить фото {photo ? '(выбрано)' : ''}
           </button>
         </div>
+
+        {photo && (
+          <div className="modal-section field">
+            <label>Как обрезать фото на карточке</label>
+            <div className="dream-photo-preview">
+              <img src={photo} alt="" style={{ objectPosition: `${posX}% ${posY}%` }} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
+              <label style={{ fontSize: 11, color: 'var(--ink-soft)' }}>По горизонтали</label>
+              <input type="range" min="0" max="100" value={posX} onChange={e => setPosX(Number(e.target.value))} />
+              <label style={{ fontSize: 11, color: 'var(--ink-soft)' }}>По вертикали</label>
+              <input type="range" min="0" max="100" value={posY} onChange={e => setPosY(Number(e.target.value))} />
+            </div>
+          </div>
+        )}
 
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>Отмена</button>

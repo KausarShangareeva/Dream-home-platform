@@ -38,7 +38,7 @@ function ContributionRow({ deposit, onUpdate, onDelete }) {
   );
 }
 
-export default function DreamCard({ dream, total, deposits, isCustom, onAddDeposit, onUpdateDeposit, onDeleteDeposit, onDeleteDream }) {
+export default function DreamCard({ dream, total, deposits, isCustom, onAddDeposit, onUpdateDeposit, onDeleteDeposit, onDeleteDream, onEdit }) {
   const [person, setPerson] = useState(PEOPLE[0].id);
   const [amount, setAmount] = useState('');
 
@@ -54,7 +54,16 @@ export default function DreamCard({ dream, total, deposits, isCustom, onAddDepos
   return (
     <div className="dream-card">
       {isCustom && (
-        <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 2 }}>
+        <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 2, display: 'flex', gap: 6 }}>
+          {onEdit && (
+            <button
+              type="button"
+              className="icon-del"
+              title="Изменить мечту"
+              onClick={onEdit}
+              style={{ background: 'var(--card)' }}
+            >✎</button>
+          )}
           <DeleteButton onConfirm={onDeleteDream} title="Удалить мечту" />
         </div>
       )}
