@@ -25,19 +25,28 @@ export default function DreamCard({ dream, total, isCustom, onAddDeposit, onDele
           <DeleteButton onConfirm={onDeleteDream} title="Удалить мечту" />
         </div>
       )}
-      <div className="dream-icon">
-        {dream.photo ? <img src={dream.photo} alt={dream.title} /> : dream.icon}
+      <div className="dream-img">
+        {dream.photo ? <img src={dream.photo} alt={dream.title} /> : (
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44, background: 'var(--card-soft)' }}>
+            {dream.icon}
+          </div>
+        )}
       </div>
       <div className="dream-body">
-        <div className="dream-title">{dream.title}</div>
-        <div className="progress-track"><div className="progress-fill" style={{ width: `${pct}%` }} /></div>
-        <div style={{ fontSize: 12, color: 'var(--ink-soft)' }}>{fmt(total)} из {fmt(dream.target)}</div>
+        <h4>{dream.title}</h4>
+        <div className="dream-progress-track"><div className="dream-progress-fill" style={{ width: `${pct}%` }} /></div>
+        <div className="dream-nums">
+          <span>Собрано</span>
+          <b>{fmt(total)} / {fmt(dream.target)}</b>
+        </div>
 
         {!adding && (
-          <button className="btn btn-sm btn-ghost" onClick={() => setAdding(true)}>+ Внести</button>
+          <div className="dream-actions">
+            <button className="btn btn-sm btn-ghost" onClick={() => setAdding(true)}>+ Внести</button>
+          </div>
         )}
         {adding && (
-          <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <form onSubmit={submit} className="dream-actions" style={{ flexDirection: 'column' }}>
             <select value={person} onChange={e => setPerson(e.target.value)}>
               {PEOPLE.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>

@@ -47,7 +47,7 @@ export default function Sidebar({ activeTab, onChangeTab }) {
             className={`nav-btn${activeTab === item.id ? ' active' : ''}`}
             onClick={() => onChangeTab(item.id)}
           >
-            <span>{item.icon}</span>
+            <span className="ic">{item.icon}</span>
             <span>{item.label}</span>
           </button>
         ))}
@@ -60,7 +60,7 @@ export default function Sidebar({ activeTab, onChangeTab }) {
             className={`nav-btn${activeTab === item.id ? ' active' : ''}`}
             onClick={() => onChangeTab(item.id)}
           >
-            <span>{item.icon}</span>
+            <span className="ic">{item.icon}</span>
             <span>{item.label}</span>
           </button>
         ))}

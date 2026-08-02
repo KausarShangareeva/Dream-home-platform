@@ -55,7 +55,7 @@ export default function DebtsTab() {
       <p style={{ margin: '0 0 18px', fontSize: 13, color: 'var(--ink-soft)' }}>То, что семья должна другим. Итого осталось выплатить: <b style={{ color: 'var(--ink)' }}>{fmt(totalOwed)}</b></p>
 
       <div className="mama-table-wrap">
-        <table className="data-table">
+        <table className="mama-table">
           <thead><tr><th className="col-title">Кому</th><th>Сумма</th><th>Выплачено</th><th>Остаток</th><th>Срок</th><th></th><th></th></tr></thead>
           <tbody>
             {debts.length === 0 && <tr><td colSpan={7} className="empty-state">Долгов нет — и пусть так и будет 🤲</td></tr>}

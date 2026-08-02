@@ -5,6 +5,7 @@ const depositSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
   currency: { type: String, default: 'SEK' },
   date: { type: String, required: true },      // ISO date string, e.g. '2026-08-02'
+  note: { type: String, default: '' },         // e.g. "Зарплата", "Подработка"
 }, { timestamps: true });
 
 export default mongoose.model('Deposit', depositSchema);

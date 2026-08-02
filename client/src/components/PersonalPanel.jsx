@@ -7,12 +7,12 @@ import StudyTab from './StudyTab.jsx';
 import CareerTab from './CareerTab.jsx';
 
 const SUB_TABS = [
-  { id: 'overview', label: '🧭 Обзор' },
-  { id: 'languages', label: '🗣️ Языки' },
-  { id: 'books', label: '📖 Книги' },
-  { id: 'quran', label: '📿 Коран' },
-  { id: 'study', label: '🌱 Учиться' },
-  { id: 'career', label: '🎯 Профессия' },
+  { id: 'overview', label: 'Обзор', icon: '🧭', color: 'var(--rose)' },
+  { id: 'languages', label: 'Языки', icon: '🗣️', color: 'var(--gold)' },
+  { id: 'books', label: 'Книги', icon: '📖', color: 'var(--violet)' },
+  { id: 'quran', label: 'Коран', icon: '📿', color: 'var(--leaf)' },
+  { id: 'study', label: 'Учиться', icon: '🌱', color: 'var(--teal)' },
+  { id: 'career', label: 'Профессия', icon: '🎯', color: 'var(--rose)' },
 ];
 
 export default function PersonalPanel({ ownerId, title }) {
@@ -21,13 +21,14 @@ export default function PersonalPanel({ ownerId, title }) {
   return (
     <div className="card">
       <h2 style={{ marginBottom: 18 }}>{title}</h2>
-      <div className="tabs-row">
+      <div className="mama-tabs">
         {SUB_TABS.map(t => (
           <button
             key={t.id}
-            className={`tab-btn${subTab === t.id ? ' active' : ''}`}
+            className={`mama-tab${subTab === t.id ? ' active' : ''}`}
             onClick={() => setSubTab(t.id)}
           >
+            <span className="mtab-ic" style={{ background: t.color }}>{t.icon}</span>
             {t.label}
           </button>
         ))}

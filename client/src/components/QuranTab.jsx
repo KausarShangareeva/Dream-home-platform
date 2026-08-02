@@ -47,7 +47,7 @@ export default function QuranTab({ ownerId }) {
       </div>
 
       <div className="mama-table-wrap">
-        <table className="data-table">
+        <table className="mama-table">
           <thead><tr><th className="col-title">Сура</th><th>Страниц</th><th>Статус</th><th>Начало</th><th>Дата готовности</th></tr></thead>
           <tbody>
             {surahs.map(s => (

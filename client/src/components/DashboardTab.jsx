@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api.js';
 import { PEOPLE, personById } from '../data/people.js';
+import { HADITHS } from '../data/staticContent.js';
 import Avatar from './ui/Avatar.jsx';
 import DeleteButton from './ui/DeleteButton.jsx';
 import houseImg from '../assets/house.jpg';
@@ -15,6 +16,7 @@ export default function DashboardTab() {
   const [person, setPerson] = useState(PEOPLE[0].id);
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [note, setNote] = useState('');
 
   const load = () => {
     setLoading(true); setError(null);
@@ -23,14 +25,16 @@ export default function DashboardTab() {
   useEffect(() => { load(); }, []);
 
   const total = deposits.reduce((s, d) => s + d.amount, 0);
-  const pct = Math.min(100, (total / TARGET) * 100);
   const remaining = Math.max(0, TARGET - total);
+
+  const totalsByPerson = Object.fromEntries(PEOPLE.map(p => [p.id, 0]));
+  deposits.forEach(d => { totalsByPerson[d.person] = (totalsByPerson[d.person] || 0) + d.amount; });
 
   const submit = async (e) => {
     e.preventDefault();
     if (!amount || Number(amount) <= 0) return;
-    await api.addDeposit({ person, amount: Number(amount), date });
-    setAmount('');
+    await api.addDeposit({ person, amount: Number(amount), date, note });
+    setAmount(''); setNote('');
     load();
   };
 
@@ -40,65 +44,111 @@ export default function DashboardTab() {
   };
 
   return (
-    <div className="card">
-      <div className="goal-photo" style={{ backgroundImage: `url(${houseImg})` }} />
-      <div className="goal-info">
-        <h2>Дом мечты — цель {fmt(TARGET)}</h2>
-      </div>
+    <div>
+      <div className="goal-row">
+        <div className="goal-photo">
+          <img src={houseImg} alt="Дом мечты: 8 спален, бассейн, сад" />
+          <div className="goal-photo-tag">🏡 8 спален · бассейн · сад</div>
+        </div>
+        <div className="goal-info">
+          <span className="goal-eyebrow">🕌 Ризк ради семьи · первый взнос за дом</span>
 
-      <div className="track-wrap">
-        <div className="amount-line">
-          <span>Собрано: {fmt(total)}</span>
-          <span>Осталось: {fmt(remaining)}</span>
-        </div>
-        <div className="progress-track">
-          <div className="progress-fill" style={{ width: `${pct}%` }} />
-        </div>
-      </div>
+          <h2>Дом мечты — цель {fmt(TARGET)}</h2>
 
-      <form className="form-row" onSubmit={submit}>
-        <div className="field">
-          <label>Кто</label>
-          <select value={person} onChange={e => setPerson(e.target.value)}>
-            {PEOPLE.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-          </select>
-        </div>
-        <div className="field">
-          <label>Сумма, kr</label>
-          <input type="number" min="1" value={amount} onChange={e => setAmount(e.target.value)} placeholder="Например: 500" />
-        </div>
-        <div className="field">
-          <label>Дата</label>
-          <input type="date" value={date} onChange={e => setDate(e.target.value)} />
-        </div>
-        <div className="field" style={{ justifyContent: 'flex-end' }}>
-          <button className="btn btn-primary" type="submit">+ Добавить взнос</button>
-        </div>
-      </form>
-
-      <div className="history">
-        {loading && <div className="empty-state">Загрузка…</div>}
-        {error && (
-          <div className="empty-state">
-            Не удалось загрузить данные: {error}
-            <div style={{ marginTop: 10 }}><button className="btn btn-sm btn-ghost" onClick={load}>Повторить</button></div>
-          </div>
-        )}
-        {!loading && !error && deposits.length === 0 && <div className="empty-state">Пока нет взносов — добавьте первый выше</div>}
-        {!loading && !error && deposits.map(d => {
-          const p = personById(d.person);
-          return (
-            <div className="hist-row" key={d._id}>
-              <Avatar person={p} />
-              <div className="hist-main">
-                <div style={{ fontWeight: 700 }}>{p.name}</div>
-                <div style={{ fontSize: 11, color: 'var(--ink-soft)' }}>{d.date}</div>
+          <div className="people-row">
+            {PEOPLE.map(p => (
+              <div className="person-chip" key={p.id}>
+                <Avatar person={p} />
+                <div>
+                  <span className="pname">{p.name.split(' ')[0]}</span>
+                  <span className="pamt">{fmt(totalsByPerson[p.id] || 0)}</span>
+                </div>
               </div>
-              <div className="hist-amount">{fmt(d.amount)}</div>
-              <DeleteButton onConfirm={() => remove(d._id)} />
+            ))}
+          </div>
+
+          <div className="track-wrap">
+            <div className="amount-line">
+              <span>Собрано: {fmt(total)}</span>
+              <span>Осталось: {fmt(remaining)}</span>
             </div>
-          );
-        })}
+            <input type="range" className="track" min="0" max={TARGET} value={Math.min(total, TARGET)} disabled />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid-2">
+        <div className="card">
+          <h3>💸 Добавить взнос</h3>
+          <form onSubmit={submit}>
+            <div className="form-row">
+              <div className="field">
+                <select value={person} onChange={e => setPerson(e.target.value)}>
+                  {PEOPLE.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </div>
+              <div className="field">
+                <input type="number" min="1" step="1" placeholder="Сумма, kr" value={amount} onChange={e => setAmount(e.target.value)} />
+              </div>
+              <div className="field">
+                <input type="date" aria-label="Дата" value={date} onChange={e => setDate(e.target.value)} />
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="field" style={{ flex: '1 1 100%' }}>
+                <select value={note} onChange={e => setNote(e.target.value)}>
+                  <option value="">Откуда деньги (необязательно)</option>
+                  <option value="Зарплата">Зарплата</option>
+                  <option value="Подработка">Подработка</option>
+                  <option value="Пособие">Пособие</option>
+                  <option value="Другое">Другое</option>
+                </select>
+              </div>
+            </div>
+            <button className="btn btn-primary" type="submit"><span className="plus-sign">+</span> Внести деньги</button>
+          </form>
+
+          <h3 style={{ marginTop: 22 }}>📜 История взносов</h3>
+          <div className="history">
+            {loading && <div className="empty-state">Загрузка…</div>}
+            {error && (
+              <div className="empty-state">
+                Не удалось загрузить данные: {error}
+                <div style={{ marginTop: 10 }}><button className="btn btn-sm btn-ghost" onClick={load}>Повторить</button></div>
+              </div>
+            )}
+            {!loading && !error && deposits.length === 0 && <div className="empty-state">Пока нет взносов — станьте первым и внесите деньги! 🌱</div>}
+            {!loading && !error && deposits.map(d => {
+              const p = personById(d.person);
+              return (
+                <div className="hrow" key={d._id}>
+                  <Avatar person={p} />
+                  <div className="meta">
+                    <div className="who">{p.name}</div>
+                    <div className="when">{d.date}</div>
+                    {d.note && <div className="note">{d.note}</div>}
+                  </div>
+                  <div className="amt">{fmt(d.amount)}</div>
+                  <DeleteButton onConfirm={() => remove(d._id)} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="quote-box">
+          <h3>📿 Мотивация на каждый день</h3>
+          <div className="quote-viewport">
+            <div className="quote-track">
+              {[...HADITHS, ...HADITHS].map((q, i) => (
+                <div className="quote-item" key={i}>
+                  {q.text}
+                  <span className="src">{q.src}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

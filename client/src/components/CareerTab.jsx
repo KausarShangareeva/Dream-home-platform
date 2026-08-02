@@ -8,7 +8,7 @@ function CareerSection({ title, items, onToggle, onDelete, onAdd }) {
     <div style={{ flex: 1, minWidth: 260 }}>
       <div style={{ fontWeight: 700, marginBottom: 10 }}>{title}</div>
       <div className="mama-table-wrap">
-        <table className="data-table">
+        <table className="mama-table">
           <thead><tr><th>✓</th><th className="col-title">Профессия</th><th></th></tr></thead>
           <tbody>
             {items.length === 0 && <tr><td colSpan={3} className="empty-state">Пусто</td></tr>}

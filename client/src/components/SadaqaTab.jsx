@@ -102,7 +102,7 @@ export default function SadaqaTab() {
 
       {/* ---- who deposited how much ---- */}
       <div className="mama-table-wrap">
-        <table className="data-table">
+        <table className="mama-table">
           <thead><tr><th className="col-title">Кто</th><th>Сумма</th><th>Дата</th><th>Использовано</th><th>Остаток</th></tr></thead>
           <tbody>
             {deposits.length === 0 && <tr><td colSpan={5} className="empty-state">Пока никто не отчислил на садаку</td></tr>}
@@ -142,7 +142,7 @@ export default function SadaqaTab() {
       {/* ---- causes ---- */}
       <h3 style={{ margin: '28px 0 12px', fontSize: 15 }}>Куда отправить</h3>
       <div className="mama-table-wrap">
-        <table className="data-table">
+        <table className="mama-table">
           <thead><tr><th className="col-title">Организация</th><th>Цель</th><th>Собрано</th><th>Осталось</th><th></th><th></th></tr></thead>
           <tbody>
             {causes.length === 0 && <tr><td colSpan={6} className="empty-state">Пока нет организаций — добавьте ниже</td></tr>}

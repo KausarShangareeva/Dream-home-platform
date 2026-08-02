@@ -9,14 +9,14 @@ router.get('/', async (req, res) => {
   res.json(deposits);
 });
 
-// POST /api/deposits  { person, amount, date, currency? }
+// POST /api/deposits  { person, amount, date, currency?, note? }
 router.post('/', async (req, res) => {
   try {
-    const { person, amount, date, currency } = req.body;
+    const { person, amount, date, currency, note } = req.body;
     if (!person || !amount || !date) {
       return res.status(400).json({ error: 'person, amount and date are required' });
     }
-    const deposit = await Deposit.create({ person, amount, date, currency });
+    const deposit = await Deposit.create({ person, amount, date, currency, note });
     res.status(201).json(deposit);
   } catch (err) {
     res.status(400).json({ error: err.message });

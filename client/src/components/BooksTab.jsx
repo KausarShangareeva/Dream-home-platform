@@ -68,7 +68,7 @@ export default function BooksTab({ ownerId }) {
       </div>
 
       <div className="mama-table-wrap">
-        <table className="data-table">
+        <table className="mama-table">
           <thead>
             <tr>
               <th className="col-title">Книга</th><th>Жанр</th><th>Сложность</th>
