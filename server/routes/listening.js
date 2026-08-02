@@ -19,13 +19,13 @@ router.get('/:ownerId/listening', async (req, res) => {
   res.json(items);
 });
 
-// POST /api/personal/:ownerId/listening  { title, language?, type?, link? }
+// POST /api/personal/:ownerId/listening  { title, language?, type?, link?, hours? }
 router.post('/:ownerId/listening', async (req, res) => {
-  const { title, language, type, link } = req.body;
+  const { title, language, type, link, hours } = req.body;
   if (!title) return res.status(400).json({ error: 'title is required' });
   const maxOrder = await ListeningItem.find({ ownerId: req.params.ownerId }).sort({ order: -1 }).limit(1);
   const item = await ListeningItem.create({
-    ownerId: req.params.ownerId, title, language, type, link,
+    ownerId: req.params.ownerId, title, language, type, link, hours: hours || 0,
     order: (maxOrder[0]?.order || 0) + 1,
   });
   res.status(201).json(item);
