@@ -150,8 +150,11 @@ export default function BooksTab({ ownerId }) {
                   </td>
                   <td className="mobile-hide col-pages">
                     <input
-                      type="number" min="1" value={b.pages}
-                      onChange={e => update(b, { pages: Number(e.target.value) })}
+                      type="number" min="1" defaultValue={b.pages}
+                      onBlur={e => {
+                        const v = Number(e.target.value);
+                        if (v > 0 && v !== b.pages) update(b, { pages: v });
+                      }}
                     />
                   </td>
                   <td className="col-diff">
@@ -159,8 +162,11 @@ export default function BooksTab({ ownerId }) {
                   </td>
                   <td className="col-days">
                     <input
-                      type="number" min="1" value={b.days} disabled={done}
-                      onChange={e => update(b, { days: Number(e.target.value) })}
+                      type="number" min="1" defaultValue={b.days} disabled={done}
+                      onBlur={e => {
+                        const v = Number(e.target.value);
+                        if (v > 0 && v !== b.days) update(b, { days: v });
+                      }}
                     />
                   </td>
                   <td className="finish-cell mobile-hide col-pace">{pagesPerDay}</td>
