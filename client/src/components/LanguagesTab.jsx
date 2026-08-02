@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
+import Flag from './ui/Flag.jsx';
 import {
   computeLangSchedule, bridgeCellText, fmtDate, STATUS_LABEL, STATUS_EMOJI, CEFR_LEVELS,
 } from '../data/langSchedule.js';
@@ -76,7 +77,7 @@ export default function LanguagesTab({ ownerId }) {
               const sc = schedule[lang.key];
               return (
                 <tr key={lang._id}>
-                  <td className="col-title">{STATUS_EMOJI[lang.status]}{lang.flag} {lang.name}</td>
+                  <td className="col-title">{STATUS_EMOJI[lang.status]}<Flag langKey={lang.key} /> {lang.name}</td>
                   <td>{bridgeCellText(lang, languages)}</td>
                   <td>
                     <select value={lang.level} onChange={e => updateLevel(lang, e.target.value)}>

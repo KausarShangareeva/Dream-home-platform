@@ -45,16 +45,15 @@ export default function OverviewTab({ ownerId }) {
   const pct = (done, total) => (total > 0 ? Math.round((done / total) * 100) : 0);
 
   const quranDone = surahs.filter(s => s.status === 'done').length;
-  const studyDone = study.filter(s => s.status === 'done').length;
-  const educationDone = education.filter(e => e.done).length;
+  const studyDone = study.filter(s => s.status === 'done').length + education.filter(e => e.done).length;
+  const studyTotal = study.length + education.length;
   const careerDone = career.filter(c => c.done).length;
 
   const rows = [
     { icon: '🗣️', label: 'Языки', done: langsDone, total: languages.length },
     { icon: '📖', label: 'Книги', done: doneThisYear, total: settings.booksYearlyGoal || 0 },
     { icon: '📿', label: 'Коран', done: quranDone, total: 114 },
-    { icon: '🌱', label: 'Учиться', done: studyDone, total: study.length },
-    { icon: '🎓', label: 'Образование', done: educationDone, total: education.length },
+    { icon: '🌱', label: 'Учиться', done: studyDone, total: studyTotal },
     { icon: '🎯', label: 'Профессия', done: careerDone, total: career.length },
   ];
 

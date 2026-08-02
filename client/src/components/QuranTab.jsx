@@ -8,7 +8,6 @@ export default function QuranTab({ ownerId }) {
   const [surahs, setSurahs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showAll, setShowAll] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true); setError(null);
@@ -41,28 +40,17 @@ export default function QuranTab({ ownerId }) {
     load();
   };
 
-  // By default show only surahs already in progress or done, plus the very next "todo" one —
-  // 114 rows at once is a lot; "show all" reveals everything.
-  const visibleSurahs = showAll
-    ? surahs
-    : surahs.filter(s => s.status !== 'todo').concat(surahs.find(s => s.status === 'todo') ? [surahs.find(s => s.status === 'todo')] : []);
-
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
-        <div style={{ fontSize: 13, fontWeight: 700 }}>
-          Выучено: {done.length} / 114 сур ({donePages} из 604 страниц) · Учу сейчас: {learning.length}
-        </div>
-        <button className="btn btn-sm btn-ghost" onClick={() => setShowAll(v => !v)}>
-          {showAll ? 'Свернуть' : 'Показать все 114 сур'}
-        </button>
+      <div style={{ marginBottom: 14, fontSize: 13, fontWeight: 700 }}>
+        Выучено: {done.length} / {surahs.length} сур ({donePages} из 604 страниц) · Учу сейчас: {learning.length}
       </div>
 
       <div className="mama-table-wrap">
         <table className="data-table">
           <thead><tr><th className="col-title">Сура</th><th>Страниц</th><th>Статус</th><th>Начало</th><th>Дата готовности</th></tr></thead>
           <tbody>
-            {visibleSurahs.map(s => (
+            {surahs.map(s => (
               <tr key={s._id}>
                 <td className="col-title">{STATUS_EMOJI[s.status]}{s.num}. {s.name}</td>
                 <td>{s.pages}</td>
