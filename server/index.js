@@ -6,6 +6,7 @@ import { connectDB } from './db.js';
 import depositsRouter from './routes/deposits.js';
 import dreamsRouter from './routes/dreams.js';
 import sadaqaRouter from './routes/sadaqa.js';
+import personalRouter from './routes/personal.js';
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.get('/', (req, res) => res.json({ ok: true, service: 'dream-home-server' }))
 app.use('/api/deposits', depositsRouter);
 app.use('/api/dreams', dreamsRouter);
 app.use('/api/sadaqa', sadaqaRouter);
+app.use('/api/personal', personalRouter);
 
 const PORT = process.env.PORT || 4000;
 

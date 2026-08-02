@@ -43,4 +43,12 @@ export const api = {
 
   getAllocations: () => request('/sadaqa/allocations'),
   deleteAllocation: (id) => request(`/sadaqa/allocations/${id}`, { method: 'DELETE' }),
+
+  // Personal panels (mama / kausar / ...)
+  getSettings: (ownerId) => request(`/personal/${ownerId}/settings`),
+  updateSettings: (ownerId, data) => request(`/personal/${ownerId}/settings`, { method: 'PATCH', body: JSON.stringify(data) }),
+  getLanguages: (ownerId) => request(`/personal/${ownerId}/languages`),
+  addLanguage: (ownerId, data) => request(`/personal/${ownerId}/languages`, { method: 'POST', body: JSON.stringify(data) }),
+  updateLanguage: (ownerId, id, data) => request(`/personal/${ownerId}/languages/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteLanguage: (ownerId, id) => request(`/personal/${ownerId}/languages/${id}`, { method: 'DELETE' }),
 };
