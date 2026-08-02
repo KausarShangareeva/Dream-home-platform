@@ -373,6 +373,14 @@
   .dream-progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--rose),var(--gold));}
   .dream-nums{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-soft);font-weight:700;}
   .dream-nums b{color:var(--purple-deep);}
+
+  .dream-contrib-list{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed var(--line);}
+  .dream-contrib-row{display:flex;align-items:center;gap:6px;font-size:11.5px;}
+  .dream-contrib-name{flex:1;color:var(--ink-soft);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .dream-contrib-amt{font-weight:800;color:var(--purple-deep);font-family:'Montserrat';}
+  .dream-contrib-edit{width:64px;border:1.5px solid var(--purple);border-radius:7px;padding:3px 6px;font-size:11px;font-family:'Montserrat';}
+  .dream-contrib-icon{background:none;border:none;cursor:pointer;color:var(--ink-soft);font-size:12px;padding:2px;}
+  .dream-contrib-icon:hover{color:var(--purple-deep);}
   .dream-actions{display:flex;gap:6px;margin-top:2px;}
   .dream-actions select,.dream-actions input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:9px;padding:7px 8px;font-size:12px;font-family:'Montserrat';background:var(--card);color:var(--ink);}
   .dream-actions select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:none;padding-right:8px;}

@@ -47,4 +47,11 @@ router.delete('/:tripId/deposits/:depositId', async (req, res) => {
   res.status(204).end();
 });
 
+router.patch('/:tripId/deposits/:depositId', async (req, res) => {
+  const { amount } = req.body;
+  if (!amount || amount <= 0) return res.status(400).json({ error: 'amount must be greater than 0' });
+  const deposit = await TripDeposit.findByIdAndUpdate(req.params.depositId, { amount }, { new: true });
+  res.json(deposit);
+});
+
 export default router;

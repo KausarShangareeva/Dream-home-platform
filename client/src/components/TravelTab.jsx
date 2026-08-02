@@ -5,7 +5,7 @@ import NewDreamModal from './NewDreamModal.jsx';
 
 export default function TravelTab() {
   const [trips, setTrips] = useState([]);
-  const [totals, setTotals] = useState({});
+  const [depositsByTrip, setDepositsByTrip] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,8 +17,8 @@ export default function TravelTab() {
       setTrips(list);
       const results = await Promise.all(list.map(t => api.getTripDeposits(t._id)));
       const next = {};
-      list.forEach((t, i) => { next[t._id] = results[i].reduce((s, d) => s + d.amount, 0); });
-      setTotals(next);
+      list.forEach((t, i) => { next[t._id] = results[i]; });
+      setDepositsByTrip(next);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -48,16 +48,23 @@ export default function TravelTab() {
     <div className="card">
       <h2 style={{ marginBottom: 18 }}>✈️ Путешествия</h2>
       <div className="dreams-grid">
-        {trips.map(trip => (
-          <DreamCard
-            key={trip._id}
-            dream={{ id: trip._id, title: trip.title, target: trip.target, icon: trip.icon, photo: trip.photo }}
-            total={totals[trip._id] || 0}
-            isCustom
-            onAddDeposit={(data) => api.addTripDeposit(trip._id, data).then(loadAll)}
-            onDeleteDream={() => api.deleteTrip(trip._id).then(loadAll)}
-          />
-        ))}
+        {trips.map(trip => {
+          const deposits = depositsByTrip[trip._id] || [];
+          const total = deposits.reduce((s, d) => s + d.amount, 0);
+          return (
+            <DreamCard
+              key={trip._id}
+              dream={{ id: trip._id, title: trip.title, target: trip.target, icon: trip.icon, photo: trip.photo }}
+              total={total}
+              deposits={deposits}
+              isCustom
+              onAddDeposit={(data) => api.addTripDeposit(trip._id, data).then(loadAll)}
+              onUpdateDeposit={(depositId, amount) => api.updateTripDeposit(trip._id, depositId, { amount }).then(loadAll)}
+              onDeleteDeposit={(depositId) => api.deleteTripDeposit(trip._id, depositId).then(loadAll)}
+              onDeleteDream={() => api.deleteTrip(trip._id).then(loadAll)}
+            />
+          );
+        })}
         <button className="dream-add-card" onClick={() => setModalOpen(true)}>
           <span style={{ fontSize: 28 }}>＋</span>
           <span>Добавить поездку</span>

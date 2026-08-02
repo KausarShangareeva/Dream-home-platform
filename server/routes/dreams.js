@@ -57,4 +57,12 @@ router.delete('/:dreamId/deposits/:depositId', async (req, res) => {
   res.status(204).end();
 });
 
+// PATCH /api/dreams/:dreamId/deposits/:depositId  { amount }
+router.patch('/:dreamId/deposits/:depositId', async (req, res) => {
+  const { amount } = req.body;
+  if (!amount || amount <= 0) return res.status(400).json({ error: 'amount must be greater than 0' });
+  const deposit = await DreamDeposit.findByIdAndUpdate(req.params.depositId, { amount }, { new: true });
+  res.json(deposit);
+});
+
 export default router;

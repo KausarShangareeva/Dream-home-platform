@@ -50,7 +50,7 @@ export default function NewDreamModal({
 
   return (
     <div className="modal-backdrop open" onClick={onClose}>
-      <div className="modal-card" onClick={e => e.stopPropagation()}>
+      <div className="modal-card form-modal" onClick={e => e.stopPropagation()}>
         <h3>{modalTitle}</h3>
 
         <div className="modal-section field">

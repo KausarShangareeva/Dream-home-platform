@@ -32,6 +32,7 @@ export const api = {
   // Deposits toward any dream (built-in id or custom dream _id)
   getDreamDeposits: (dreamId) => request(`/dreams/${dreamId}/deposits`),
   addDreamDeposit: (dreamId, data) => request(`/dreams/${dreamId}/deposits`, { method: 'POST', body: JSON.stringify(data) }),
+  updateDreamDeposit: (dreamId, depositId, data) => request(`/dreams/${dreamId}/deposits/${depositId}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteDreamDeposit: (dreamId, depositId) => request(`/dreams/${dreamId}/deposits/${depositId}`, { method: 'DELETE' }),
 
   // Sadaqa
@@ -86,6 +87,7 @@ export const api = {
   deleteTrip: (id) => request(`/trips/${id}`, { method: 'DELETE' }),
   getTripDeposits: (tripId) => request(`/trips/${tripId}/deposits`),
   addTripDeposit: (tripId, data) => request(`/trips/${tripId}/deposits`, { method: 'POST', body: JSON.stringify(data) }),
+  updateTripDeposit: (tripId, depositId, data) => request(`/trips/${tripId}/deposits/${depositId}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteTripDeposit: (tripId, depositId) => request(`/trips/${tripId}/deposits/${depositId}`, { method: 'DELETE' }),
 
   // Debts

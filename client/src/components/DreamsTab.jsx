@@ -6,7 +6,7 @@ import NewDreamModal from './NewDreamModal.jsx';
 
 export default function DreamsTab() {
   const [customDreams, setCustomDreams] = useState([]);
-  const [totals, setTotals] = useState({}); // dreamId -> total amount
+  const [depositsByDream, setDepositsByDream] = useState({}); // dreamId -> [deposits]
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,8 +21,8 @@ export default function DreamsTab() {
       const ids = [...BUILTIN_DREAMS.map(d => d.id), ...custom.map(d => d._id)];
       const results = await Promise.all(ids.map(id => api.getDreamDeposits(id)));
       const next = {};
-      ids.forEach((id, i) => { next[id] = results[i].reduce((s, d) => s + d.amount, 0); });
-      setTotals(next);
+      ids.forEach((id, i) => { next[id] = results[i]; });
+      setDepositsByDream(next);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -48,6 +48,16 @@ export default function DreamsTab() {
     loadAll();
   };
 
+  const handleUpdateDeposit = async (dreamId, depositId, amount) => {
+    await api.updateDreamDeposit(dreamId, depositId, { amount });
+    loadAll();
+  };
+
+  const handleDeleteDeposit = async (dreamId, depositId) => {
+    await api.deleteDreamDeposit(dreamId, depositId);
+    loadAll();
+  };
+
   if (loading) return <div className="card"><div className="empty-state">Загрузка…</div></div>;
   if (error) return (
     <div className="card">
@@ -60,18 +70,24 @@ export default function DreamsTab() {
 
   return (
     <div className="card">
-      <h2 style={{ marginBottom: 18 }}>✨ Другие мечты</h2>
       <div className="dreams-grid">
-        {allDreams.map(dream => (
-          <DreamCard
-            key={dream.id}
-            dream={dream}
-            total={totals[dream.id] || 0}
-            isCustom={dream.isCustom}
-            onAddDeposit={(data) => handleAddDeposit(dream.id, data)}
-            onDeleteDream={() => handleDeleteDream(dream.id)}
-          />
-        ))}
+        {allDreams.map(dream => {
+          const deposits = depositsByDream[dream.id] || [];
+          const total = deposits.reduce((s, d) => s + d.amount, 0);
+          return (
+            <DreamCard
+              key={dream.id}
+              dream={dream}
+              total={total}
+              deposits={deposits}
+              isCustom={dream.isCustom}
+              onAddDeposit={(data) => handleAddDeposit(dream.id, data)}
+              onUpdateDeposit={(depositId, amount) => handleUpdateDeposit(dream.id, depositId, amount)}
+              onDeleteDeposit={(depositId) => handleDeleteDeposit(dream.id, depositId)}
+              onDeleteDream={() => handleDeleteDream(dream.id)}
+            />
+          );
+        })}
         <button className="dream-add-card" onClick={() => setModalOpen(true)}>
           <span style={{ fontSize: 28 }}>＋</span>
           <span>Добавить свою мечту</span>

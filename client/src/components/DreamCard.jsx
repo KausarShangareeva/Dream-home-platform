@@ -1,11 +1,44 @@
 import { useState } from 'react';
-import { PEOPLE } from '../data/people.js';
+import { PEOPLE, personById } from '../data/people.js';
+import Avatar from './ui/Avatar.jsx';
 import DeleteButton from './ui/DeleteButton.jsx';
 
 const fmt = (n) => Math.round(n).toLocaleString('ru-RU') + ' kr';
 
-export default function DreamCard({ dream, total, isCustom, onAddDeposit, onDeleteDream }) {
-  const [adding, setAdding] = useState(false);
+function ContributionRow({ deposit, onUpdate, onDelete }) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(deposit.amount);
+  const p = personById(deposit.person);
+
+  const save = () => {
+    if (Number(value) > 0) onUpdate(Number(value));
+    setEditing(false);
+  };
+
+  return (
+    <div className="dream-contrib-row">
+      <Avatar person={p} size={22} />
+      <span className="dream-contrib-name">{p.name.split(' ')[0]}</span>
+      {editing ? (
+        <input
+          type="number" min="1" autoFocus value={value}
+          onChange={e => setValue(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && save()}
+          onBlur={save}
+          className="dream-contrib-edit"
+        />
+      ) : (
+        <span className="dream-contrib-amt">{fmt(deposit.amount)}</span>
+      )}
+      {!editing && (
+        <button type="button" className="dream-contrib-icon" title="Изменить сумму" onClick={() => setEditing(true)}>✎</button>
+      )}
+      <DeleteButton onConfirm={onDelete} title="Удалить взнос" />
+    </div>
+  );
+}
+
+export default function DreamCard({ dream, total, deposits, isCustom, onAddDeposit, onUpdateDeposit, onDeleteDeposit, onDeleteDream }) {
   const [person, setPerson] = useState(PEOPLE[0].id);
   const [amount, setAmount] = useState('');
 
@@ -15,7 +48,7 @@ export default function DreamCard({ dream, total, isCustom, onAddDeposit, onDele
     e.preventDefault();
     if (!amount || Number(amount) <= 0) return;
     await onAddDeposit({ person, amount: Number(amount), date: new Date().toISOString().slice(0, 10) });
-    setAmount(''); setAdding(false);
+    setAmount('');
   };
 
   return (
@@ -42,26 +75,29 @@ export default function DreamCard({ dream, total, isCustom, onAddDeposit, onDele
         <h4>{dream.title}</h4>
         <div className="dream-progress-track"><div className="dream-progress-fill" style={{ width: `${pct}%` }} /></div>
         <div className="dream-nums">
-          <span>Собрано</span>
-          <b>{fmt(total)} / {fmt(dream.target)}</b>
+          <span>Собрано <b>{fmt(total)}</b></span>
+          <span>Цель {fmt(dream.target)}</span>
         </div>
 
-        {!adding && (
-          <div className="dream-actions">
-            <button className="btn btn-sm btn-ghost" onClick={() => setAdding(true)}>+ Внести</button>
+        <form onSubmit={submit} className="dream-actions">
+          <select value={person} onChange={e => setPerson(e.target.value)}>
+            {PEOPLE.map(p => <option key={p.id} value={p.id}>{p.name.split(' ')[0]}</option>)}
+          </select>
+          <input type="number" min="1" placeholder="kr" value={amount} onChange={e => setAmount(e.target.value)} />
+          <button type="submit" className="btn btn-sm btn-primary">+</button>
+        </form>
+
+        {deposits.length > 0 && (
+          <div className="dream-contrib-list">
+            {deposits.map(d => (
+              <ContributionRow
+                key={d._id}
+                deposit={d}
+                onUpdate={(amount) => onUpdateDeposit(d._id, amount)}
+                onDelete={() => onDeleteDeposit(d._id)}
+              />
+            ))}
           </div>
-        )}
-        {adding && (
-          <form onSubmit={submit} className="dream-actions" style={{ flexDirection: 'column' }}>
-            <select value={person} onChange={e => setPerson(e.target.value)}>
-              {PEOPLE.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
-            <input type="number" min="1" placeholder="Сумма" value={amount} onChange={e => setAmount(e.target.value)} autoFocus />
-            <div style={{ display: 'flex', gap: 6 }}>
-              <button type="button" className="btn btn-sm btn-ghost" onClick={() => setAdding(false)} style={{ flex: 1 }}>Отмена</button>
-              <button type="submit" className="btn btn-sm btn-primary" style={{ flex: 1 }}>Ок</button>
-            </div>
-          </form>
         )}
       </div>
     </div>
