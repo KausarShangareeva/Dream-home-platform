@@ -91,6 +91,9 @@ export const api = {
   updateListeningItem: (ownerId, id, data) => request(`/personal/${ownerId}/listening/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteListeningItem: (ownerId, id) => request(`/personal/${ownerId}/listening/${id}`, { method: 'DELETE' }),
   reorderListeningItems: (ownerId, ids) => request(`/personal/${ownerId}/listening/reorder`, { method: 'PATCH', body: JSON.stringify({ ids }) }),
+  addListeningSession: (ownerId, itemId, data) => request(`/personal/${ownerId}/listening/${itemId}/sessions`, { method: 'POST', body: JSON.stringify(data) }),
+  updateListeningSession: (ownerId, itemId, sessionId, data) => request(`/personal/${ownerId}/listening/${itemId}/sessions/${sessionId}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteListeningSession: (ownerId, itemId, sessionId) => request(`/personal/${ownerId}/listening/${itemId}/sessions/${sessionId}`, { method: 'DELETE' }),
 
   // Trips
   getTrips: () => request('/trips'),

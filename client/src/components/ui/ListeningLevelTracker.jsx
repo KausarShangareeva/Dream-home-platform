@@ -10,13 +10,13 @@ const LEVEL_TARGETS = [
 ];
 const HOURS_PER_BEAD = 10;
 
-export default function ListeningLevelTracker({ items }) {
-  const done = items.filter(i => i.status === 'done');
-
+export default function ListeningLevelTracker({ items, language }) {
   // Each level's progress comes only from items actually tagged at that level —
   // not a shared pool that fills B1 first regardless of what you marked done.
+  // Hours count the moment they're logged (checked episode / quick log), independent
+  // of the item's own todo/learning/done status.
   const segments = LEVEL_TARGETS.map(([level, target]) => {
-    const raw = done.filter(i => i.difficulty === level).reduce((sum, i) => sum + i.hours, 0);
+    const raw = items.filter(i => i.difficulty === level).reduce((sum, i) => sum + i.hours, 0);
     const hoursInLevel = Math.min(target, raw);
     return { level, target, hoursInLevel, done: hoursInLevel >= target };
   });
@@ -31,7 +31,7 @@ export default function ListeningLevelTracker({ items }) {
   return (
     <div className="mama-year-block">
       <div className="mama-year-head">
-        🎧 Аудирование <span className="count">{totalHours} / {grandTotal} ч</span>
+        🎧 {language ? `${language} — ` : ''}Аудирование <span className="count">{totalHours} / {grandTotal} ч</span>
         <span className="listening-current-level">сейчас: {DIFF_LABEL[currentLevel]}</span>
       </div>
 

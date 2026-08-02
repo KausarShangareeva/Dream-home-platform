@@ -654,6 +654,32 @@
   .mama-beads-sm{gap:4px;}
   .mama-beads-sm .mama-bead{width:12px;height:12px;}
   .mama-beads-sm .mama-bead.empty{border-width:1.5px;}
+
+  /* LISTENING — language overview + switcher */
+  .listening-lang-overview{margin-bottom:14px;}
+  .listening-lang-total{font-weight:800;font-size:14px;color:var(--purple-deep);margin-bottom:8px;}
+  .listening-lang-chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .listening-lang-chip{
+    display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--card-soft);
+    border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;
+  }
+  .listening-lang-chip b{color:var(--ink-soft);font-weight:800;}
+  .listening-lang-chip.active{background:var(--purple);border-color:var(--purple);color:var(--on-accent);}
+  .listening-lang-chip.active b{color:var(--on-accent);}
+
+  /* LISTENING — clickable item title + episode/session modal */
+  .listening-title-btn{background:none;border:none;padding:0;margin:0;cursor:pointer;text-align:left;font:inherit;color:var(--ink);}
+  .listening-title-btn:hover b{text-decoration:underline;color:var(--purple-deep);}
+  .listening-episode-list{display:flex;flex-direction:column;gap:2px;}
+  .listening-episode-row{
+    display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line);font-size:13.5px;
+  }
+  .listening-episode-row:last-child{border-bottom:none;}
+  .listening-episode-row label{display:flex;align-items:center;gap:9px;flex:1;cursor:pointer;}
+  .listening-episode-row input[type=checkbox]{width:17px;height:17px;accent-color:var(--purple);cursor:pointer;}
+  .listening-episode-hours{font-weight:700;color:var(--ink-soft);font-size:12px;}
+  .listening-quick-log{background:var(--card-soft);border-radius:14px;padding:14px;}
+  .listening-modal-total{text-align:center;font-size:15px;font-weight:700;color:var(--ink);margin:18px 0 6px;}
   .mama-pace-hint{font-size:12px;font-weight:800;color:var(--purple-deep);background:var(--card);border-radius:999px;padding:6px 14px;}
   .mama-add-book-block{background:var(--card-soft);border-radius:16px;padding:18px;margin:18px 0 24px;}
 
