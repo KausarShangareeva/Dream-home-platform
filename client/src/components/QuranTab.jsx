@@ -4,11 +4,13 @@ import QuranBeadsTracker from './ui/QuranBeadsTracker.jsx';
 
 const STATUS_LABEL = { todo: 'Не начато', learning: 'Учу сейчас', done: 'Выучено' };
 const STATUS_EMOJI = { todo: '', learning: '📖 ', done: '✅ ' };
+const FILTERS = [['all', 'Все'], ['todo', 'Не начато'], ['learning', 'Учу'], ['done', 'Выучено']];
 
 export default function QuranTab({ ownerId }) {
   const [surahs, setSurahs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filter, setFilter] = useState('all');
 
   const loadedOnceRef = useRef(false);
   const load = useCallback(async () => {
@@ -35,9 +37,7 @@ export default function QuranTab({ ownerId }) {
     </div>
   );
 
-  const done = surahs.filter(s => s.status === 'done');
-  const donePages = done.reduce((sum, s) => sum + s.pages, 0);
-  const learning = surahs.filter(s => s.status === 'learning');
+  const visibleSurahs = filter === 'all' ? surahs : surahs.filter(s => s.status === filter);
 
   const update = async (surah, patch) => {
     await api.updateSurah(ownerId, surah._id, patch);
@@ -46,8 +46,22 @@ export default function QuranTab({ ownerId }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 14, fontSize: 13, fontWeight: 700 }}>
-        Выучено: {done.length} / {surahs.length} сур ({donePages} из 604 страниц) · Учу сейчас: {learning.length}
+      <QuranBeadsTracker surahs={surahs} />
+
+      <div className="mama-controls">
+        <label>Показать:</label>
+        <div className="pace-pills">
+          {FILTERS.map(([k, label]) => (
+            <button
+              key={k}
+              type="button"
+              className={`pace-pill${filter === k ? ' active' : ''}`}
+              onClick={() => setFilter(k)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="mama-table-wrap">
@@ -66,7 +80,8 @@ export default function QuranTab({ ownerId }) {
             </tr>
           </thead>
           <tbody>
-            {surahs.map(s => {
+            {visibleSurahs.length === 0 && <tr><td colSpan={9} className="empty-state">Ничего не найдено</td></tr>}
+            {visibleSurahs.map(s => {
               const done = s.status === 'done';
               const pace = s.days ? Math.max(1, Math.ceil(s.ayahs / Math.max(1, s.days))) : null;
               return (
@@ -95,10 +110,6 @@ export default function QuranTab({ ownerId }) {
             })}
           </tbody>
         </table>
-      </div>
-
-      <div style={{ marginTop: 18 }}>
-        <QuranBeadsTracker surahs={surahs} />
       </div>
     </div>
   );
