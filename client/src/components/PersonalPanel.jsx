@@ -19,8 +19,10 @@ export default function PersonalPanel({ ownerId, title }) {
   const [subTab, setSubTab] = useState('overview');
 
   return (
-    <div className="card">
-      <h2 style={{ marginBottom: 18 }}>{title}</h2>
+    <div className="card mama-corner">
+      <div className="mama-header">
+        <h2>{title}</h2>
+      </div>
       <div className="mama-tabs">
         {SUB_TABS.map(t => (
           <button
