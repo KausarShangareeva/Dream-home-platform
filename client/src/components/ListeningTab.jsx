@@ -1,11 +1,10 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
-import LevelSelect from './ui/LevelSelect.jsx';
 import Flag from './ui/Flag.jsx';
-import ListeningLevelTracker from './ui/ListeningLevelTracker.jsx';
+import ListeningTypeStats from './ui/ListeningTypeStats.jsx';
 import ListeningSessionsModal from './ListeningSessionsModal.jsx';
-import { TYPE_LABEL, THEME_LABEL } from '../data/listeningLabels.js';
+import { TYPE_LABEL, TYPE_DOT, THEME_LABEL } from '../data/listeningLabels.js';
 import { useDragReorder } from '../hooks/useDragReorder.js';
 
 const STATUS_LABEL = { todo: 'В планах', learning: 'Слушаю', done: 'Прослушано' };
@@ -23,7 +22,6 @@ export default function ListeningTab({ ownerId }) {
   const [newLang, setNewLang] = useState('');
   const [newType, setNewType] = useState('');
   const [newTheme, setNewTheme] = useState('');
-  const [newDifficulty, setNewDifficulty] = useState('B1');
   const [newLink, setNewLink] = useState('');
 
   const loadedOnceRef = useRef(false);
@@ -75,7 +73,7 @@ export default function ListeningTab({ ownerId }) {
     if (!newTitle.trim()) return alert('Впишите название');
     await api.addListeningItem(ownerId, {
       title: newTitle.trim(), language: newLang, type: newType || null, theme: newTheme || null,
-      difficulty: newDifficulty, link: newLink.trim(),
+      link: newLink.trim(),
     });
     setNewTitle(''); setNewLink('');
     load();
@@ -90,23 +88,23 @@ export default function ListeningTab({ ownerId }) {
 
   return (
     <div>
-      <div className="listening-lang-overview">
-        <div className="listening-lang-total">Всего: <b>{grandTotal} ч</b></div>
-        <div className="listening-lang-chips">
-          {languages.map(l => (
-            <button
-              key={l.key}
-              type="button"
-              className={`listening-lang-chip${selectedLanguage === l.name ? ' active' : ''}`}
-              onClick={() => setSelectedLanguage(l.name)}
-            >
-              <Flag langKey={l.key} /> {l.name} <b>{totalsByLanguage[l.name] || 0} ч</b>
-            </button>
-          ))}
-        </div>
+      <div className="listening-lang-total">Всего: <b>{grandTotal} ч</b></div>
+      <div className="listening-lang-rail">
+        {languages.map(l => (
+          <button
+            key={l.key}
+            type="button"
+            className={`listening-lang-pill${selectedLanguage === l.name ? ' active' : ''}`}
+            onClick={() => setSelectedLanguage(l.name)}
+            title={l.name}
+          >
+            <Flag langKey={l.key} />
+            <span>{totalsByLanguage[l.name] || 0} ч</span>
+          </button>
+        ))}
       </div>
 
-      <ListeningLevelTracker items={itemsForLanguage} language={selectedLanguage} />
+      <ListeningTypeStats items={itemsForLanguage} />
 
       <div className="mama-table-wrap" style={{ marginTop: 18 }}>
         <table className="mama-table">
@@ -116,7 +114,6 @@ export default function ListeningTab({ ownerId }) {
               <th className="col-title">Название</th>
               <th className="mobile-hide">Тип</th>
               <th className="mobile-hide">Тематика</th>
-              <th>Сложность</th>
               <th>Часов</th>
               <th className="mobile-hide">🔗</th>
               <th>Статус</th>
@@ -124,7 +121,7 @@ export default function ListeningTab({ ownerId }) {
             </tr>
           </thead>
           <tbody>
-            {ordered.length === 0 && <tr><td colSpan={9} className="empty-state">Пока пусто для этого языка — добавьте ниже</td></tr>}
+            {ordered.length === 0 && <tr><td colSpan={8} className="empty-state">Пока пусто для этого языка — добавьте ниже</td></tr>}
             {ordered.map((item, idx) => (
               <tr key={item._id} {...getRowProps(item)} className={`qstatus-${item.status}`}>
                 <td className="col-num"><span className="drag-handle">⋮⋮</span><span className="seq-badge">{idx + 1}</span></td>
@@ -139,7 +136,7 @@ export default function ListeningTab({ ownerId }) {
                 <td className="mobile-hide">
                   <select value={item.type || ''} onChange={e => update(item, { type: e.target.value || null })}>
                     <option value="">—</option>
-                    {Object.entries(TYPE_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+                    {Object.entries(TYPE_LABEL).map(([k, label]) => <option key={k} value={k}>{TYPE_DOT[k]} {label}</option>)}
                   </select>
                 </td>
                 <td className="mobile-hide">
@@ -148,7 +145,6 @@ export default function ListeningTab({ ownerId }) {
                     {Object.entries(THEME_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
                   </select>
                 </td>
-                <td><LevelSelect value={item.difficulty} onChange={val => update(item, { difficulty: val })} allowNone /></td>
                 <td className="finish-cell">{item.hours} ч</td>
                 <td className="mobile-hide">
                   {item.link ? <a href={item.link} target="_blank" rel="noreferrer" title={item.link}>🔗</a> : '—'}
@@ -171,13 +167,12 @@ export default function ListeningTab({ ownerId }) {
           <input placeholder="Название" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
           <select value={newType} onChange={e => setNewType(e.target.value)}>
             <option value="">Тип...</option>
-            {Object.entries(TYPE_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+            {Object.entries(TYPE_LABEL).map(([k, label]) => <option key={k} value={k}>{TYPE_DOT[k]} {label}</option>)}
           </select>
           <select value={newTheme} onChange={e => setNewTheme(e.target.value)}>
             <option value="">Тематика...</option>
             {Object.entries(THEME_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
           </select>
-          <LevelSelect value={newDifficulty} onChange={setNewDifficulty} />
           <input placeholder="Ссылка (необязательно)" value={newLink} onChange={e => setNewLink(e.target.value)} />
           <button className="btn btn-sm btn-primary" onClick={addItem} type="button">+ Добавить</button>
         </div>

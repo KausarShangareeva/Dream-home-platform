@@ -657,31 +657,39 @@
   }
   .mama-year-goal-line{font-size:12px;color:var(--ink-soft);font-weight:700;margin-top:8px;}
 
-  /* LISTENING LEVEL LADDER */
-  .listening-current-level{margin-left:auto;font-size:11px;font-weight:800;color:var(--purple-deep);background:var(--card-soft);border-radius:999px;padding:3px 10px;}
-  .listening-levels{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
-  .listening-level{
-    flex:1;min-width:150px;background:var(--card-soft);border:1.5px solid var(--line);
-    border-radius:14px;padding:10px 12px;
+  /* LISTENING — type stats (legend + proportional wheel) */
+  .listening-stats{
+    display:flex;gap:26px;align-items:center;flex-wrap:wrap;
+    background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px 20px;
   }
-  .listening-level.done{border-color:var(--teal);background:color-mix(in srgb, var(--teal) 12%, var(--card-soft));}
-  .listening-level-head{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:8px;}
-  .listening-level-hours{font-weight:700;color:var(--ink-soft);font-size:11.5px;}
-  .mama-beads-sm{gap:4px;}
-  .mama-beads-sm .mama-bead{width:12px;height:12px;}
-  .mama-beads-sm .mama-bead.empty{border-width:1.5px;}
+  .listening-stats-legend{flex:1;min-width:220px;display:flex;flex-direction:column;gap:9px;}
+  .listening-stats-row{display:flex;align-items:center;gap:9px;font-size:12.5px;}
+  .listening-stats-dot{width:12px;height:12px;border-radius:50%;flex:none;box-shadow:0 0 0 1px rgba(0,0,0,.08) inset;}
+  .listening-stats-label{flex:1;color:var(--ink);font-weight:600;}
+  .listening-stats-hours{font-weight:800;color:var(--purple-deep);font-size:12px;}
+  .listening-wheel{
+    position:relative;width:140px;height:140px;border-radius:50%;flex:none;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .listening-wheel::before{content:'';position:absolute;inset:16px;border-radius:50%;background:var(--card);}
+  .listening-wheel-center{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;}
+  .listening-wheel-num{font-family:'Montserrat';font-size:24px;font-weight:800;color:var(--purple-deep);line-height:1;}
+  .listening-wheel-label{font-size:10.5px;color:var(--ink-soft);margin-top:2px;}
 
-  /* LISTENING — language overview + switcher */
-  .listening-lang-overview{margin-bottom:14px;}
+  /* LISTENING — language switcher: one clean scrollable row instead of a wrapping grid of chips */
   .listening-lang-total{font-weight:800;font-size:14px;color:var(--purple-deep);margin-bottom:8px;}
-  .listening-lang-chips{display:flex;flex-wrap:wrap;gap:8px;}
-  .listening-lang-chip{
-    display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--card-soft);
-    border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;
+  .listening-lang-rail{
+    display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;
+    scrollbar-width:thin;
   }
-  .listening-lang-chip b{color:var(--ink-soft);font-weight:800;}
-  .listening-lang-chip.active{background:var(--purple);border-color:var(--purple);color:var(--on-accent);}
-  .listening-lang-chip.active b{color:var(--on-accent);}
+  .listening-lang-pill{
+    display:flex;align-items:center;gap:6px;flex:none;
+    border:1.5px solid var(--line);background:var(--card-soft);border-radius:999px;
+    padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;
+  }
+  .listening-lang-pill span{color:var(--ink-soft);font-weight:800;}
+  .listening-lang-pill.active{background:var(--purple);border-color:var(--purple);color:var(--on-accent);}
+  .listening-lang-pill.active span{color:var(--on-accent);}
 
   /* LISTENING — clickable item title + episode/session modal */
   .listening-title-btn{background:none;border:none;padding:0;margin:0;cursor:pointer;text-align:left;font:inherit;color:var(--ink);}
