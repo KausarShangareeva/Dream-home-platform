@@ -217,6 +217,16 @@ export function defaultCareerGoalsFor(ownerId) {
   ];
 }
 
+// ---- Аудирование (listening practice: audiobooks, podcasts, TED, channels) ----
+export function defaultListeningItemsFor(ownerId) {
+  if (ownerId !== 'kausar') return []; // starter set below is Kausar's own roadmap; mama adds her own
+  return [
+    { title: 'Atrium Explores — все видео', language: 'Английский', difficulty: 'B1', hours: 60, order: 1 },
+    { title: 'BBC Learning English — 6 Minute English', language: 'Английский', difficulty: 'B1', hours: 40, order: 2 },
+    { title: 'TED-Ed — подборка', language: 'Английский', difficulty: 'B1', hours: 20, order: 3 },
+  ];
+}
+
 export function defaultSurahs() {
   return [
     { num: 1, name: 'Аль-Фатиха', ayahs: 7, pages: 1 },

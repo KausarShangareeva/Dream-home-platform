@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import OverviewTab from './OverviewTab.jsx';
 import LanguagesTab from './LanguagesTab.jsx';
+import ListeningTab from './ListeningTab.jsx';
 import BooksTab from './BooksTab.jsx';
 import QuranTab from './QuranTab.jsx';
 import StudyTab from './StudyTab.jsx';
@@ -9,6 +10,7 @@ import CareerTab from './CareerTab.jsx';
 const SUB_TABS = [
   { id: 'overview', label: 'Обзор', icon: '🧭', color: 'var(--rose)' },
   { id: 'languages', label: 'Языки', icon: '🗣️', color: 'var(--gold)' },
+  { id: 'listening', label: 'Аудирование', icon: '🎧', color: 'var(--purple)' },
   { id: 'books', label: 'Книги', icon: '📖', color: 'var(--violet)' },
   { id: 'quran', label: 'Коран', icon: '📿', color: 'var(--leaf)' },
   { id: 'study', label: 'Учиться', icon: '🌱', color: 'var(--teal)' },
@@ -42,6 +44,7 @@ export default function PersonalPanel({ ownerId, title, icon, photo }) {
       </div>
       {subTab === 'overview' && <OverviewTab ownerId={ownerId} />}
       {subTab === 'languages' && <LanguagesTab ownerId={ownerId} />}
+      {subTab === 'listening' && <ListeningTab ownerId={ownerId} />}
       {subTab === 'books' && <BooksTab ownerId={ownerId} />}
       {subTab === 'quran' && <QuranTab ownerId={ownerId} />}
       {subTab === 'study' && <StudyTab ownerId={ownerId} />}

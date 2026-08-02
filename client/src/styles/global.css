@@ -636,6 +636,21 @@
     background:transparent;border:2px dashed var(--line);box-shadow:none;
   }
   .mama-year-goal-line{font-size:12px;color:var(--ink-soft);font-weight:700;margin-top:8px;}
+
+  /* LISTENING LEVEL LADDER */
+  .listening-current-level{margin-left:auto;font-size:11px;font-weight:800;color:var(--purple-deep);background:var(--card-soft);border-radius:999px;padding:3px 10px;}
+  .listening-levels{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
+  .listening-level{
+    flex:1;min-width:150px;background:var(--card-soft);border:1.5px solid var(--line);
+    border-radius:14px;padding:10px 12px;
+  }
+  .listening-level.done{border-color:var(--teal);background:color-mix(in srgb, var(--teal) 12%, var(--card-soft));}
+  .listening-level.locked{opacity:.5;}
+  .listening-level-head{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:8px;}
+  .listening-level-hours{font-weight:700;color:var(--ink-soft);font-size:11.5px;}
+  .mama-beads-sm{gap:4px;}
+  .mama-beads-sm .mama-bead{width:12px;height:12px;}
+  .mama-beads-sm .mama-bead.empty{border-width:1.5px;}
   .mama-pace-hint{font-size:12px;font-weight:800;color:var(--purple-deep);background:var(--card);border-radius:999px;padding:6px 14px;}
   .mama-add-book-block{background:var(--card-soft);border-radius:16px;padding:18px;margin:18px 0 24px;}
 
