@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import LanguagesTab from './LanguagesTab.jsx';
+import BooksTab from './BooksTab.jsx';
 
 const SUB_TABS = [
   { id: 'languages', label: '🗣️ Языки' },
-  // 'books', 'learn', 'career', 'quran' will be added in follow-up iterations
+  { id: 'books', label: '📖 Книги' },
+  // 'learn', 'career', 'quran' will be added in follow-up iterations
 ];
 
 export default function PersonalPanel({ ownerId, title }) {
@@ -24,6 +26,7 @@ export default function PersonalPanel({ ownerId, title }) {
         ))}
       </div>
       {subTab === 'languages' && <LanguagesTab ownerId={ownerId} />}
+      {subTab === 'books' && <BooksTab ownerId={ownerId} />}
     </div>
   );
 }

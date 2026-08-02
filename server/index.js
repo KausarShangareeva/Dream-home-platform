@@ -7,6 +7,7 @@ import depositsRouter from './routes/deposits.js';
 import dreamsRouter from './routes/dreams.js';
 import sadaqaRouter from './routes/sadaqa.js';
 import personalRouter from './routes/personal.js';
+import booksRouter from './routes/books.js';
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use('/api/deposits', depositsRouter);
 app.use('/api/dreams', dreamsRouter);
 app.use('/api/sadaqa', sadaqaRouter);
 app.use('/api/personal', personalRouter);
+app.use('/api/personal', booksRouter);
 
 const PORT = process.env.PORT || 4000;
 

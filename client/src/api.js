@@ -51,4 +51,9 @@ export const api = {
   addLanguage: (ownerId, data) => request(`/personal/${ownerId}/languages`, { method: 'POST', body: JSON.stringify(data) }),
   updateLanguage: (ownerId, id, data) => request(`/personal/${ownerId}/languages/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteLanguage: (ownerId, id) => request(`/personal/${ownerId}/languages/${id}`, { method: 'DELETE' }),
+
+  getBooks: (ownerId) => request(`/personal/${ownerId}/books`),
+  addBook: (ownerId, data) => request(`/personal/${ownerId}/books`, { method: 'POST', body: JSON.stringify(data) }),
+  updateBook: (ownerId, id, data) => request(`/personal/${ownerId}/books/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteBook: (ownerId, id) => request(`/personal/${ownerId}/books/${id}`, { method: 'DELETE' }),
 };
