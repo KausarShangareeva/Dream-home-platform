@@ -105,19 +105,19 @@ export default function BooksTab({ ownerId }) {
       </div>
 
       <div className="mama-table-wrap">
-        <table className="mama-table">
+        <table className="mama-table books-table">
           <thead>
             <tr>
               <th className="col-num">#</th>
               <th className="col-title">Книга</th>
-              <th className="mobile-hide">Язык</th>
-              <th className="mobile-hide">Жанр</th>
-              <th className="mobile-hide">Стр.</th>
-              <th>Сложность</th>
-              <th>Прочту за</th>
-              <th className="mobile-hide">Стр/день</th>
-              <th>Статус</th>
-              <th>Завершила</th>
+              <th className="mobile-hide col-lang">Язык</th>
+              <th className="mobile-hide col-genre">Жанр</th>
+              <th className="mobile-hide col-pages">Стр.</th>
+              <th className="col-diff">Сложность</th>
+              <th className="col-days">Прочту за</th>
+              <th className="mobile-hide col-pace">Стр/день</th>
+              <th className="col-status">Статус</th>
+              <th className="col-done">Завершила</th>
               <th className="col-del"></th>
             </tr>
           </thead>
@@ -134,7 +134,7 @@ export default function BooksTab({ ownerId }) {
                     <b>{b.title}</b>
                     {b.author && <span className="bridge-note">{b.author}</span>}
                   </td>
-                  <td className="mobile-hide">
+                  <td className="mobile-hide col-lang">
                     <LanguageSelect
                       value={b.language || KNOWN_READING_LANGUAGES[0].name}
                       options={KNOWN_READING_LANGUAGES}
@@ -142,29 +142,29 @@ export default function BooksTab({ ownerId }) {
                       compact
                     />
                   </td>
-                  <td className="mobile-hide">
+                  <td className="mobile-hide col-genre">
                     <select value={b.genre || ''} onChange={e => update(b, { genre: e.target.value || null })} className="genre-select">
                       <option value="">—</option>
                       {Object.entries(GENRE_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
                     </select>
                   </td>
-                  <td className="mobile-hide">
+                  <td className="mobile-hide col-pages">
                     <input
                       type="number" min="1" style={{ maxWidth: 64 }} value={b.pages}
                       onChange={e => update(b, { pages: Number(e.target.value) })}
                     /> стр
                   </td>
-                  <td>
+                  <td className="col-diff">
                     <LevelSelect value={b.difficulty} onChange={val => update(b, { difficulty: val })} allowNone />
                   </td>
-                  <td>
+                  <td className="col-days">
                     <input
                       type="number" min="1" style={{ maxWidth: 60 }} value={b.days} disabled={done}
                       onChange={e => update(b, { days: Number(e.target.value) })}
                     /> дн.
                   </td>
-                  <td className="finish-cell mobile-hide">{pagesPerDay} стр/день</td>
-                  <td>
+                  <td className="finish-cell mobile-hide col-pace">{pagesPerDay} стр/день</td>
+                  <td className="col-status">
                     <select
                       value={b.status}
                       disabled={locked}
@@ -176,7 +176,7 @@ export default function BooksTab({ ownerId }) {
                     </select>
                     {locked && <span className="lock-hint" title="Сначала дочитайте предыдущую книгу по списку">🔒</span>}
                   </td>
-                  <td>
+                  <td className="col-done">
                     {done && (
                       <input type="date" value={b.doneDate || ''} onChange={e => update(b, { doneDate: e.target.value })} />
                     )}

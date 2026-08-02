@@ -591,6 +591,18 @@
   }
   table.mama-table select{padding-right:22px;background-position:right 6px center;background-size:9px;}
   table.mama-table input[type=number]{max-width:64px;}
+
+  /* BOOKS TABLE — explicit column widths (auto-layout was squeezing Жанр/Статус text
+     while over-allocating space to the mostly-empty Завершила date column) */
+  table.books-table{table-layout:fixed;min-width:920px;}
+  table.books-table .col-lang{width:52px;}
+  table.books-table .col-genre{width:120px;}
+  table.books-table .col-pages{width:70px;}
+  table.books-table .col-diff{width:90px;}
+  table.books-table .col-days{width:80px;}
+  table.books-table .col-pace{width:90px;}
+  table.books-table .col-status{width:120px;}
+  table.books-table .col-done{width:130px;}
   table.mama-table .lang-select{width:100%;}
   table.mama-table .lang-select-trigger{padding:5px 7px;font-size:12px;background-color:var(--card-soft);}
   table.mama-table .finish-cell{font-weight:600;color:var(--purple-deep);}
