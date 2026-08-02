@@ -168,3 +168,16 @@ table.data-table tr:last-child td{border-bottom:none;}
 .ov-hi-icon{font-size:17px; flex:none; width:26px; text-align:center;}
 .ov-hi-text b{display:block; font-size:12.5px;}
 .ov-hi-text span{font-size:11px; color:var(--ink-soft);}
+
+/* ---- Hadiths + Tips ---- */
+.hadith-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+@media (max-width:800px){ .hadith-grid{grid-template-columns:1fr;} }
+.hadith-card{background:var(--card-soft); border-radius:16px; padding:16px 18px; font-size:13px; line-height:1.6;}
+.hadith-card p{margin:0 0 8px;}
+.hadith-src{font-size:11px; color:var(--purple-deep); font-weight:700;}
+
+.tips-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+@media (max-width:800px){ .tips-grid{grid-template-columns:1fr;} }
+.tip-card{background:var(--card-soft); border-radius:16px; padding:16px 18px;}
+.tip-card h4{margin:0 0 8px; font-size:14px; color:var(--purple-deep);}
+.tip-card p{margin:0; font-size:12.5px; line-height:1.6; color:var(--ink);}
