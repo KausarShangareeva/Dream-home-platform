@@ -31,10 +31,17 @@ router.post('/:ownerId/books', async (req, res) => {
   res.status(201).json(book);
 });
 
-// PATCH /api/personal/:ownerId/books/:id  { status?, difficulty?, genre?, days?, doneDate? }
+// PATCH /api/personal/:ownerId/books/reorder  { ids: [...] }
+router.patch('/:ownerId/books/reorder', async (req, res) => {
+  const { ids } = req.body;
+  await Promise.all(ids.map((id, i) => Book.findOneAndUpdate({ _id: id, ownerId: req.params.ownerId }, { order: i })));
+  res.json({ ok: true });
+});
+
+// PATCH /api/personal/:ownerId/books/:id  { status?, difficulty?, genre?, days?, doneDate?, language?, pages?, title?, author? }
 router.patch('/:ownerId/books/:id', async (req, res) => {
   const update = {};
-  ['status', 'difficulty', 'genre', 'days', 'doneDate', 'startDate'].forEach(f => {
+  ['status', 'difficulty', 'genre', 'days', 'doneDate', 'startDate', 'language', 'pages', 'title', 'author'].forEach(f => {
     if (req.body[f] !== undefined) update[f] = req.body[f];
   });
   const book = await Book.findOneAndUpdate({ _id: req.params.id, ownerId: req.params.ownerId }, update, { new: true });

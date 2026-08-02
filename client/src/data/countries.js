@@ -9,11 +9,23 @@ export function getCountry(id) {
   return COUNTRIES.find(c => c.id === id) || COUNTRIES[0];
 }
 
-// Amounts are stored in the database in SEK (kr). `rates` = { RUB, TRY, AED } fetched live from the server.
-export function fmtCur(amount, country, rates) {
+// The SEK -> local-currency conversion rate for a given country (1 for Sweden itself).
+export function rateFor(country, rates) {
   const rateMap = { se: 1, ru: rates?.RUB || 1, tr: rates?.TRY || 1, ae: rates?.AED || 1 };
-  const rate = rateMap[country.id] ?? 1;
-  const converted = amount * rate;
+  return rateMap[country.id] ?? 1;
+}
+
+// Amounts stored in the database are always in SEK (kr). `rates` = { RUB, TRY, AED } fetched live from the server.
+// Use this for deposit totals / progress amounts, which need converting from SEK.
+export function fmtCur(amount, country, rates) {
+  const converted = amount * rateFor(country, rates);
   const n = Math.round(converted).toLocaleString('ru-RU');
+  return country.currency === 'kr' ? `${n} kr` : `${n} ${country.currency}`;
+}
+
+// The down-payment target is already set directly in each country's own currency
+// (it's a realistic local down-payment figure, not converted from SEK) — format only, no rate.
+export function fmtTarget(country) {
+  const n = Math.round(country.target).toLocaleString('ru-RU');
   return country.currency === 'kr' ? `${n} kr` : `${n} ${country.currency}`;
 }

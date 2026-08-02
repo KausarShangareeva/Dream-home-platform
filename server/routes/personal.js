@@ -41,20 +41,27 @@ router.get('/:ownerId/languages', async (req, res) => {
   res.json(languages);
 });
 
-// POST /api/personal/:ownerId/languages  { name, flag?, level, diff? }
-// Adds a custom language at the end of the chain (no bridge, "from scratch").
+// POST /api/personal/:ownerId/languages  { name, flag?, level, diff?, key?, note?, bridge? }
+// Adds a language to the chain. If `key` isn't given (custom/manual entry), one is generated.
 router.post('/:ownerId/languages', async (req, res) => {
-  const { name, flag, level, diff } = req.body;
+  const { name, flag, level, diff, key, note, bridge } = req.body;
   if (!name || !level) return res.status(400).json({ error: 'name and level are required' });
   const maxOrder = await Language.find({ ownerId: req.params.ownerId }).sort({ order: -1 }).limit(1);
   const nextOrder = (maxOrder[0]?.order || 0) + 1;
   const lang = await Language.create({
     ownerId: req.params.ownerId,
-    key: name.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now(),
-    name, flag: flag || '🌍', level, diff: diff || 1.0,
-    bridge: null, chain: true, order: nextOrder, status: 'todo',
+    key: key || (name.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now()),
+    name, flag: flag || '🌍', level, diff: diff || 1.0, note: note || '',
+    bridge: bridge || null, chain: true, order: nextOrder, status: 'todo',
   });
   res.status(201).json(lang);
+});
+
+// PATCH /api/personal/:ownerId/languages/reorder  { ids: [...] } — new order top to bottom
+router.patch('/:ownerId/languages/reorder', async (req, res) => {
+  const { ids } = req.body;
+  await Promise.all(ids.map((id, i) => Language.findOneAndUpdate({ _id: id, ownerId: req.params.ownerId }, { order: i })));
+  res.json({ ok: true });
 });
 
 // PATCH /api/personal/:ownerId/languages/:id  { level?, status? }

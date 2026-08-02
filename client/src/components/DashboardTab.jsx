@@ -3,7 +3,7 @@ import ReactCountryFlag from 'react-country-flag';
 import { api } from '../api.js';
 import { PEOPLE, personById } from '../data/people.js';
 import { HADITHS } from '../data/staticContent.js';
-import { COUNTRIES, getCountry, fmtCur } from '../data/countries.js';
+import { COUNTRIES, getCountry, fmtCur, fmtTarget, rateFor } from '../data/countries.js';
 import Avatar from './ui/Avatar.jsx';
 import DeleteButton from './ui/DeleteButton.jsx';
 import houseImg from '../assets/house.jpg';
@@ -31,7 +31,13 @@ export default function DashboardTab() {
   const cur = (n) => fmtCur(n, country, rates?.rates);
 
   const total = deposits.reduce((s, d) => s + d.amount, 0);
-  const remaining = Math.max(0, country.target - total);
+  const rate = rateFor(country, rates?.rates);
+  const totalInLocalCurrency = total * rate;
+  const remaining = Math.max(0, country.target - totalInLocalCurrency);
+  const formatLocal = (n) => {
+    const rounded = Math.round(n).toLocaleString('ru-RU');
+    return country.currency === 'kr' ? `${rounded} kr` : `${rounded} ${country.currency}`;
+  };
 
   const totalsByPerson = Object.fromEntries(PEOPLE.map(p => [p.id, 0]));
   deposits.forEach(d => { totalsByPerson[d.person] = (totalsByPerson[d.person] || 0) + d.amount; });
@@ -71,7 +77,7 @@ export default function DashboardTab() {
             ))}
           </div>
 
-          <h2>Дом мечты — цель {cur(country.target)}</h2>
+          <h2>Дом мечты — цель {fmtTarget(country)}</h2>
 
           <div className="people-row">
             {PEOPLE.map(p => (
@@ -88,9 +94,9 @@ export default function DashboardTab() {
           <div className="track-wrap">
             <div className="amount-line">
               <span>Собрано: {cur(total)}</span>
-              <span>Осталось: {cur(remaining)}</span>
+              <span>Осталось: {formatLocal(remaining)}</span>
             </div>
-            <input type="range" className="track" min="0" max={country.target} value={Math.min(total, country.target)} disabled />
+            <input type="range" className="track" min="0" max={country.target} value={Math.min(totalInLocalCurrency, country.target)} disabled />
           </div>
         </div>
       </div>

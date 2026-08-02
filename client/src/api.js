@@ -58,11 +58,13 @@ export const api = {
   addLanguage: (ownerId, data) => request(`/personal/${ownerId}/languages`, { method: 'POST', body: JSON.stringify(data) }),
   updateLanguage: (ownerId, id, data) => request(`/personal/${ownerId}/languages/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteLanguage: (ownerId, id) => request(`/personal/${ownerId}/languages/${id}`, { method: 'DELETE' }),
+  reorderLanguages: (ownerId, ids) => request(`/personal/${ownerId}/languages/reorder`, { method: 'PATCH', body: JSON.stringify({ ids }) }),
 
   getBooks: (ownerId) => request(`/personal/${ownerId}/books`),
   addBook: (ownerId, data) => request(`/personal/${ownerId}/books`, { method: 'POST', body: JSON.stringify(data) }),
   updateBook: (ownerId, id, data) => request(`/personal/${ownerId}/books/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteBook: (ownerId, id) => request(`/personal/${ownerId}/books/${id}`, { method: 'DELETE' }),
+  reorderBooks: (ownerId, ids) => request(`/personal/${ownerId}/books/reorder`, { method: 'PATCH', body: JSON.stringify({ ids }) }),
 
   getSurahs: (ownerId) => request(`/personal/${ownerId}/quran`),
   updateSurah: (ownerId, id, data) => request(`/personal/${ownerId}/quran/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
@@ -71,16 +73,19 @@ export const api = {
   addStudyItem: (ownerId, data) => request(`/personal/${ownerId}/study`, { method: 'POST', body: JSON.stringify(data) }),
   updateStudyItem: (ownerId, id, data) => request(`/personal/${ownerId}/study/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteStudyItem: (ownerId, id) => request(`/personal/${ownerId}/study/${id}`, { method: 'DELETE' }),
+  reorderStudyItems: (ownerId, ids) => request(`/personal/${ownerId}/study/reorder`, { method: 'PATCH', body: JSON.stringify({ ids }) }),
 
   getEducation: (ownerId) => request(`/personal/${ownerId}/education`),
   addEducation: (ownerId, data) => request(`/personal/${ownerId}/education`, { method: 'POST', body: JSON.stringify(data) }),
   updateEducation: (ownerId, id, data) => request(`/personal/${ownerId}/education/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteEducation: (ownerId, id) => request(`/personal/${ownerId}/education/${id}`, { method: 'DELETE' }),
+  reorderEducation: (ownerId, ids) => request(`/personal/${ownerId}/education/reorder`, { method: 'PATCH', body: JSON.stringify({ ids }) }),
 
   getCareerGoals: (ownerId) => request(`/personal/${ownerId}/career`),
   addCareerGoal: (ownerId, data) => request(`/personal/${ownerId}/career`, { method: 'POST', body: JSON.stringify(data) }),
   updateCareerGoal: (ownerId, id, data) => request(`/personal/${ownerId}/career/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteCareerGoal: (ownerId, id) => request(`/personal/${ownerId}/career/${id}`, { method: 'DELETE' }),
+  reorderCareerGoals: (ownerId, ids) => request(`/personal/${ownerId}/career/reorder`, { method: 'PATCH', body: JSON.stringify({ ids }) }),
 
   // Trips
   getTrips: () => request('/trips'),

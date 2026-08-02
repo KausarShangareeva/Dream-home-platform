@@ -25,8 +25,19 @@ router.get('/:ownerId/study', async (req, res) => {
 router.post('/:ownerId/study', async (req, res) => {
   const { category, name, hours, platform, url, icon } = req.body;
   if (!category || !name) return res.status(400).json({ error: 'category and name are required' });
-  const item = await StudyItem.create({ ownerId: req.params.ownerId, category, name, hours, platform, url, icon: icon || '📘' });
+  const maxOrder = await StudyItem.find({ ownerId: req.params.ownerId, category }).sort({ order: -1 }).limit(1);
+  const item = await StudyItem.create({
+    ownerId: req.params.ownerId, category, name, hours, platform, url, icon: icon || '📘',
+    order: (maxOrder[0]?.order || 0) + 1,
+  });
   res.status(201).json(item);
+});
+
+// PATCH /api/personal/:ownerId/study/reorder  { category, ids: [...] }
+router.patch('/:ownerId/study/reorder', async (req, res) => {
+  const { ids } = req.body;
+  await Promise.all(ids.map((id, i) => StudyItem.findOneAndUpdate({ _id: id, ownerId: req.params.ownerId }, { order: i })));
+  res.json({ ok: true });
 });
 
 router.patch('/:ownerId/study/:id', async (req, res) => {
@@ -52,13 +63,23 @@ router.get('/:ownerId/education', async (req, res) => {
 router.post('/:ownerId/education', async (req, res) => {
   const { faculty, university, language, years, url } = req.body;
   if (!faculty) return res.status(400).json({ error: 'faculty is required' });
-  const item = await Education.create({ ownerId: req.params.ownerId, faculty, university, language, years, url });
+  const maxOrder = await Education.find({ ownerId: req.params.ownerId }).sort({ order: -1 }).limit(1);
+  const item = await Education.create({
+    ownerId: req.params.ownerId, faculty, university, language, years, url,
+    order: (maxOrder[0]?.order || 0) + 1,
+  });
   res.status(201).json(item);
+});
+
+router.patch('/:ownerId/education/reorder', async (req, res) => {
+  const { ids } = req.body;
+  await Promise.all(ids.map((id, i) => Education.findOneAndUpdate({ _id: id, ownerId: req.params.ownerId }, { order: i })));
+  res.json({ ok: true });
 });
 
 router.patch('/:ownerId/education/:id', async (req, res) => {
   const update = {};
-  ['level', 'done', 'years', 'url'].forEach(f => { if (req.body[f] !== undefined) update[f] = req.body[f]; });
+  ['level', 'done', 'years', 'url', 'faculty', 'university', 'language'].forEach(f => { if (req.body[f] !== undefined) update[f] = req.body[f]; });
   const item = await Education.findOneAndUpdate({ _id: req.params.id, ownerId: req.params.ownerId }, update, { new: true });
   res.json(item);
 });
@@ -79,8 +100,18 @@ router.get('/:ownerId/career', async (req, res) => {
 router.post('/:ownerId/career', async (req, res) => {
   const { category, name, icon } = req.body;
   if (!category || !name) return res.status(400).json({ error: 'category and name are required' });
-  const item = await CareerGoal.create({ ownerId: req.params.ownerId, category, name, icon: icon || '💼' });
+  const maxOrder = await CareerGoal.find({ ownerId: req.params.ownerId, category }).sort({ order: -1 }).limit(1);
+  const item = await CareerGoal.create({
+    ownerId: req.params.ownerId, category, name, icon: icon || '💼',
+    order: (maxOrder[0]?.order || 0) + 1,
+  });
   res.status(201).json(item);
+});
+
+router.patch('/:ownerId/career/reorder', async (req, res) => {
+  const { ids } = req.body;
+  await Promise.all(ids.map((id, i) => CareerGoal.findOneAndUpdate({ _id: id, ownerId: req.params.ownerId }, { order: i })));
+  res.json({ ok: true });
 });
 
 router.patch('/:ownerId/career/:id', async (req, res) => {
