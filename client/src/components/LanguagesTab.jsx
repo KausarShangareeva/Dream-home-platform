@@ -80,7 +80,7 @@ export default function LanguagesTab({ ownerId }) {
         <div className="field" style={{ maxWidth: 140 }}>
           <label>Часов в день</label>
           <select value={settings.hoursPerDay || 2} onChange={e => updateHoursPerDay(e.target.value)}>
-            {[0.5, 1, 1.5, 2, 2.5, 3, 4, 5].map(h => <option key={h} value={h}>{h} ч</option>)}
+            {[1, 2, 3, 4, 5, 6, 7].map(h => <option key={h} value={h}>{h} ч</option>)}
           </select>
         </div>
       </div>
