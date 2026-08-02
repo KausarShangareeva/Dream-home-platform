@@ -22,7 +22,7 @@ const RECOMPUTE_HOURS_STAGE = {
     hours: {
       $sum: {
         $map: {
-          input: { $filter: { input: '$sessions', cond: '$$this.done' } },
+          input: { $filter: { input: { $ifNull: ['$sessions', []] }, cond: '$$this.done' } },
           as: 'x',
           in: '$$x.hours',
         },
@@ -95,7 +95,7 @@ router.post('/:ownerId/listening/:id/sessions', async (req, res) => {
   const item = await ListeningItem.findOneAndUpdate(
     filter,
     [
-      { $set: { sessions: { $concatArrays: ['$sessions', newSessions] } } },
+      { $set: { sessions: { $concatArrays: [{ $ifNull: ['$sessions', []] }, newSessions] } } },
       RECOMPUTE_HOURS_STAGE,
     ],
     { new: true }
@@ -116,7 +116,7 @@ router.patch('/:ownerId/listening/:id/sessions/:sessionId', async (req, res) => 
         $set: {
           sessions: {
             $map: {
-              input: '$sessions',
+              input: { $ifNull: ['$sessions', []] },
               as: 's',
               in: {
                 $cond: [{ $eq: ['$$s._id', sessionObjectId] }, { $mergeObjects: ['$$s', patch] }, '$$s'],
@@ -140,7 +140,7 @@ router.delete('/:ownerId/listening/:id/sessions/:sessionId', async (req, res) =>
   const item = await ListeningItem.findOneAndUpdate(
     { _id: req.params.id, ownerId: req.params.ownerId },
     [
-      { $set: { sessions: { $filter: { input: '$sessions', cond: { $ne: ['$$this._id', sessionObjectId] } } } } },
+      { $set: { sessions: { $filter: { input: { $ifNull: ['$sessions', []] }, cond: { $ne: ['$$this._id', sessionObjectId] } } } } },
       RECOMPUTE_HOURS_STAGE,
     ],
     { new: true }
