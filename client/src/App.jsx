@@ -13,11 +13,19 @@ import mamaPhoto from './assets/mama.jpg';
 import kausarPhoto from './assets/kausar.jpg';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState(() => {
+    try { return localStorage.getItem('activeTab') || 'dashboard'; }
+    catch { return 'dashboard'; }
+  });
+
+  const changeTab = (tab) => {
+    setActiveTab(tab);
+    try { localStorage.setItem('activeTab', tab); } catch { /* ignore (private mode etc.) */ }
+  };
 
   return (
     <div className="app">
-      <Sidebar activeTab={activeTab} onChangeTab={setActiveTab} />
+      <Sidebar activeTab={activeTab} onChangeTab={changeTab} />
       <main className="main">
         <Topbar />
         <div className="tab-panel active">

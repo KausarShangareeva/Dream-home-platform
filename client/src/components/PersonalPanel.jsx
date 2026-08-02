@@ -18,7 +18,16 @@ const SUB_TABS = [
 ];
 
 export default function PersonalPanel({ ownerId, title, icon, photo }) {
-  const [subTab, setSubTab] = useState('overview');
+  const storageKey = `personalSubTab:${ownerId}`;
+  const [subTab, setSubTab] = useState(() => {
+    try { return localStorage.getItem(storageKey) || 'overview'; }
+    catch { return 'overview'; }
+  });
+
+  const changeSubTab = (tab) => {
+    setSubTab(tab);
+    try { localStorage.setItem(storageKey, tab); } catch { /* ignore (private mode etc.) */ }
+  };
 
   return (
     <div className="card mama-corner">
@@ -35,7 +44,7 @@ export default function PersonalPanel({ ownerId, title, icon, photo }) {
           <button
             key={t.id}
             className={`mama-tab${subTab === t.id ? ' active' : ''}`}
-            onClick={() => setSubTab(t.id)}
+            onClick={() => changeSubTab(t.id)}
           >
             <span className="mtab-ic" style={{ background: t.color }}>{t.icon}</span>
             {t.label}
