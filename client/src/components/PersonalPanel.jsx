@@ -15,13 +15,18 @@ const SUB_TABS = [
   { id: 'career', label: 'Профессия', icon: '🎯', color: 'var(--rose)' },
 ];
 
-export default function PersonalPanel({ ownerId, title }) {
+export default function PersonalPanel({ ownerId, title, icon, photo }) {
   const [subTab, setSubTab] = useState('overview');
 
   return (
     <div className="card mama-corner">
       <div className="mama-header">
-        <h2>{title}</h2>
+        <h2>
+          <span className="mama-header-avatar">
+            {photo ? <img src={photo} alt="" /> : icon}
+          </span>
+          {title}
+        </h2>
       </div>
       <div className="mama-tabs">
         {SUB_TABS.map(t => (

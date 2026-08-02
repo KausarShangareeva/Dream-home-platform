@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { api } from '../api.js';
 import { PEOPLE } from '../data/people.js';
 import Avatar from './ui/Avatar.jsx';
+import mamaPhoto from '../assets/mama.jpg';
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Главная', icon: '🏠' },
@@ -14,7 +15,7 @@ const NAV_ITEMS = [
 ];
 
 const PERSONAL_ITEMS = [
-  { id: 'personal:mama', label: 'Личные цели мамы', icon: '🗺️' },
+  { id: 'personal:mama', label: 'Личные цели мамы', icon: '🗺️', photo: mamaPhoto },
   { id: 'personal:kausar', label: 'Личные цели — Каусар', icon: '🌸' },
 ];
 
@@ -69,7 +70,9 @@ export default function Sidebar({ activeTab, onChangeTab }) {
             className={`nav-btn${activeTab === item.id ? ' active' : ''}`}
             onClick={() => onChangeTab(item.id)}
           >
-            <span className="ic">{item.icon}</span>
+            <span className="ic">
+              {item.photo ? <img src={item.photo} alt="" /> : item.icon}
+            </span>
             <span>{item.label}</span>
           </button>
         ))}

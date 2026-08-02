@@ -9,6 +9,7 @@ import SadaqaTab from './components/SadaqaTab.jsx';
 import PersonalPanel from './components/PersonalPanel.jsx';
 import HadithTab from './components/HadithTab.jsx';
 import TipsTab from './components/TipsTab.jsx';
+import mamaPhoto from './assets/mama.jpg';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -26,8 +27,8 @@ export default function App() {
           {activeTab === 'sadaqa' && <SadaqaTab />}
           {activeTab === 'hadith' && <HadithTab />}
           {activeTab === 'tips' && <TipsTab />}
-          {activeTab === 'personal:mama' && <PersonalPanel ownerId="mama" title="🗺️ Личные цели мамы" />}
-          {activeTab === 'personal:kausar' && <PersonalPanel ownerId="kausar" title="🌸 Личные цели — Каусар" />}
+          {activeTab === 'personal:mama' && <PersonalPanel ownerId="mama" title="Личные цели мамы" photo={mamaPhoto} />}
+          {activeTab === 'personal:kausar' && <PersonalPanel ownerId="kausar" title="Личные цели — Каусар" icon="🌸" />}
         </div>
       </main>
     </div>
