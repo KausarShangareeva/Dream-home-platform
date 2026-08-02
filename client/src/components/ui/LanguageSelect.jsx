@@ -20,7 +20,7 @@ export default function LanguageSelect({ value, options, onChange, returnField =
   return (
     <div className="lang-select ac-wrap" ref={wrapRef} style={style}>
       <button type="button" className="lang-select-trigger" onClick={() => setOpen(o => !o)}>
-        <Flag langKey={current?.key} />
+        {current?.key && current.key !== '__custom' && <Flag langKey={current.key} />}
         <span>{current?.name || 'Выберите...'}</span>
         <span className="lang-select-caret">▾</span>
       </button>
@@ -31,7 +31,7 @@ export default function LanguageSelect({ value, options, onChange, returnField =
             className="ac-item lang-select-item"
             onClick={() => { onChange(o[returnField]); setOpen(false); }}
           >
-            <Flag langKey={o.key} /> {o.name}
+            {o.key && o.key !== '__custom' && <Flag langKey={o.key} />} {o.name}
           </div>
         ))}
       </div>
