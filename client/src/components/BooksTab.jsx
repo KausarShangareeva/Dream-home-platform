@@ -2,7 +2,8 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import BooksYearTracker from './ui/BooksYearTracker.jsx';
-import { DIFF_LABEL, GENRE_LABEL, BOOK_STATUS_LABEL } from '../data/bookLabels.js';
+import LevelSelect from './ui/LevelSelect.jsx';
+import { GENRE_LABEL, BOOK_STATUS_LABEL } from '../data/bookLabels.js';
 import { KNOWN_READING_LANGUAGES } from '../data/readingLanguages.js';
 import { useDragReorder } from '../hooks/useDragReorder.js';
 
@@ -114,7 +115,6 @@ export default function BooksTab({ ownerId }) {
               const pagesPerDay = Math.max(1, Math.ceil(b.pages / Math.max(1, b.days)));
               const done = b.status === 'done';
               const locked = idx > 0 && ordered[idx - 1].status !== 'done';
-              const diffClass = `diff-select diff-${(b.difficulty || 'none').replace('+', 'plus')}`;
               return (
                 <tr key={b._id} {...getRowProps(b)} className={`qstatus-${b.status}`}>
                   <td className="col-num"><span className="drag-handle">⋮⋮</span><span className="seq-badge">{idx + 1}</span></td>
@@ -135,10 +135,7 @@ export default function BooksTab({ ownerId }) {
                   </td>
                   <td className="mobile-hide">{b.pages} стр</td>
                   <td>
-                    <select value={b.difficulty || ''} onChange={e => update(b, { difficulty: e.target.value || null })} className={diffClass}>
-                      <option value="">—</option>
-                      {Object.entries(DIFF_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
-                    </select>
+                    <LevelSelect value={b.difficulty} onChange={val => update(b, { difficulty: val })} allowNone />
                   </td>
                   <td>
                     <input

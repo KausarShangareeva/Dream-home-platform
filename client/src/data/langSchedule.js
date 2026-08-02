@@ -1,5 +1,6 @@
 // CEFR levels, cumulative hours to reach each level from zero (Council of Europe estimates).
-export const CEFR_HOURS = { A1: 100, A2: 200, B1: 350, B2: 600, C1: 800, C2: 1200 };
+// B1+/B2+ are interpolated midpoints, added so the language level list can match Books exactly.
+export const CEFR_HOURS = { A1: 100, A2: 200, B1: 350, 'B1+': 475, B2: 600, 'B2+': 700, C1: 800, C2: 1200 };
 export const CEFR_LEVELS = Object.keys(CEFR_HOURS);
 
 export function langHoursNeeded(lang) {

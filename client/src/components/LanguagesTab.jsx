@@ -2,10 +2,11 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import Flag from './ui/Flag.jsx';
+import LevelSelect from './ui/LevelSelect.jsx';
 import { LANGUAGE_CATALOG } from '../data/languageCatalog.js';
 import { useDragReorder } from '../hooks/useDragReorder.js';
 import {
-  computeLangSchedule, bridgeCellText, fmtDate, STATUS_LABEL, STATUS_EMOJI, CEFR_LEVELS,
+  computeLangSchedule, bridgeCellText, fmtDate, STATUS_LABEL, STATUS_EMOJI,
 } from '../data/langSchedule.js';
 
 export default function LanguagesTab({ ownerId }) {
@@ -109,9 +110,7 @@ export default function LanguagesTab({ ownerId }) {
                   <td className="col-title">{STATUS_EMOJI[lang.status]}<Flag langKey={lang.key} /> {lang.name}</td>
                   <td className="mobile-hide">{bridgeCellText(lang, languages)}</td>
                   <td>
-                    <select value={lang.level} onChange={e => updateLevel(lang, e.target.value)}>
-                      {CEFR_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
-                    </select>
+                    <LevelSelect value={lang.level} onChange={val => updateLevel(lang, val)} />
                   </td>
                   <td className="mobile-hide">{sc.hours.toLocaleString('ru-RU')} ч</td>
                   <td className="mobile-hide">{sc.months < 1 ? '<1' : sc.months.toFixed(1)} мес</td>
