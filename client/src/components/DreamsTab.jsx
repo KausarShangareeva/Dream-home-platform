@@ -9,18 +9,25 @@ export default function DreamsTab() {
   const [totals, setTotals] = useState({}); // dreamId -> total amount
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const allDreams = [...BUILTIN_DREAMS, ...customDreams.map(d => ({ ...d, id: d._id, isCustom: true }))];
 
   const loadAll = useCallback(async () => {
-    const custom = await api.getDreams();
-    setCustomDreams(custom);
-    const ids = [...BUILTIN_DREAMS.map(d => d.id), ...custom.map(d => d._id)];
-    const results = await Promise.all(ids.map(id => api.getDreamDeposits(id)));
-    const next = {};
-    ids.forEach((id, i) => { next[id] = results[i].reduce((s, d) => s + d.amount, 0); });
-    setTotals(next);
-    setLoading(false);
+    setLoading(true); setError(null);
+    try {
+      const custom = await api.getDreams();
+      setCustomDreams(custom);
+      const ids = [...BUILTIN_DREAMS.map(d => d.id), ...custom.map(d => d._id)];
+      const results = await Promise.all(ids.map(id => api.getDreamDeposits(id)));
+      const next = {};
+      ids.forEach((id, i) => { next[id] = results[i].reduce((s, d) => s + d.amount, 0); });
+      setTotals(next);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => { loadAll(); }, [loadAll]);
@@ -42,6 +49,14 @@ export default function DreamsTab() {
   };
 
   if (loading) return <div className="card"><div className="empty-state">Загрузка…</div></div>;
+  if (error) return (
+    <div className="card">
+      <div className="empty-state">
+        Не удалось загрузить данные: {error}
+        <div style={{ marginTop: 10 }}><button className="btn btn-sm btn-ghost" onClick={loadAll}>Повторить</button></div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="card">

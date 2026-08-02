@@ -10,11 +10,15 @@ const fmt = (n) => Math.round(n).toLocaleString('ru-RU') + ' kr';
 export default function DashboardTab() {
   const [deposits, setDeposits] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [person, setPerson] = useState(PEOPLE[0].id);
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
 
-  const load = () => api.getDeposits().then(setDeposits).finally(() => setLoading(false));
+  const load = () => {
+    setLoading(true); setError(null);
+    api.getDeposits().then(setDeposits).catch(err => setError(err.message)).finally(() => setLoading(false));
+  };
   useEffect(() => { load(); }, []);
 
   const total = deposits.reduce((s, d) => s + d.amount, 0);
@@ -72,8 +76,14 @@ export default function DashboardTab() {
 
       <div className="history">
         {loading && <div className="empty-state">Загрузка…</div>}
-        {!loading && deposits.length === 0 && <div className="empty-state">Пока нет взносов — добавьте первый выше</div>}
-        {!loading && deposits.map(d => {
+        {error && (
+          <div className="empty-state">
+            Не удалось загрузить данные: {error}
+            <div style={{ marginTop: 10 }}><button className="btn btn-sm btn-ghost" onClick={load}>Повторить</button></div>
+          </div>
+        )}
+        {!loading && !error && deposits.length === 0 && <div className="empty-state">Пока нет взносов — добавьте первый выше</div>}
+        {!loading && !error && deposits.map(d => {
           const p = personById(d.person);
           return (
             <div className="hist-row" key={d._id}>

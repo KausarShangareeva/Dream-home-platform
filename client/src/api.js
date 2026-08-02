@@ -1,13 +1,18 @@
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
 async function request(path, options = {}) {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
+  let res;
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options,
+    });
+  } catch (networkErr) {
+    throw new Error(`Сервер недоступен (${BASE}). Проверьте, что backend на Render запущен, и VITE_API_URL указывает на правильный адрес.`);
+  }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `Request failed: ${res.status}`);
+    throw new Error(body.error || `Сервер ответил ошибкой ${res.status}`);
   }
   if (res.status === 204) return null;
   return res.json();

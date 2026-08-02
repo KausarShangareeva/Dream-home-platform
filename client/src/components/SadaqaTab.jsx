@@ -12,6 +12,7 @@ export default function SadaqaTab() {
   const [causes, setCauses] = useState([]);
   const [allocations, setAllocations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [depPerson, setDepPerson] = useState(PEOPLE[0].id);
   const [depAmount, setDepAmount] = useState('');
@@ -22,9 +23,15 @@ export default function SadaqaTab() {
   const [useModalCause, setUseModalCause] = useState(null);
 
   const loadAll = useCallback(async () => {
-    const [d, c, a] = await Promise.all([api.getSadaqaDeposits(), api.getCauses(), api.getAllocations()]);
-    setDeposits(d); setCauses(c); setAllocations(a);
-    setLoading(false);
+    setLoading(true); setError(null);
+    try {
+      const [d, c, a] = await Promise.all([api.getSadaqaDeposits(), api.getCauses(), api.getAllocations()]);
+      setDeposits(d); setCauses(c); setAllocations(a);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => { loadAll(); }, [loadAll]);
@@ -78,6 +85,14 @@ export default function SadaqaTab() {
   };
 
   if (loading) return <div className="card"><div className="empty-state">Загрузка…</div></div>;
+  if (error) return (
+    <div className="card">
+      <div className="empty-state">
+        Не удалось загрузить данные: {error}
+        <div style={{ marginTop: 10 }}><button className="btn btn-sm btn-ghost" onClick={loadAll}>Повторить</button></div>
+      </div>
+    </div>
+  );
 
   const availabilityMap = Object.fromEntries(PEOPLE.map(p => [p.id, availableByPerson(p.id)]));
 

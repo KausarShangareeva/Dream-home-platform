@@ -7,16 +7,30 @@ const STATUS_EMOJI = { todo: '', learning: '📖 ', done: '✅ ' };
 export default function QuranTab({ ownerId }) {
   const [surahs, setSurahs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showAll, setShowAll] = useState(false);
 
   const load = useCallback(async () => {
-    const s = await api.getSurahs(ownerId);
-    setSurahs(s); setLoading(false);
+    setLoading(true); setError(null);
+    try {
+      const s = await api.getSurahs(ownerId);
+      setSurahs(s);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [ownerId]);
 
   useEffect(() => { load(); }, [load]);
 
   if (loading) return <div className="empty-state">Загрузка…</div>;
+  if (error) return (
+    <div className="empty-state">
+      Не удалось загрузить данные: {error}
+      <div style={{ marginTop: 10 }}><button className="btn btn-sm btn-ghost" onClick={load}>Повторить</button></div>
+    </div>
+  );
 
   const done = surahs.filter(s => s.status === 'done');
   const donePages = done.reduce((sum, s) => sum + s.pages, 0);

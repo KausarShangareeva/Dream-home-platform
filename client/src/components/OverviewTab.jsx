@@ -7,17 +7,31 @@ export default function OverviewTab({ ownerId }) {
   const [surahs, setSurahs] = useState([]);
   const [settings, setSettings] = useState({ booksYearlyGoal: 100 });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const load = useCallback(async () => {
-    const [langs, b, s, surahs] = await Promise.all([
-      api.getLanguages(ownerId), api.getBooks(ownerId), api.getSettings(ownerId), api.getSurahs(ownerId),
-    ]);
-    setLanguages(langs); setBooks(b); setSettings(s); setSurahs(surahs); setLoading(false);
+    setLoading(true); setError(null);
+    try {
+      const [langs, b, s, surahs] = await Promise.all([
+        api.getLanguages(ownerId), api.getBooks(ownerId), api.getSettings(ownerId), api.getSurahs(ownerId),
+      ]);
+      setLanguages(langs); setBooks(b); setSettings(s); setSurahs(surahs);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [ownerId]);
 
   useEffect(() => { load(); }, [load]);
 
   if (loading) return <div className="empty-state">Загрузка…</div>;
+  if (error) return (
+    <div className="empty-state">
+      Не удалось загрузить данные: {error}
+      <div style={{ marginTop: 10 }}><button className="btn btn-sm btn-ghost" onClick={load}>Повторить</button></div>
+    </div>
+  );
 
   const thisYear = new Date().getFullYear();
   const langsDone = languages.filter(l => l.status === 'done').length;

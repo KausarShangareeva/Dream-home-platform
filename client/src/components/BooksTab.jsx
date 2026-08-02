@@ -7,18 +7,32 @@ export default function BooksTab({ ownerId }) {
   const [books, setBooks] = useState([]);
   const [settings, setSettings] = useState({ booksYearlyGoal: 100 });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [newTitle, setNewTitle] = useState('');
   const [newAuthor, setNewAuthor] = useState('');
   const [newPages, setNewPages] = useState('');
 
   const load = useCallback(async () => {
-    const [b, s] = await Promise.all([api.getBooks(ownerId), api.getSettings(ownerId)]);
-    setBooks(b); setSettings(s); setLoading(false);
+    setLoading(true); setError(null);
+    try {
+      const [b, s] = await Promise.all([api.getBooks(ownerId), api.getSettings(ownerId)]);
+      setBooks(b); setSettings(s);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [ownerId]);
 
   useEffect(() => { load(); }, [load]);
 
   if (loading) return <div className="empty-state">Загрузка…</div>;
+  if (error) return (
+    <div className="empty-state">
+      Не удалось загрузить данные: {error}
+      <div style={{ marginTop: 10 }}><button className="btn btn-sm btn-ghost" onClick={load}>Повторить</button></div>
+    </div>
+  );
 
   const thisYear = new Date().getFullYear();
   const doneThisYear = books.filter(b => b.status === 'done' && b.doneDate && new Date(b.doneDate).getFullYear() === thisYear).length;

@@ -9,15 +9,29 @@ export default function LanguagesTab({ ownerId }) {
   const [languages, setLanguages] = useState([]);
   const [settings, setSettings] = useState({ hoursPerDay: 2 });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const load = useCallback(async () => {
-    const [langs, s] = await Promise.all([api.getLanguages(ownerId), api.getSettings(ownerId)]);
-    setLanguages(langs); setSettings(s); setLoading(false);
+    setLoading(true); setError(null);
+    try {
+      const [langs, s] = await Promise.all([api.getLanguages(ownerId), api.getSettings(ownerId)]);
+      setLanguages(langs); setSettings(s);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [ownerId]);
 
   useEffect(() => { load(); }, [load]);
 
   if (loading) return <div className="empty-state">Загрузка…</div>;
+  if (error) return (
+    <div className="empty-state">
+      Не удалось загрузить данные: {error}
+      <div style={{ marginTop: 10 }}><button className="btn btn-sm btn-ghost" onClick={load}>Повторить</button></div>
+    </div>
+  );
 
   const schedule = computeLangSchedule(languages, settings.hoursPerDay || 2);
   const rows = [...languages].sort((a, b) => schedule[a.key].start - schedule[b.key].start);
