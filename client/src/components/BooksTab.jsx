@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import BooksYearTracker from './ui/BooksYearTracker.jsx';
@@ -28,8 +28,10 @@ export default function BooksTab({ ownerId }) {
   const [newLang, setNewLang] = useState(KNOWN_READING_LANGUAGES[0].name);
   const [newPages, setNewPages] = useState('');
 
+  const loadedOnceRef = useRef(false);
   const load = useCallback(async () => {
-    setLoading(true); setError(null);
+    if (!loadedOnceRef.current) setLoading(true);
+    setError(null);
     try {
       const [b, s] = await Promise.all([api.getBooks(ownerId), api.getSettings(ownerId)]);
       setBooks(b); setSettings(s);
@@ -37,6 +39,7 @@ export default function BooksTab({ ownerId }) {
       setError(err.message);
     } finally {
       setLoading(false);
+      loadedOnceRef.current = true;
     }
   }, [ownerId]);
 

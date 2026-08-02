@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import { useDragReorder } from '../hooks/useDragReorder.js';
@@ -46,11 +46,13 @@ export default function CareerTab({ ownerId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const loadedOnceRef = useRef(false);
   const load = useCallback(async () => {
-    setLoading(true); setError(null);
+    if (!loadedOnceRef.current) setLoading(true);
+    setError(null);
     try { setItems(await api.getCareerGoals(ownerId)); }
     catch (err) { setError(err.message); }
-    finally { setLoading(false); }
+    finally { setLoading(false); loadedOnceRef.current = true; }
   }, [ownerId]);
 
   useEffect(() => { load(); }, [load]);

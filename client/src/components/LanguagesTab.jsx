@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import Flag from './ui/Flag.jsx';
@@ -16,8 +16,10 @@ export default function LanguagesTab({ ownerId }) {
   const [catalogPick, setCatalogPick] = useState('');
   const [customName, setCustomName] = useState('');
 
+  const loadedOnceRef = useRef(false);
   const load = useCallback(async () => {
-    setLoading(true); setError(null);
+    if (!loadedOnceRef.current) setLoading(true);
+    setError(null);
     try {
       const [langs, s] = await Promise.all([api.getLanguages(ownerId), api.getSettings(ownerId)]);
       setLanguages(langs); setSettings(s);
@@ -25,6 +27,7 @@ export default function LanguagesTab({ ownerId }) {
       setError(err.message);
     } finally {
       setLoading(false);
+      loadedOnceRef.current = true;
     }
   }, [ownerId]);
 

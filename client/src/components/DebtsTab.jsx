@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 
@@ -14,11 +14,13 @@ export default function DebtsTab() {
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
 
+  const loadedOnceRef = useRef(false);
   const load = useCallback(async () => {
-    setLoading(true); setError(null);
+    if (!loadedOnceRef.current) setLoading(true);
+    setError(null);
     try { setDebts(await api.getDebts()); }
     catch (err) { setError(err.message); }
-    finally { setLoading(false); }
+    finally { setLoading(false); loadedOnceRef.current = true; }
   }, []);
 
   useEffect(() => { load(); }, [load]);

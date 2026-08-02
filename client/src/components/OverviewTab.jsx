@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
 
 export default function OverviewTab({ ownerId }) {
@@ -12,8 +12,10 @@ export default function OverviewTab({ ownerId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const loadedOnceRef = useRef(false);
   const load = useCallback(async () => {
-    setLoading(true); setError(null);
+    if (!loadedOnceRef.current) setLoading(true);
+    setError(null);
     try {
       const [langs, b, s, surahs, study, education, career] = await Promise.all([
         api.getLanguages(ownerId), api.getBooks(ownerId), api.getSettings(ownerId), api.getSurahs(ownerId),
@@ -25,6 +27,7 @@ export default function OverviewTab({ ownerId }) {
       setError(err.message);
     } finally {
       setLoading(false);
+      loadedOnceRef.current = true;
     }
   }, [ownerId]);
 

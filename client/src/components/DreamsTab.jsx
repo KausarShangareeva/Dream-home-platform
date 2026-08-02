@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
 import { BUILTIN_DREAMS } from '../data/builtinDreams.js';
 import DreamCard from './DreamCard.jsx';
@@ -14,8 +14,10 @@ export default function DreamsTab() {
 
   const allDreams = [...BUILTIN_DREAMS, ...customDreams.map(d => ({ ...d, id: d._id, isCustom: true }))];
 
+  const loadedOnceRef = useRef(false);
   const loadAll = useCallback(async () => {
-    setLoading(true); setError(null);
+    if (!loadedOnceRef.current) setLoading(true);
+    setError(null);
     try {
       const custom = await api.getDreams();
       setCustomDreams(custom);
@@ -28,6 +30,7 @@ export default function DreamsTab() {
       setError(err.message);
     } finally {
       setLoading(false);
+      loadedOnceRef.current = true;
     }
   }, []);
 
@@ -55,7 +58,12 @@ export default function DreamsTab() {
   };
 
   const handleAddDeposit = async (dreamId, data) => {
-    await api.addDreamDeposit(dreamId, data);
+    const existing = (depositsByDream[dreamId] || []).find(d => d.person === data.person);
+    if (existing) {
+      await api.updateDreamDeposit(dreamId, existing._id, { amount: existing.amount + data.amount });
+    } else {
+      await api.addDreamDeposit(dreamId, data);
+    }
     loadAll();
   };
 

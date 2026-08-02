@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import ReactCountryFlag from 'react-country-flag';
 import { api } from '../api.js';
 import { PEOPLE, personById } from '../data/people.js';
@@ -21,9 +21,11 @@ export default function DashboardTab() {
 
   const country = getCountry(countryId);
 
+  const loadedOnceRef = useRef(false);
   const load = () => {
-    setLoading(true); setError(null);
-    api.getDeposits().then(setDeposits).catch(err => setError(err.message)).finally(() => setLoading(false));
+    if (!loadedOnceRef.current) setLoading(true);
+    setError(null);
+    api.getDeposits().then(setDeposits).catch(err => setError(err.message)).finally(() => { setLoading(false); loadedOnceRef.current = true; });
   };
   useEffect(() => { load(); }, []);
   useEffect(() => { api.getRates().then(setRates).catch(() => {}); }, []);

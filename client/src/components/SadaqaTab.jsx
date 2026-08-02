@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
 import { PEOPLE, personById } from '../data/people.js';
 import Avatar from './ui/Avatar.jsx';
@@ -22,8 +22,10 @@ export default function SadaqaTab() {
 
   const [useModalCause, setUseModalCause] = useState(null);
 
+  const loadedOnceRef = useRef(false);
   const loadAll = useCallback(async () => {
-    setLoading(true); setError(null);
+    if (!loadedOnceRef.current) setLoading(true);
+    setError(null);
     try {
       const [d, c, a] = await Promise.all([api.getSadaqaDeposits(), api.getCauses(), api.getAllocations()]);
       setDeposits(d); setCauses(c); setAllocations(a);
@@ -31,6 +33,7 @@ export default function SadaqaTab() {
       setError(err.message);
     } finally {
       setLoading(false);
+      loadedOnceRef.current = true;
     }
   }, []);
 

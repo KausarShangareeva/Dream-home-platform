@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
 import QuranBeadsTracker from './ui/QuranBeadsTracker.jsx';
 
@@ -10,8 +10,10 @@ export default function QuranTab({ ownerId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const loadedOnceRef = useRef(false);
   const load = useCallback(async () => {
-    setLoading(true); setError(null);
+    if (!loadedOnceRef.current) setLoading(true);
+    setError(null);
     try {
       const s = await api.getSurahs(ownerId);
       setSurahs(s);
@@ -19,6 +21,7 @@ export default function QuranTab({ ownerId }) {
       setError(err.message);
     } finally {
       setLoading(false);
+      loadedOnceRef.current = true;
     }
   }, [ownerId]);
 

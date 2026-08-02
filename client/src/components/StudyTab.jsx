@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import { useDragReorder } from '../hooks/useDragReorder.js';
@@ -131,8 +131,10 @@ export default function StudyTab({ ownerId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const loadedOnceRef = useRef(false);
   const load = useCallback(async () => {
-    setLoading(true); setError(null);
+    if (!loadedOnceRef.current) setLoading(true);
+    setError(null);
     try {
       const [study, edu] = await Promise.all([api.getStudyItems(ownerId), api.getEducation(ownerId)]);
       setItems(study); setEducation(edu);
@@ -140,6 +142,7 @@ export default function StudyTab({ ownerId }) {
       setError(err.message);
     } finally {
       setLoading(false);
+      loadedOnceRef.current = true;
     }
   }, [ownerId]);
 
