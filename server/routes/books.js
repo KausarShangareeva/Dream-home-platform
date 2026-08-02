@@ -44,6 +44,22 @@ router.patch('/:ownerId/books/:id', async (req, res) => {
   ['status', 'difficulty', 'genre', 'days', 'doneDate', 'startDate', 'language', 'pages', 'title', 'author'].forEach(f => {
     if (req.body[f] !== undefined) update[f] = req.body[f];
   });
+
+  if (update.status !== undefined) {
+    const current = await Book.findOne({ _id: req.params.id, ownerId: req.params.ownerId });
+    if (!current) return res.status(404).json({ error: 'Книга не найдена' });
+    if (update.status !== current.status) {
+      const blocking = await Book.findOne({
+        ownerId: req.params.ownerId,
+        order: { $lt: current.order },
+        status: { $ne: 'done' },
+      });
+      if (blocking) {
+        return res.status(400).json({ error: 'Сначала нужно дочитать предыдущие книги по списку' });
+      }
+    }
+  }
+
   const book = await Book.findOneAndUpdate({ _id: req.params.id, ownerId: req.params.ownerId }, update, { new: true });
   res.json(book);
 });

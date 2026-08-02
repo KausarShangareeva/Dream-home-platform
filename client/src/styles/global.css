@@ -570,6 +570,8 @@
   select.qstatus-select.qstatus-todo{background:var(--card-soft);color:var(--ink-soft);border-color:var(--line);}
   select.qstatus-select.qstatus-learning{background:color-mix(in srgb, var(--gold) 40%, var(--card));color:var(--ink);border-color:var(--gold);font-weight:700;}
   select.qstatus-select.qstatus-done{background:var(--teal);color:var(--on-accent);border-color:var(--teal);font-weight:700;}
+  select.qstatus-select.qstatus-locked{opacity:.5;cursor:not-allowed;filter:grayscale(.4);}
+  .lock-hint{display:inline-block;margin-left:5px;font-size:11px;cursor:help;opacity:.75;}
 
   /* BOOK DIFFICULTY COLOR CODING */
   select.diff-select{font-weight:700;text-align:center;}

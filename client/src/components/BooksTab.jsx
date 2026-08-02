@@ -58,7 +58,14 @@ export default function BooksTab({ ownerId }) {
   const thisYear = new Date().getFullYear();
   const doneThisYear = books.filter(b => b.status === 'done' && b.doneDate && new Date(b.doneDate).getFullYear() === thisYear).length;
 
-  const update = async (book, patch) => { await api.updateBook(ownerId, book._id, patch); load(); };
+  const update = async (book, patch) => {
+    try {
+      await api.updateBook(ownerId, book._id, patch);
+      load();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
   const updateGoal = async (value) => { await api.updateSettings(ownerId, { booksYearlyGoal: Number(value) }); load(); };
 
   const addBook = async () => {
@@ -103,6 +110,7 @@ export default function BooksTab({ ownerId }) {
             {ordered.map((b, idx) => {
               const pagesPerDay = Math.max(1, Math.ceil(b.pages / Math.max(1, b.days)));
               const done = b.status === 'done';
+              const locked = idx > 0 && ordered[idx - 1].status !== 'done';
               const diffClass = `diff-select diff-${(b.difficulty || 'none').replace('+', 'plus')}`;
               return (
                 <tr key={b._id} {...getRowProps(b)} className={`qstatus-${b.status}`}>
@@ -139,11 +147,14 @@ export default function BooksTab({ ownerId }) {
                   <td>
                     <select
                       value={b.status}
-                      className={`qstatus-select qstatus-${b.status}`}
+                      disabled={locked}
+                      title={locked ? 'Сначала дочитайте предыдущую книгу по списку' : undefined}
+                      className={`qstatus-select qstatus-${b.status}${locked ? ' qstatus-locked' : ''}`}
                       onChange={e => update(b, { status: e.target.value, doneDate: e.target.value === 'done' ? new Date().toISOString().slice(0, 10) : null })}
                     >
                       {Object.entries(BOOK_STATUS_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
                     </select>
+                    {locked && <span className="lock-hint" title="Сначала дочитайте предыдущую книгу по списку">🔒</span>}
                   </td>
                   <td>
                     {done && (
