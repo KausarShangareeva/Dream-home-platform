@@ -2,7 +2,8 @@ import { Router } from 'express';
 import StudyItem from '../models/StudyItem.js';
 import Education from '../models/Education.js';
 import CareerGoal from '../models/CareerGoal.js';
-import { defaultStudyItemsFor, defaultEducationFor, defaultCareerGoalsFor } from '../seedData.js';
+import ExamGoal from '../models/ExamGoal.js';
+import { defaultStudyItemsFor, defaultEducationFor, defaultCareerGoalsFor, defaultExamGoalsFor } from '../seedData.js';
 
 const router = Router();
 
@@ -123,6 +124,43 @@ router.patch('/:ownerId/career/:id', async (req, res) => {
 
 router.delete('/:ownerId/career/:id', async (req, res) => {
   await CareerGoal.findOneAndDelete({ _id: req.params.id, ownerId: req.params.ownerId });
+  res.status(204).end();
+});
+
+// ---- Exam goals ----
+
+router.get('/:ownerId/exams', async (req, res) => {
+  await ensureSeeded(ExamGoal, req.params.ownerId, defaultExamGoalsFor);
+  const items = await ExamGoal.find({ ownerId: req.params.ownerId }).sort({ order: 1 });
+  res.json(items);
+});
+
+router.post('/:ownerId/exams', async (req, res) => {
+  const { name, targetScore, prepNotes, examDate } = req.body;
+  if (!name) return res.status(400).json({ error: 'name is required' });
+  const maxOrder = await ExamGoal.find({ ownerId: req.params.ownerId }).sort({ order: -1 }).limit(1);
+  const item = await ExamGoal.create({
+    ownerId: req.params.ownerId, name, targetScore, prepNotes, examDate,
+    order: (maxOrder[0]?.order || 0) + 1,
+  });
+  res.status(201).json(item);
+});
+
+router.patch('/:ownerId/exams/reorder', async (req, res) => {
+  const { ids } = req.body;
+  await Promise.all(ids.map((id, i) => ExamGoal.findOneAndUpdate({ _id: id, ownerId: req.params.ownerId }, { order: i })));
+  res.json({ ok: true });
+});
+
+router.patch('/:ownerId/exams/:id', async (req, res) => {
+  const update = {};
+  ['name', 'targetScore', 'prepNotes', 'examDate', 'status'].forEach(f => { if (req.body[f] !== undefined) update[f] = req.body[f]; });
+  const item = await ExamGoal.findOneAndUpdate({ _id: req.params.id, ownerId: req.params.ownerId }, update, { new: true });
+  res.json(item);
+});
+
+router.delete('/:ownerId/exams/:id', async (req, res) => {
+  await ExamGoal.findOneAndDelete({ _id: req.params.id, ownerId: req.params.ownerId });
   res.status(204).end();
 });
 

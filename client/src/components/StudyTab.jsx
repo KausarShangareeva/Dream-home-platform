@@ -5,6 +5,74 @@ import { useDragReorder } from '../hooks/useDragReorder.js';
 
 const STATUS_LABEL = { todo: 'Не начато', learning: 'Изучаю', done: 'Готово' };
 const EDU_LEVEL_LABEL = { todo: 'Не начато', applying: 'Подаю документы', studying: 'Учусь', done: 'Готово' };
+const EXAM_STATUS_LABEL = { todo: 'Не начато', studying: 'Готовлюсь', done: 'Сдано' };
+
+function ExamsSection({ items, onUpdate, onDelete, onAdd, onReorder }) {
+  const [name, setName] = useState('');
+
+  const { ordered, getRowProps } = useDragReorder(items, onReorder);
+
+  return (
+    <div style={{ marginBottom: 26 }}>
+      <div style={{ fontWeight: 700, marginBottom: 10 }}>📝 Экзамены</div>
+      <div className="mama-table-wrap">
+        <table className="mama-table">
+          <thead>
+            <tr>
+              <th className="col-num">#</th>
+              <th className="col-title">Экзамен</th>
+              <th>Целевой балл</th>
+              <th className="mobile-hide">Уроки для подготовки</th>
+              <th className="mobile-hide">Дата</th>
+              <th>Статус</th>
+              <th className="col-del"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {ordered.length === 0 && <tr><td colSpan={7} className="empty-state">Пока пусто — добавьте экзамен, который планируете сдавать</td></tr>}
+            {ordered.map((item, idx) => (
+              <tr key={item._id} {...getRowProps(item)} className={`qstatus-${item.status}`}>
+                <td className="col-num"><span className="drag-handle">⋮⋮</span><span className="seq-badge">{idx + 1}</span></td>
+                <td className="col-title"><b>{item.name}</b></td>
+                <td>
+                  <input
+                    placeholder="напр. 7.5" style={{ maxWidth: 90 }} defaultValue={item.targetScore || ''}
+                    onBlur={e => onUpdate(item, { targetScore: e.target.value.trim() })}
+                  />
+                </td>
+                <td className="mobile-hide">
+                  <input
+                    placeholder="какие курсы/уроки пройти" defaultValue={item.prepNotes || ''}
+                    onBlur={e => onUpdate(item, { prepNotes: e.target.value.trim() })}
+                  />
+                </td>
+                <td className="mobile-hide">
+                  <input type="date" value={item.examDate || ''} onChange={e => onUpdate(item, { examDate: e.target.value })} />
+                </td>
+                <td>
+                  <select value={item.status} className={`qstatus-select qstatus-${item.status}`} onChange={e => onUpdate(item, { status: e.target.value })}>
+                    {Object.entries(EXAM_STATUS_LABEL).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+                  </select>
+                </td>
+                <td className="col-del"><DeleteButton onConfirm={() => onDelete(item)} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="mama-add-book-block">
+        <div className="mama-strip-title" style={{ margin: '0 0 12px' }}>Добавить экзамен</div>
+        <div className="mama-add-row">
+          <input placeholder="Название (напр. IELTS)" value={name} onChange={e => setName(e.target.value)} />
+          <button
+            className="btn btn-sm btn-primary" type="button"
+            onClick={() => { if (!name.trim()) return; onAdd({ name: name.trim() }); setName(''); }}
+          >+ Добавить</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function EducationSection({ items, onToggle, onUpdate, onDelete, onAdd, onReorder }) {
   const [faculty, setFaculty] = useState('');
@@ -81,6 +149,7 @@ function EducationSection({ items, onToggle, onUpdate, onDelete, onAdd, onReorde
 function StudySection({ title, addLabel, items, onUpdate, onDelete, onAdd, onReorder }) {
   const [name, setName] = useState('');
   const [hours, setHours] = useState('');
+  const [url, setUrl] = useState('');
 
   const { ordered, getRowProps } = useDragReorder(items, onReorder);
 
@@ -94,12 +163,13 @@ function StudySection({ title, addLabel, items, onUpdate, onDelete, onAdd, onReo
               <th className="col-num">#</th>
               <th className="col-title">Название</th>
               <th>Часов</th>
+              <th className="mobile-hide">🔗</th>
               <th>Статус</th>
               <th className="col-del"></th>
             </tr>
           </thead>
           <tbody>
-            {ordered.length === 0 && <tr><td colSpan={5} className="empty-state">Пусто</td></tr>}
+            {ordered.length === 0 && <tr><td colSpan={6} className="empty-state">Пусто</td></tr>}
             {ordered.map((item, idx) => (
               <tr key={item._id} {...getRowProps(item)} className={`qstatus-${item.status}`}>
                 <td className="col-num"><span className="drag-handle">⋮⋮</span><span className="seq-badge">{idx + 1}</span></td>
@@ -108,6 +178,12 @@ function StudySection({ title, addLabel, items, onUpdate, onDelete, onAdd, onReo
                   {item.platform && <span className="bridge-note">{item.platform}</span>}
                 </td>
                 <td>{item.approx ? '≈' : ''}{item.hours} ч</td>
+                <td className="mobile-hide">
+                  <input
+                    type="url" placeholder="ссылка" defaultValue={item.url || ''}
+                    onBlur={e => onUpdate(item, { url: e.target.value.trim() })}
+                  />
+                </td>
                 <td>
                   <select value={item.status} className={`qstatus-select qstatus-${item.status}`} onChange={e => onUpdate(item, { status: e.target.value })}>
                     {Object.entries(STATUS_LABEL).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
@@ -124,7 +200,15 @@ function StudySection({ title, addLabel, items, onUpdate, onDelete, onAdd, onReo
         <div className="mama-add-row">
           <input placeholder="Название" value={name} onChange={e => setName(e.target.value)} />
           <input type="number" min="0" step="0.5" placeholder="Часов" style={{ maxWidth: 80 }} value={hours} onChange={e => setHours(e.target.value)} />
-          <button className="btn btn-sm btn-primary" type="button" onClick={() => { if (!name.trim()) return; onAdd({ name: name.trim(), hours: Number(hours) || 0 }); setName(''); setHours(''); }}>+ Добавить</button>
+          <input placeholder="Ссылка (необязательно)" value={url} onChange={e => setUrl(e.target.value)} />
+          <button
+            className="btn btn-sm btn-primary" type="button"
+            onClick={() => {
+              if (!name.trim()) return;
+              onAdd({ name: name.trim(), hours: Number(hours) || 0, url: url.trim() });
+              setName(''); setHours(''); setUrl('');
+            }}
+          >+ Добавить</button>
         </div>
       </div>
     </div>
@@ -134,6 +218,7 @@ function StudySection({ title, addLabel, items, onUpdate, onDelete, onAdd, onReo
 export default function StudyTab({ ownerId }) {
   const [items, setItems] = useState([]);
   const [education, setEducation] = useState([]);
+  const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -142,8 +227,8 @@ export default function StudyTab({ ownerId }) {
     if (!loadedOnceRef.current) setLoading(true);
     setError(null);
     try {
-      const [study, edu] = await Promise.all([api.getStudyItems(ownerId), api.getEducation(ownerId)]);
-      setItems(study); setEducation(edu);
+      const [study, edu, examGoals] = await Promise.all([api.getStudyItems(ownerId), api.getEducation(ownerId), api.getExamGoals(ownerId)]);
+      setItems(study); setEducation(edu); setExams(examGoals);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -176,9 +261,15 @@ export default function StudyTab({ ownerId }) {
   const addEdu = async (data) => { await api.addEducation(ownerId, data); load(); };
   const reorderEdu = async (ids) => { await api.reorderEducation(ownerId, ids); load(); };
 
+  const updateExam = async (item, patch) => { await api.updateExamGoal(ownerId, item._id, patch); load(); };
+  const removeExam = async (item) => { await api.deleteExamGoal(ownerId, item._id); load(); };
+  const addExam = async (data) => { await api.addExamGoal(ownerId, data); load(); };
+  const reorderExam = async (ids) => { await api.reorderExamGoals(ownerId, ids); load(); };
+
   return (
     <div>
       <EducationSection items={education} onToggle={toggleEdu} onUpdate={updateEdu} onDelete={removeEdu} onAdd={addEdu} onReorder={reorderEdu} />
+      <ExamsSection items={exams} onUpdate={updateExam} onDelete={removeExam} onAdd={addExam} onReorder={reorderExam} />
       <div className="mama-two-col">
         <StudySection title="📚 Учебные дисциплины" addLabel="Добавить дисциплину" items={subjects} onUpdate={update} onDelete={remove} onAdd={d => add('subject', d)} onReorder={reorderStudy} />
         <StudySection title="🧶 Хобби" addLabel="Добавить хобби" items={hobbies} onUpdate={update} onDelete={remove} onAdd={d => add('hobby', d)} onReorder={reorderStudy} />

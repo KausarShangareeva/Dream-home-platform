@@ -234,6 +234,13 @@ export function defaultListeningItemsFor(ownerId) {
   ];
 }
 
+// ---- Экзамены ----
+export function defaultExamGoalsFor(ownerId) {
+  if (ownerId !== 'kausar') return [];
+  const exams = ['IELTS', 'TOEFL', 'SAT', 'ACT', 'PSAT', 'ALPT', 'Hamza'];
+  return exams.map((name, i) => ({ name, targetScore: '', prepNotes: '', order: i + 1 }));
+}
+
 export function defaultSurahs() {
   return [
     { num: 1, name: 'Аль-Фатиха', ayahs: 7, pages: 1 },
