@@ -3,13 +3,18 @@ import OverviewTab from './OverviewTab.jsx';
 import LanguagesTab from './LanguagesTab.jsx';
 import BooksTab from './BooksTab.jsx';
 import QuranTab from './QuranTab.jsx';
+import StudyTab from './StudyTab.jsx';
+import EducationTab from './EducationTab.jsx';
+import CareerTab from './CareerTab.jsx';
 
 const SUB_TABS = [
   { id: 'overview', label: '🧭 Обзор' },
   { id: 'languages', label: '🗣️ Языки' },
   { id: 'books', label: '📖 Книги' },
   { id: 'quran', label: '📿 Коран' },
-  // 'learn', 'career' will be added in follow-up iterations
+  { id: 'study', label: '🌱 Учиться' },
+  { id: 'education', label: '🎓 Образование' },
+  { id: 'career', label: '🎯 Профессия' },
 ];
 
 export default function PersonalPanel({ ownerId, title }) {
@@ -33,6 +38,9 @@ export default function PersonalPanel({ ownerId, title }) {
       {subTab === 'languages' && <LanguagesTab ownerId={ownerId} />}
       {subTab === 'books' && <BooksTab ownerId={ownerId} />}
       {subTab === 'quran' && <QuranTab ownerId={ownerId} />}
+      {subTab === 'study' && <StudyTab ownerId={ownerId} />}
+      {subTab === 'education' && <EducationTab ownerId={ownerId} />}
+      {subTab === 'career' && <CareerTab ownerId={ownerId} />}
     </div>
   );
 }

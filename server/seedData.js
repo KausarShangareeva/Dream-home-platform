@@ -176,6 +176,47 @@ export function defaultBooksFor(ownerId) {
   return ownerId === 'kausar' ? defaultKausarBooks() : defaultMamaBooks();
 }
 
+// ---- Учиться (дисциплины + хобби) ----
+export function defaultMamaSubjects() {
+  return [
+    { category: 'subject', icon: '📐', name: 'Математика', hours: 6.5, approx: false, platform: 'Stepik', url: 'https://stepik.org/course/181515/promo', order: 1 },
+    { category: 'subject', icon: '💰', name: 'Финансы', hours: 15, approx: true, platform: '4Brain', url: 'https://4brain.ru/finance/', order: 2 },
+    { category: 'subject', icon: '☪️', name: 'Акыда', hours: 25, approx: true, platform: 'Stepik', url: 'https://stepik.org/course/124579/promo', order: 3 },
+    { category: 'subject', icon: '📜', name: 'Фикх', hours: 25, approx: true, platform: 'Stepik', url: 'https://stepik.org/course/134284/promo', order: 4 },
+    { category: 'subject', icon: '🧠', name: 'Психология', hours: 20, approx: true, platform: 'Stepik', url: 'https://stepik.org/course/132383/promo', order: 5 },
+    { category: 'subject', icon: '🎓', name: 'Педагогика', hours: 20, approx: true, platform: 'Stepik', url: 'https://stepik.org/course/53266/promo', order: 6 },
+    { category: 'subject', icon: '🍎', name: 'Нутрициология', hours: 15, approx: true, platform: '4Brain', url: 'https://4brain.ru/nutriciology/', order: 7 },
+    { category: 'subject', icon: '🩺', name: 'Медицина (основы)', hours: 36, approx: true, platform: 'Открытое образование', url: 'https://openedu.ru/course/msu/MEDSKILLS/', order: 8 },
+  ];
+}
+export function defaultMamaHobbies() {
+  return [
+    { category: 'hobby', icon: '🧵', name: 'Вышивание', hours: 5, approx: false, platform: 'Udemy', url: 'https://www.udemy.com/course/hand-embroidery-for-beginners/', order: 1 },
+    { category: 'hobby', icon: '✂️', name: 'Шитьё', hours: 5, approx: false, platform: 'Udemy', url: 'https://www.udemy.com/course/beginner-sewing-course/', order: 2 },
+    { category: 'hobby', icon: '🎂', name: 'Кондитерские изделия', hours: 6, approx: true, platform: 'Udemy', url: 'https://www.udemy.com/course/special-cake-making/', order: 3 },
+    { category: 'hobby', icon: '🧶', name: 'Вязание', hours: 4, approx: false, platform: 'Udemy', url: 'https://www.udemy.com/course/knitting101/', order: 4 },
+    { category: 'hobby', icon: '🧘', name: 'Йога', hours: 200, approx: false, platform: 'Yoga Alliance', url: 'https://yogaalliance.org/explore-training-options/', order: 5 },
+  ];
+}
+export function defaultStudyItemsFor(ownerId) {
+  if (ownerId === 'kausar') return []; // she'll add her own subjects/hobbies
+  return [...defaultMamaSubjects(), ...defaultMamaHobbies()];
+}
+
+// ---- Образование ----
+export function defaultEducationFor() {
+  return []; // nobody has picked concrete programs yet — added manually as they're researched
+}
+
+// ---- Профессия ----
+export function defaultCareerGoalsFor(ownerId) {
+  if (ownerId === 'kausar') return [];
+  return [
+    { category: 'main', icon: '🧒', name: 'Детский педагог-психолог', order: 1 },
+    { category: 'main', icon: '💰', name: 'Семейный финансист', order: 2 },
+  ];
+}
+
 export function defaultSurahs() {
   return [
     { num: 1, name: 'Аль-Фатиха', ayahs: 7, pages: 1 },

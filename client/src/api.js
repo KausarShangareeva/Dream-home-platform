@@ -64,4 +64,19 @@ export const api = {
 
   getSurahs: (ownerId) => request(`/personal/${ownerId}/quran`),
   updateSurah: (ownerId, id, data) => request(`/personal/${ownerId}/quran/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+
+  getStudyItems: (ownerId) => request(`/personal/${ownerId}/study`),
+  addStudyItem: (ownerId, data) => request(`/personal/${ownerId}/study`, { method: 'POST', body: JSON.stringify(data) }),
+  updateStudyItem: (ownerId, id, data) => request(`/personal/${ownerId}/study/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteStudyItem: (ownerId, id) => request(`/personal/${ownerId}/study/${id}`, { method: 'DELETE' }),
+
+  getEducation: (ownerId) => request(`/personal/${ownerId}/education`),
+  addEducation: (ownerId, data) => request(`/personal/${ownerId}/education`, { method: 'POST', body: JSON.stringify(data) }),
+  updateEducation: (ownerId, id, data) => request(`/personal/${ownerId}/education/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteEducation: (ownerId, id) => request(`/personal/${ownerId}/education/${id}`, { method: 'DELETE' }),
+
+  getCareerGoals: (ownerId) => request(`/personal/${ownerId}/career`),
+  addCareerGoal: (ownerId, data) => request(`/personal/${ownerId}/career`, { method: 'POST', body: JSON.stringify(data) }),
+  updateCareerGoal: (ownerId, id, data) => request(`/personal/${ownerId}/career/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteCareerGoal: (ownerId, id) => request(`/personal/${ownerId}/career/${id}`, { method: 'DELETE' }),
 };

@@ -5,6 +5,9 @@ export default function OverviewTab({ ownerId }) {
   const [languages, setLanguages] = useState([]);
   const [books, setBooks] = useState([]);
   const [surahs, setSurahs] = useState([]);
+  const [study, setStudy] = useState([]);
+  const [education, setEducation] = useState([]);
+  const [career, setCareer] = useState([]);
   const [settings, setSettings] = useState({ booksYearlyGoal: 100 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,10 +15,12 @@ export default function OverviewTab({ ownerId }) {
   const load = useCallback(async () => {
     setLoading(true); setError(null);
     try {
-      const [langs, b, s, surahs] = await Promise.all([
+      const [langs, b, s, surahs, study, education, career] = await Promise.all([
         api.getLanguages(ownerId), api.getBooks(ownerId), api.getSettings(ownerId), api.getSurahs(ownerId),
+        api.getStudyItems(ownerId), api.getEducation(ownerId), api.getCareerGoals(ownerId),
       ]);
       setLanguages(langs); setBooks(b); setSettings(s); setSurahs(surahs);
+      setStudy(study); setEducation(education); setCareer(career);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -40,12 +45,17 @@ export default function OverviewTab({ ownerId }) {
   const pct = (done, total) => (total > 0 ? Math.round((done / total) * 100) : 0);
 
   const quranDone = surahs.filter(s => s.status === 'done').length;
+  const studyDone = study.filter(s => s.status === 'done').length;
+  const educationDone = education.filter(e => e.done).length;
+  const careerDone = career.filter(c => c.done).length;
 
   const rows = [
     { icon: '🗣️', label: 'Языки', done: langsDone, total: languages.length },
     { icon: '📖', label: 'Книги', done: doneThisYear, total: settings.booksYearlyGoal || 0 },
     { icon: '📿', label: 'Коран', done: quranDone, total: 114 },
-    // Учиться, Образование, Профессия will show up here once those tabs exist
+    { icon: '🌱', label: 'Учиться', done: studyDone, total: study.length },
+    { icon: '🎓', label: 'Образование', done: educationDone, total: education.length },
+    { icon: '🎯', label: 'Профессия', done: careerDone, total: career.length },
   ];
 
   const validRows = rows.filter(r => r.total > 0);
