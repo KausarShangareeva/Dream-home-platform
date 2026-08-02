@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import LevelSelect from './ui/LevelSelect.jsx';
+import LanguageSelect from './ui/LanguageSelect.jsx';
+import Flag from './ui/Flag.jsx';
 import ListeningLevelTracker from './ui/ListeningLevelTracker.jsx';
 import ListeningSessionsModal from './ListeningSessionsModal.jsx';
 import { TYPE_LABEL, THEME_LABEL } from '../data/listeningLabels.js';
@@ -98,7 +100,7 @@ export default function ListeningTab({ ownerId }) {
               className={`listening-lang-chip${selectedLanguage === l.name ? ' active' : ''}`}
               onClick={() => setSelectedLanguage(l.name)}
             >
-              {l.flag} {l.name} <b>{totalsByLanguage[l.name] || 0} ч</b>
+              <Flag langKey={l.key} /> {l.name} <b>{totalsByLanguage[l.name] || 0} ч</b>
             </button>
           ))}
         </div>
@@ -167,9 +169,7 @@ export default function ListeningTab({ ownerId }) {
         <div className="mama-strip-title" style={{ margin: '0 0 12px' }}>Добавить аудиокнигу / подкаст / канал</div>
         <div className="mama-add-row">
           <input placeholder="Название" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
-          <select value={newLang} onChange={e => setNewLang(e.target.value)} style={{ maxWidth: 140 }}>
-            {languages.map(l => <option key={l.key} value={l.name}>{l.flag} {l.name}</option>)}
-          </select>
+          <LanguageSelect value={newLang} options={languages} onChange={setNewLang} style={{ maxWidth: 140 }} />
           <select value={newType} onChange={e => setNewType(e.target.value)}>
             <option value="">Тип...</option>
             {Object.entries(TYPE_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}

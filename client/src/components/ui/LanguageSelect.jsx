@@ -4,10 +4,10 @@ import Flag from './Flag.jsx';
 // A dropdown that looks and behaves like a <select> but isn't one — native <option>
 // elements can only render plain text, so flag icons (SVG or emoji) never show up
 // reliably inside them across platforms. This renders real <Flag> icons instead.
-export default function LanguageSelect({ value, options, onChange, style }) {
+export default function LanguageSelect({ value, options, onChange, returnField = 'name', style }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
-  const current = options.find(o => o.name === value) || options[0];
+  const current = options.find(o => o.name === value || o.key === value) || options[0];
 
   useEffect(() => {
     const onClickOutside = (e) => {
@@ -29,7 +29,7 @@ export default function LanguageSelect({ value, options, onChange, style }) {
           <div
             key={o.key}
             className="ac-item lang-select-item"
-            onClick={() => { onChange(o.name); setOpen(false); }}
+            onClick={() => { onChange(o[returnField]); setOpen(false); }}
           >
             <Flag langKey={o.key} /> {o.name}
           </div>

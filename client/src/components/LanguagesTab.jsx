@@ -3,6 +3,7 @@ import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import Flag from './ui/Flag.jsx';
 import LevelSelect from './ui/LevelSelect.jsx';
+import LanguageSelect from './ui/LanguageSelect.jsx';
 import { LANGUAGE_CATALOG } from '../data/languageCatalog.js';
 import { useDragReorder } from '../hooks/useDragReorder.js';
 import {
@@ -58,6 +59,11 @@ export default function LanguagesTab({ ownerId }) {
 
   const haveKeys = languages.map(l => l.key);
   const catalogOptions = Object.entries(LANGUAGE_CATALOG).filter(([k]) => !haveKeys.includes(k));
+  const catalogSelectOptions = [
+    { key: '', name: 'Выберите язык…' },
+    ...catalogOptions.map(([k, c]) => ({ key: k, name: c.name })),
+    { key: '__custom', name: '✏️ Свой язык...' },
+  ];
 
   const addLanguage = async () => {
     if (catalogPick === '__custom') {
@@ -136,11 +142,7 @@ export default function LanguagesTab({ ownerId }) {
       <div className="form-row" style={{ marginTop: 16 }}>
         <div className="field">
           <label>Добавить язык</label>
-          <select value={catalogPick} onChange={e => setCatalogPick(e.target.value)}>
-            <option value="">Выберите язык…</option>
-            {catalogOptions.map(([k, c]) => <option key={k} value={k}>{c.flag} {c.name}</option>)}
-            <option value="__custom">✏️ Свой язык...</option>
-          </select>
+          <LanguageSelect value={catalogPick} options={catalogSelectOptions} onChange={setCatalogPick} returnField="key" />
         </div>
         {catalogPick === '__custom' && (
           <div className="field">

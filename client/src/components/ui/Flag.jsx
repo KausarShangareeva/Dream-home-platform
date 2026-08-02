@@ -7,6 +7,7 @@ const COUNTRY_CODE = {
   english: 'GB', swedish: 'SE', turkish: 'TR', chinese: 'CN', korean: 'KR',
   japanese: 'JP', french: 'FR', hindi: 'IN', spanish: 'ES', german: 'DE',
   italian: 'IT', portuguese: 'PT', urdu: 'PK', russian: 'RU', indonesian: 'ID',
+  persian: 'IR',
 };
 
 // Arabic isn't tied to one country flag in this context — keep the mosque emoji.
