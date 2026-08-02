@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import ReactCountryFlag from 'react-country-flag';
 import { api } from '../api.js';
 import { PEOPLE, personById } from '../data/people.js';
 import { HADITHS } from '../data/staticContent.js';
@@ -16,6 +17,7 @@ export default function DashboardTab() {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [note, setNote] = useState('');
   const [countryId, setCountryId] = useState('se');
+  const [rates, setRates] = useState(null);
 
   const country = getCountry(countryId);
 
@@ -24,6 +26,9 @@ export default function DashboardTab() {
     api.getDeposits().then(setDeposits).catch(err => setError(err.message)).finally(() => setLoading(false));
   };
   useEffect(() => { load(); }, []);
+  useEffect(() => { api.getRates().then(setRates).catch(() => {}); }, []);
+
+  const cur = (n) => fmtCur(n, country, rates?.rates);
 
   const total = deposits.reduce((s, d) => s + d.amount, 0);
   const remaining = Math.max(0, country.target - total);
@@ -52,7 +57,7 @@ export default function DashboardTab() {
           <div className="goal-photo-tag">🏡 8 спален · бассейн · сад</div>
         </div>
         <div className="goal-info">
-          <span className="goal-eyebrow">🕌 {country.note}</span>
+          <span className="goal-eyebrow">🕌 Ризк ради семьи · первый взнос за дом</span>
 
           <div className="country-switch">
             {COUNTRIES.map(c => (
@@ -61,12 +66,12 @@ export default function DashboardTab() {
                 className={`country-pill${c.id === countryId ? ' active' : ''}`}
                 onClick={() => setCountryId(c.id)}
               >
-                <span className="flag">{c.flag}</span> {c.name}
+                <span className="flag"><ReactCountryFlag countryCode={c.flag} svg style={{ width: '1.1em', height: '1.1em' }} /></span> {c.name}
               </button>
             ))}
           </div>
 
-          <h2>Дом мечты — цель {fmtCur(country.target, country)}</h2>
+          <h2>Дом мечты — цель {cur(country.target)}</h2>
 
           <div className="people-row">
             {PEOPLE.map(p => (
@@ -74,7 +79,7 @@ export default function DashboardTab() {
                 <Avatar person={p} />
                 <div>
                   <span className="pname">{p.name.split(' ')[0]}</span>
-                  <span className="pamt">{fmtCur(totalsByPerson[p.id] || 0, country)}</span>
+                  <span className="pamt">{cur(totalsByPerson[p.id] || 0)}</span>
                 </div>
               </div>
             ))}
@@ -82,8 +87,8 @@ export default function DashboardTab() {
 
           <div className="track-wrap">
             <div className="amount-line">
-              <span>Собрано: {fmtCur(total, country)}</span>
-              <span>Осталось: {fmtCur(remaining, country)}</span>
+              <span>Собрано: {cur(total)}</span>
+              <span>Осталось: {cur(remaining)}</span>
             </div>
             <input type="range" className="track" min="0" max={country.target} value={Math.min(total, country.target)} disabled />
           </div>
@@ -141,7 +146,7 @@ export default function DashboardTab() {
                     <div className="when">{d.date}</div>
                     {d.note && <div className="note">{d.note}</div>}
                   </div>
-                  <div className="amt">{fmtCur(d.amount, country)}</div>
+                  <div className="amt">{cur(d.amount)}</div>
                   <DeleteButton onConfirm={() => remove(d._id)} />
                 </div>
               );

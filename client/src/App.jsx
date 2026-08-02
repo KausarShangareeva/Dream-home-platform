@@ -16,7 +16,7 @@ export default function App() {
   return (
     <div className="app">
       <Sidebar activeTab={activeTab} onChangeTab={setActiveTab} />
-      <main>
+      <main className="main">
         <Topbar />
         <div className="tab-panel active">
           {activeTab === 'dashboard' && <DashboardTab />}

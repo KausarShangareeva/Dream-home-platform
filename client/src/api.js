@@ -93,4 +93,7 @@ export const api = {
   addDebt: (data) => request('/debts', { method: 'POST', body: JSON.stringify(data) }),
   updateDebt: (id, data) => request(`/debts/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteDebt: (id) => request(`/debts/${id}`, { method: 'DELETE' }),
+
+  // Live exchange rates
+  getRates: () => request('/rates'),
 };
