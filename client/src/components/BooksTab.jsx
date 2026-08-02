@@ -67,8 +67,8 @@ export default function BooksTab({ ownerId }) {
   const monthsLeft = Math.max(1, 12 - now.getMonth()); // getMonth() is 0-indexed; current month still counts as available
   const remainingBooks = Math.max(0, yearlyGoal - doneThisYear);
   const paceLine = remainingBooks === 0
-    ? 'цель уже выполнена! 🎉'
-    : `нужно ≈${Math.ceil(remainingBooks / monthsLeft)} кн./мес, чтобы успеть`;
+    ? 'Цель уже выполнена! 🎉'
+    : `Это ${Math.ceil(remainingBooks / monthsLeft)} книг/ мес.`;
 
   const update = async (book, patch) => {
     try {
@@ -96,7 +96,7 @@ export default function BooksTab({ ownerId }) {
           <span>книг</span>
         </div>
         <div style={{ fontSize: 12.5, color: 'var(--ink-soft)', fontWeight: 700 }}>
-          Прочитано в {thisYear} году: {doneThisYear} / {yearlyGoal} · {paceLine}
+          {paceLine}
         </div>
       </div>
 
