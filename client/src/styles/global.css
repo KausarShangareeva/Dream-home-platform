@@ -597,12 +597,13 @@
   table.books-table{table-layout:fixed;min-width:920px;}
   table.books-table .col-lang{width:52px;}
   table.books-table .col-genre{width:120px;}
-  table.books-table .col-pages{width:70px;}
+  table.books-table .col-pages{width:82px;}
   table.books-table .col-diff{width:90px;}
   table.books-table .col-days{width:80px;}
   table.books-table .col-pace{width:90px;}
   table.books-table .col-status{width:120px;}
   table.books-table .col-done{width:130px;}
+  table.books-table .col-pages input, table.books-table .col-days input{max-width:none;width:100%;}
   table.mama-table .lang-select{width:100%;}
   table.mama-table .lang-select-trigger{padding:5px 7px;font-size:12px;background-color:var(--card-soft);}
   table.mama-table .finish-cell{font-weight:600;color:var(--purple-deep);}

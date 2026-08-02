@@ -150,20 +150,20 @@ export default function BooksTab({ ownerId }) {
                   </td>
                   <td className="mobile-hide col-pages">
                     <input
-                      type="number" min="1" style={{ maxWidth: 64 }} value={b.pages}
+                      type="number" min="1" value={b.pages}
                       onChange={e => update(b, { pages: Number(e.target.value) })}
-                    /> стр
+                    />
                   </td>
                   <td className="col-diff">
                     <LevelSelect value={b.difficulty} onChange={val => update(b, { difficulty: val })} allowNone />
                   </td>
                   <td className="col-days">
                     <input
-                      type="number" min="1" style={{ maxWidth: 60 }} value={b.days} disabled={done}
+                      type="number" min="1" value={b.days} disabled={done}
                       onChange={e => update(b, { days: Number(e.target.value) })}
-                    /> дн.
+                    />
                   </td>
-                  <td className="finish-cell mobile-hide col-pace">{pagesPerDay} стр/день</td>
+                  <td className="finish-cell mobile-hide col-pace">{pagesPerDay}</td>
                   <td className="col-status">
                     <select
                       value={b.status}
