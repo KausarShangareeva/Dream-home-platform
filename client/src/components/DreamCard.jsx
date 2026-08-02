@@ -26,7 +26,13 @@ export default function DreamCard({ dream, total, isCustom, onAddDeposit, onDele
         </div>
       )}
       <div className="dream-img">
-        {dream.photo ? <img src={dream.photo} alt={dream.title} /> : (
+        {dream.photo ? (
+          <img
+            src={dream.photo}
+            alt={dream.title}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: dream.pos || 'center', display: 'block' }}
+          />
+        ) : (
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44, background: 'var(--card-soft)' }}>
             {dream.icon}
           </div>
