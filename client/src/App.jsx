@@ -18,15 +18,17 @@ export default function App() {
       <Sidebar activeTab={activeTab} onChangeTab={setActiveTab} />
       <main>
         <Topbar />
-        {activeTab === 'dashboard' && <DashboardTab />}
-        {activeTab === 'dreams' && <DreamsTab />}
-        {activeTab === 'travel' && <TravelTab />}
-        {activeTab === 'debts' && <DebtsTab />}
-        {activeTab === 'sadaqa' && <SadaqaTab />}
-        {activeTab === 'hadith' && <HadithTab />}
-        {activeTab === 'tips' && <TipsTab />}
-        {activeTab === 'personal:mama' && <PersonalPanel ownerId="mama" title="🗺️ Личные цели мамы" />}
-        {activeTab === 'personal:kausar' && <PersonalPanel ownerId="kausar" title="🌸 Личные цели — Каусар" />}
+        <div className="tab-panel active">
+          {activeTab === 'dashboard' && <DashboardTab />}
+          {activeTab === 'dreams' && <DreamsTab />}
+          {activeTab === 'travel' && <TravelTab />}
+          {activeTab === 'debts' && <DebtsTab />}
+          {activeTab === 'sadaqa' && <SadaqaTab />}
+          {activeTab === 'hadith' && <HadithTab />}
+          {activeTab === 'tips' && <TipsTab />}
+          {activeTab === 'personal:mama' && <PersonalPanel ownerId="mama" title="🗺️ Личные цели мамы" />}
+          {activeTab === 'personal:kausar' && <PersonalPanel ownerId="kausar" title="🌸 Личные цели — Каусар" />}
+        </div>
       </main>
     </div>
   );

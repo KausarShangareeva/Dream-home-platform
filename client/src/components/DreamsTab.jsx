@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '../api.js';
-import { BUILTIN_DREAMS } from '../data/people.js';
+import { BUILTIN_DREAMS } from '../data/builtinDreams.js';
 import DreamCard from './DreamCard.jsx';
 import NewDreamModal from './NewDreamModal.jsx';
 

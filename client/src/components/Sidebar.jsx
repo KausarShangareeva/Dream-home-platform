@@ -39,7 +39,16 @@ export default function Sidebar({ activeTab, onChangeTab }) {
 
   return (
     <aside className="sidebar">
-      <div className="brand">🏡 Дом мечты</div>
+      <div className="brand">
+        <div className="mark">
+          <svg viewBox="0 0 40 40" width="26" height="26" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 15 L20 7 L31 15" stroke="#fff" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+            <text x="20" y="31" textAnchor="middle" fontFamily="Montserrat, sans-serif" fontWeight="800" fontSize="16" fill="#fff" letterSpacing="-0.5">ДМ</text>
+          </svg>
+        </div>
+        <h1>Дом мечты</h1>
+        <p>Копилка семьи Shangareev</p>
+      </div>
       <nav>
         {NAV_ITEMS.map(item => (
           <button
