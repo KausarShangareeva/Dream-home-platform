@@ -3,6 +3,7 @@ import { api } from '../api.js';
 import { PEOPLE, personById } from '../data/people.js';
 import Avatar from './ui/Avatar.jsx';
 import DeleteButton from './ui/DeleteButton.jsx';
+import houseImg from '../assets/house.jpg';
 
 const TARGET = 1000000;
 const fmt = (n) => Math.round(n).toLocaleString('ru-RU') + ' kr';
@@ -40,6 +41,7 @@ export default function DashboardTab() {
 
   return (
     <div className="card">
+      <div className="goal-photo" style={{ backgroundImage: `url(${houseImg})` }} />
       <div className="goal-info">
         <h2>Дом мечты — цель {fmt(TARGET)}</h2>
       </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Sidebar from './components/Sidebar.jsx';
+import Topbar from './components/Topbar.jsx';
 import DashboardTab from './components/DashboardTab.jsx';
 import DreamsTab from './components/DreamsTab.jsx';
 import TravelTab from './components/TravelTab.jsx';
@@ -16,6 +17,7 @@ export default function App() {
     <div className="app">
       <Sidebar activeTab={activeTab} onChangeTab={setActiveTab} />
       <main>
+        <Topbar />
         {activeTab === 'dashboard' && <DashboardTab />}
         {activeTab === 'dreams' && <DreamsTab />}
         {activeTab === 'travel' && <TravelTab />}

@@ -37,6 +37,32 @@ nav{display:flex; flex-direction:column; gap:6px;}
 .nav-btn:hover{background:var(--card-soft);}
 .nav-btn.active{background:var(--purple-deep); color:#fff;}
 
+.sidebar-people{margin-top:6px; padding-top:14px; border-top:1px solid var(--line);}
+.sidebar-people h4{margin:0 0 10px; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); padding:0 4px;}
+.mini-person{display:flex; align-items:center; gap:8px; padding:5px 4px; font-size:12.5px;}
+.mini-person span{flex:1;}
+.mini-person b{font-weight:700; font-size:12px;}
+
+.topbar{
+  display:flex; justify-content:space-between; align-items:center; background:var(--card);
+  border-radius:18px; padding:16px 22px; margin-bottom:16px; font-size:14px;
+}
+.topbar-right{position:relative;}
+.mood-panel{
+  position:absolute; top:calc(100% + 8px); right:0; background:var(--card); border:1.5px solid var(--line);
+  border-radius:14px; padding:8px; display:flex; flex-direction:column; gap:4px; z-index:10; min-width:140px;
+  box-shadow:0 12px 30px -10px rgba(0,0,0,.2);
+}
+.mood-option{
+  background:none; border:none; text-align:left; padding:8px 10px; border-radius:9px; cursor:pointer;
+  font-family:'Montserrat'; font-size:12.5px; font-weight:600; color:var(--ink);
+}
+.mood-option:hover{background:var(--card-soft);}
+.mood-option.active{background:var(--purple-deep); color:#fff;}
+
+body[data-mood="cool"]{ --bg-1:#eef3f6; --card-soft:#e4ecf0; --purple:#5f8ca8; --purple-deep:#3f6272; --rose:#a0c4e8; }
+body[data-mood="night"]{ --bg-1:#241c2e; --card:#2f2438; --card-soft:#3a2d45; --ink:#eee6f2; --ink-soft:#b5a5c2; --line:#463952; --purple:#a884c9; --purple-deep:#7a5595; }
+
 .card{background:var(--card); border-radius:22px; padding:26px 28px; box-shadow:0 1px 0 var(--line);}
 
 .btn{
@@ -64,6 +90,10 @@ nav{display:flex; flex-direction:column; gap:6px;}
 
 /* ---- Dashboard ---- */
 .goal-info h2{font-size:24px; color:var(--purple-deep);}
+.goal-photo{
+  height:220px; border-radius:18px; background-size:cover; background-position:center;
+  margin-bottom:20px; display:flex; align-items:flex-end; padding:16px;
+}
 .track-wrap{margin-top:16px;}
 .amount-line{display:flex; justify-content:space-between; font-weight:700; font-size:13.5px; margin-bottom:8px;}
 .track{width:100%; height:10px; -webkit-appearance:none; appearance:none; border-radius:999px; background:var(--card-soft);}
