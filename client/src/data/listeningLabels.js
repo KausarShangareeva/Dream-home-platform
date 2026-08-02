@@ -28,15 +28,3 @@ export const TYPE_DOT = {
   poems_songs: '🟠',
   radio_news: '🔴',
 };
-
-export const THEME_LABEL = {
-  romance: '❤️ Romance',
-  detective: '🕵 Detective',
-  history: '⚔ History',
-  ai: '🤖 AI',
-  programming: '💻 Programming',
-  space: '🚀 Space',
-  religion: '🕌 Religion',
-  law: '⚖ Law',
-  fantasy: '🏰 Fantasy',
-};

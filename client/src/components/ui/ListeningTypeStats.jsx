@@ -6,7 +6,7 @@ export default function ListeningTypeStats({ items }) {
   const hoursByType = {};
   TYPE_ENTRIES.forEach(([k]) => { hoursByType[k] = 0; });
   let grandTotal = 0;
-  items.forEach(i => {
+  items.filter(i => i.status === 'done').forEach(i => {
     if (i.type && hoursByType[i.type] !== undefined) hoursByType[i.type] += i.hours;
     grandTotal += i.hours;
   });

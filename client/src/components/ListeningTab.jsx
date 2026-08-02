@@ -4,7 +4,7 @@ import DeleteButton from './ui/DeleteButton.jsx';
 import Flag from './ui/Flag.jsx';
 import ListeningTypeStats from './ui/ListeningTypeStats.jsx';
 import ListeningSessionsModal from './ListeningSessionsModal.jsx';
-import { TYPE_LABEL, TYPE_DOT, THEME_LABEL } from '../data/listeningLabels.js';
+import { TYPE_LABEL, TYPE_DOT } from '../data/listeningLabels.js';
 import { useDragReorder } from '../hooks/useDragReorder.js';
 
 const STATUS_LABEL = { todo: 'В планах', learning: 'Слушаю', done: 'Прослушано' };
@@ -21,7 +21,6 @@ export default function ListeningTab({ ownerId }) {
   const [newTitle, setNewTitle] = useState('');
   const [newLang, setNewLang] = useState('');
   const [newType, setNewType] = useState('');
-  const [newTheme, setNewTheme] = useState('');
   const [newLink, setNewLink] = useState('');
 
   const loadedOnceRef = useRef(false);
@@ -72,7 +71,7 @@ export default function ListeningTab({ ownerId }) {
   const addItem = async () => {
     if (!newTitle.trim()) return alert('Впишите название');
     await api.addListeningItem(ownerId, {
-      title: newTitle.trim(), language: newLang, type: newType || null, theme: newTheme || null,
+      title: newTitle.trim(), language: newLang, type: newType || null,
       link: newLink.trim(),
     });
     setNewTitle(''); setNewLink('');
@@ -112,7 +111,6 @@ export default function ListeningTab({ ownerId }) {
             <tr>
               <th className="col-num">#</th>
               <th className="col-title">Название</th>
-              <th className="mobile-hide">Тип</th>
               <th className="mobile-hide">Тематика</th>
               <th>Часов</th>
               <th className="mobile-hide">🔗</th>
@@ -121,7 +119,7 @@ export default function ListeningTab({ ownerId }) {
             </tr>
           </thead>
           <tbody>
-            {ordered.length === 0 && <tr><td colSpan={8} className="empty-state">Пока пусто для этого языка — добавьте ниже</td></tr>}
+            {ordered.length === 0 && <tr><td colSpan={7} className="empty-state">Пока пусто для этого языка — добавьте ниже</td></tr>}
             {ordered.map((item, idx) => (
               <tr key={item._id} {...getRowProps(item)} className={`qstatus-${item.status}`}>
                 <td className="col-num"><span className="drag-handle">⋮⋮</span><span className="seq-badge">{idx + 1}</span></td>
@@ -137,12 +135,6 @@ export default function ListeningTab({ ownerId }) {
                   <select value={item.type || ''} onChange={e => update(item, { type: e.target.value || null })}>
                     <option value="">—</option>
                     {Object.entries(TYPE_LABEL).map(([k, label]) => <option key={k} value={k}>{TYPE_DOT[k]} {label}</option>)}
-                  </select>
-                </td>
-                <td className="mobile-hide">
-                  <select value={item.theme || ''} onChange={e => update(item, { theme: e.target.value || null })}>
-                    <option value="">—</option>
-                    {Object.entries(THEME_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
                   </select>
                 </td>
                 <td className="finish-cell">{item.hours} ч</td>
@@ -166,12 +158,8 @@ export default function ListeningTab({ ownerId }) {
         <div className="mama-add-row">
           <input placeholder="Название" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
           <select value={newType} onChange={e => setNewType(e.target.value)}>
-            <option value="">Тип...</option>
-            {Object.entries(TYPE_LABEL).map(([k, label]) => <option key={k} value={k}>{TYPE_DOT[k]} {label}</option>)}
-          </select>
-          <select value={newTheme} onChange={e => setNewTheme(e.target.value)}>
             <option value="">Тематика...</option>
-            {Object.entries(THEME_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+            {Object.entries(TYPE_LABEL).map(([k, label]) => <option key={k} value={k}>{TYPE_DOT[k]} {label}</option>)}
           </select>
           <input placeholder="Ссылка (необязательно)" value={newLink} onChange={e => setNewLink(e.target.value)} />
           <button className="btn btn-sm btn-primary" onClick={addItem} type="button">+ Добавить</button>
