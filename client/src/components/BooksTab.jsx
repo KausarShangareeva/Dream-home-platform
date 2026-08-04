@@ -103,7 +103,7 @@ export default function BooksTab({ ownerId }) {
           <div className="books-pace-row books-pace-done">🎉 Цель уже выполнена!</div>
         ) : (
           <>
-            <div className="books-pace-row">📖 Обычный темп: <b>{baselinePace.toFixed(1)} книг/мес</b> — чтобы прочитать {yearlyGoal} за год</div>
+            <div className="books-pace-row">📖 Обычный темп: <b>{Math.ceil(baselinePace)} книг/мес</b> — чтобы прочитать {yearlyGoal} за год</div>
             {projectedTotal >= yearlyGoal ? (
               <div className="books-pace-row books-pace-ok">✅ В этом темпе ты уложишься в цель</div>
             ) : (
