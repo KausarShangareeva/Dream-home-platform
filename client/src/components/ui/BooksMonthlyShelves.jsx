@@ -115,7 +115,7 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
                       <div className="shelf-book-title-row">
                         <span className="shelf-book-num">{i + 1}-</span> {BOOK_STATUS_EMOJI[b.status]}{b.title}
                       </div>
-                      {!isDone && b.pages > 0 && (
+                      {b.status === 'learning' && b.pages > 0 && (
                         <div className="shelf-book-slider-row">
                           <input
                             type="range" min="0" max={b.pages} value={page}
@@ -123,7 +123,19 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
                             onMouseUp={e => onChangePage(b, Number(e.target.value))}
                             onTouchEnd={e => onChangePage(b, Number(e.target.value))}
                           />
-                          <span className="shelf-book-slider-val">{page}/{b.pages} стр.</span>
+                          <input
+                            type="number" min="0" max={b.pages} value={page}
+                            className="shelf-book-page-input"
+                            onChange={e => {
+                              const v = Math.max(0, Math.min(b.pages, Number(e.target.value) || 0));
+                              setDraftPages(prev => ({ ...prev, [b._id]: v }));
+                            }}
+                            onBlur={e => {
+                              const v = Math.max(0, Math.min(b.pages, Number(e.target.value) || 0));
+                              onChangePage(b, v);
+                            }}
+                          />
+                          <span className="shelf-book-slider-val">/ {b.pages} стр.</span>
                         </div>
                       )}
                     </li>
