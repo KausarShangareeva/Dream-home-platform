@@ -81,9 +81,9 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
             )}
 
             <ul className="shelf-book-list">
-              {shelf.books.map(b => (
+              {shelf.books.map((b, i) => (
                 <li key={b._id} className={b.status === 'done' ? 'shelf-book-done' : ''}>
-                  {BOOK_STATUS_EMOJI[b.status]}{b.title}
+                  <span className="shelf-book-num">{i + 1}-</span> {BOOK_STATUS_EMOJI[b.status]}{b.title}
                 </li>
               ))}
             </ul>
