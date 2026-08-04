@@ -66,9 +66,10 @@ export default function BooksTab({ ownerId }) {
   const yearlyGoal = settings.booksYearlyGoal || 100;
   const monthsLeft = Math.max(1, 12 - now.getMonth()); // getMonth() is 0-indexed; current month still counts as available
   const remainingBooks = Math.max(0, yearlyGoal - doneThisYear);
-  const paceLine = remainingBooks === 0
-    ? 'Цель уже выполнена! 🎉'
-    : `Это ${Math.ceil(remainingBooks / monthsLeft)} книг/ мес.`;
+
+  const baselinePace = yearlyGoal / 12; // ровный темп, если бы читали с начала года
+  const projectedTotal = Math.floor(doneThisYear + baselinePace * monthsLeft); // куда придёшь, если продолжишь в обычном темпе
+  const catchUpPace = Math.ceil(remainingBooks / monthsLeft); // сколько нужно читать, чтобы реально успеть
 
   const update = async (book, patch) => {
     try {
@@ -95,9 +96,22 @@ export default function BooksTab({ ownerId }) {
           <input type="number" min="1" style={{ maxWidth: 80 }} defaultValue={settings.booksYearlyGoal} onBlur={e => updateGoal(e.target.value)} />
           <span>книг</span>
         </div>
-        <div style={{ fontSize: 12.5, color: 'var(--ink-soft)', fontWeight: 700 }}>
-          {paceLine}
-        </div>
+      </div>
+
+      <div className="books-pace-card">
+        {remainingBooks === 0 ? (
+          <div className="books-pace-row books-pace-done">🎉 Цель уже выполнена!</div>
+        ) : (
+          <>
+            <div className="books-pace-row">📖 Обычный темп: <b>{baselinePace.toFixed(1)} книг/мес</b> — чтобы прочитать {yearlyGoal} за год</div>
+            {projectedTotal >= yearlyGoal ? (
+              <div className="books-pace-row books-pace-ok">✅ В этом темпе ты уложишься в цель</div>
+            ) : (
+              <div className="books-pace-row books-pace-warn">⚠️ Если продолжишь в этом темпе — прочитаешь ≈{projectedTotal} книг за год</div>
+            )}
+            <div className="books-pace-row books-pace-target">🎯 Чтобы прочитать все {yearlyGoal} — читай <b>{catchUpPace} книг/мес</b></div>
+          </>
+        )}
       </div>
 
       <div style={{ marginBottom: 18 }}>

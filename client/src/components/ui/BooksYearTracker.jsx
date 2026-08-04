@@ -24,8 +24,10 @@ export default function BooksYearTracker({ books, goal }) {
         const list = [...byYear[y]].sort((a, b) => new Date(a.doneDate) - new Date(b.doneDate));
         const isCurrent = y === thisYear;
         const emptyCount = isCurrent ? Math.max(0, goal - list.length) : 0;
-        return (
-          <div className="mama-year-block" key={y}>
+        const pct = isCurrent && goal > 0 ? Math.min(100, Math.round((list.length / goal) * 100)) : 0;
+
+        const beadsBlock = (
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div className="mama-year-head">🏆 {y} год <span className="count">{isCurrent ? `${list.length}/${goal}` : list.length}</span></div>
             <div className="mama-beads">
               {list.map(b => {
@@ -36,6 +38,22 @@ export default function BooksYearTracker({ books, goal }) {
               {isCurrent && Array.from({ length: emptyCount }).map((_, i) => <span className="mama-bead empty" key={`empty-${i}`} />)}
             </div>
             {isCurrent && <div className="mama-year-goal-line">Цель: {list.length} из {goal}</div>}
+          </div>
+        );
+
+        if (!isCurrent) {
+          return <div className="mama-year-block" key={y}>{beadsBlock}</div>;
+        }
+
+        return (
+          <div className="mama-year-block books-year-row" key={y}>
+            {beadsBlock}
+            <div className="books-progress-wheel" style={{ '--pct': pct }}>
+              <div className="books-progress-wheel-center">
+                <span className="books-progress-wheel-num">{list.length}/{goal}</span>
+                <span className="books-progress-wheel-label">{pct}%</span>
+              </div>
+            </div>
           </div>
         );
       })}
