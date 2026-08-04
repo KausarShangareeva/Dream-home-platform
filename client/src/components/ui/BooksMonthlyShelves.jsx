@@ -95,13 +95,15 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
                 {PACE_OPTIONS.map(n => <option key={n} value={n}>{n} книг в этот месяц</option>)}
               </select>
 
-              {shelf.isCurrent && shelf.totalPages > 0 ? (
+              {shelf.totalPages > 0 && (
+                <div className="shelf-pace-hint">📄 {shelf.totalPages} стр. за {shelf.days} дн. — <b>{shelf.pagesPerDay} стр/день</b></div>
+              )}
+
+              {shelf.isCurrent && shelf.totalPages > 0 && (
                 <div className={`shelf-pace-hint shelf-live-hint${onTrack ? ' shelf-hint-ok' : ' shelf-hint-behind'}`}>
                   {onTrack ? '✅ Успеваешь' : '⚠️ Отстаёшь'} — осталось {remainingPages} стр. за {daysLeft} дн. → сегодня <b>{todayPace} стр/день</b>
                   {currentBook && <> → дочитай «{currentBook.title}» до стр. <b>{targetPageToday}</b></>}
                 </div>
-              ) : shelf.totalPages > 0 && (
-                <div className="shelf-pace-hint">📄 {shelf.totalPages} стр. за {shelf.days} дн. — <b>{shelf.pagesPerDay} стр/день</b></div>
               )}
 
               <ul className="shelf-book-list">
