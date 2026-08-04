@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BOOK_STATUS_EMOJI } from '../../data/bookLabels.js';
 
 const MONTH_NAMES = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
@@ -34,9 +35,18 @@ function computeShelves(books, pace, overrides) {
   return shelves;
 }
 
-export default function BooksMonthlyShelves({ books, pace, overrides, onChangePace, onChangeMonthOverride }) {
+export default function BooksMonthlyShelves({ books, pace, overrides, onChangePace, onChangeMonthOverride, onChangePage }) {
+  const [draftPages, setDraftPages] = useState({}); // bookId -> slider value while dragging, before it's saved
+
+  const getPage = (b) => {
+    if (b.status === 'done') return b.pages;
+    if (draftPages[b._id] !== undefined) return draftPages[b._id];
+    return b.currentPage || 0;
+  };
+
   const queue = books; // stable order — includes done books too, so shelf boundaries don't shift as you read
   const shelves = computeShelves(queue, pace, overrides || {});
+  const now = new Date();
 
   return (
     <div className="shelves-block">
@@ -59,36 +69,65 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
       </div>
 
       <div className="shelves-grid">
-        {shelves.map(shelf => (
-          <div className={`shelf-card${shelf.allDone ? ' shelf-done' : ''}${shelf.isPast && !shelf.allDone ? ' shelf-missed' : ''}`} key={shelf.monthKey}>
-            <div className="shelf-card-head">
-              <span className="shelf-card-title">{shelf.label}</span>
-              {shelf.allDone && <span className="shelf-status shelf-status-ok" title="Всё прочитано вовремя">✅</span>}
-              {shelf.isPast && !shelf.allDone && <span className="shelf-status shelf-status-bad" title="Не успели прочитать всё в этот месяц">😢</span>}
+        {shelves.map(shelf => {
+          const pagesReadInShelf = shelf.books.reduce((sum, b) => sum + getPage(b), 0);
+          const remainingPages = Math.max(0, shelf.totalPages - pagesReadInShelf);
+          const daysLeft = shelf.isCurrent ? Math.max(1, shelf.days - now.getDate() + 1) : shelf.days;
+          const todayPace = remainingPages > 0 ? Math.ceil(remainingPages / daysLeft) : 0;
+          const onTrack = todayPace <= shelf.pagesPerDay;
+
+          return (
+            <div className={`shelf-card${shelf.allDone ? ' shelf-done' : ''}${shelf.isPast && !shelf.allDone ? ' shelf-missed' : ''}`} key={shelf.monthKey}>
+              <div className="shelf-card-head">
+                <span className="shelf-card-title">{shelf.label}</span>
+                {shelf.allDone && <span className="shelf-status shelf-status-ok" title="Всё прочитано вовремя">✅</span>}
+                {shelf.isPast && !shelf.allDone && <span className="shelf-status shelf-status-bad" title="Не успели прочитать всё в этот месяц">😢</span>}
+              </div>
+
+              <select
+                className="shelf-pace-select"
+                value={overrides?.[shelf.monthKey] ?? ''}
+                onChange={e => onChangeMonthOverride(shelf.monthKey, e.target.value ? Number(e.target.value) : null)}
+              >
+                <option value="">По умолчанию ({pace})</option>
+                {PACE_OPTIONS.map(n => <option key={n} value={n}>{n} книг в этот месяц</option>)}
+              </select>
+
+              {shelf.isCurrent && shelf.totalPages > 0 ? (
+                <div className={`shelf-pace-hint shelf-live-hint${onTrack ? ' shelf-hint-ok' : ' shelf-hint-behind'}`}>
+                  {onTrack ? '✅ Успеваешь' : '⚠️ Отстаёшь'} — осталось {remainingPages} стр. за {daysLeft} дн. → сегодня <b>{todayPace} стр/день</b>
+                </div>
+              ) : shelf.totalPages > 0 && (
+                <div className="shelf-pace-hint">📄 {shelf.totalPages} стр. за {shelf.days} дн. — <b>{shelf.pagesPerDay} стр/день</b></div>
+              )}
+
+              <ul className="shelf-book-list">
+                {shelf.books.map((b, i) => {
+                  const page = getPage(b);
+                  const isDone = b.status === 'done';
+                  return (
+                    <li key={b._id} className={isDone ? 'shelf-book-done' : ''}>
+                      <div className="shelf-book-title-row">
+                        <span className="shelf-book-num">{i + 1}-</span> {BOOK_STATUS_EMOJI[b.status]}{b.title}
+                      </div>
+                      {!isDone && b.pages > 0 && (
+                        <div className="shelf-book-slider-row">
+                          <input
+                            type="range" min="0" max={b.pages} value={page}
+                            onChange={e => setDraftPages(prev => ({ ...prev, [b._id]: Number(e.target.value) }))}
+                            onMouseUp={e => onChangePage(b, Number(e.target.value))}
+                            onTouchEnd={e => onChangePage(b, Number(e.target.value))}
+                          />
+                          <span className="shelf-book-slider-val">{page}/{b.pages} стр.</span>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-
-            <select
-              className="shelf-pace-select"
-              value={overrides?.[shelf.monthKey] ?? ''}
-              onChange={e => onChangeMonthOverride(shelf.monthKey, e.target.value ? Number(e.target.value) : null)}
-            >
-              <option value="">По умолчанию ({pace})</option>
-              {PACE_OPTIONS.map(n => <option key={n} value={n}>{n} книг в этот месяц</option>)}
-            </select>
-
-            {shelf.totalPages > 0 && (
-              <div className="shelf-pace-hint">📄 {shelf.totalPages} стр. за {shelf.days} дн. — <b>{shelf.pagesPerDay} стр/день</b></div>
-            )}
-
-            <ul className="shelf-book-list">
-              {shelf.books.map((b, i) => (
-                <li key={b._id} className={b.status === 'done' ? 'shelf-book-done' : ''}>
-                  <span className="shelf-book-num">{i + 1}-</span> {BOOK_STATUS_EMOJI[b.status]}{b.title}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

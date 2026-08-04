@@ -38,10 +38,10 @@ router.patch('/:ownerId/books/reorder', async (req, res) => {
   res.json({ ok: true });
 });
 
-// PATCH /api/personal/:ownerId/books/:id  { status?, difficulty?, genre?, days?, doneDate?, language?, pages?, title?, author? }
+// PATCH /api/personal/:ownerId/books/:id  { status?, difficulty?, genre?, days?, doneDate?, language?, pages?, title?, author?, currentPage? }
 router.patch('/:ownerId/books/:id', async (req, res) => {
   const update = {};
-  ['status', 'difficulty', 'genre', 'days', 'doneDate', 'startDate', 'language', 'pages', 'title', 'author'].forEach(f => {
+  ['status', 'difficulty', 'genre', 'days', 'doneDate', 'startDate', 'language', 'pages', 'title', 'author', 'currentPage'].forEach(f => {
     if (req.body[f] !== undefined) update[f] = req.body[f];
   });
 

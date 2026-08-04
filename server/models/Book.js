@@ -13,6 +13,7 @@ const bookSchema = new mongoose.Schema({
   difficulty: { type: String, default: null }, // A1-C2 / B1+ / B2+
   genre: { type: String, default: null },
   order: { type: Number, default: 0 },
+  currentPage: { type: Number, default: 0 }, // how far into the book you've read so far
 }, { timestamps: true });
 
 export default mongoose.model('Book', bookSchema);

@@ -144,6 +144,7 @@ export default function BooksTab({ ownerId }) {
         overrides={settings.shelfMonthOverrides || {}}
         onChangePace={updateShelfPace}
         onChangeMonthOverride={updateMonthOverride}
+        onChangePage={(book, page) => update(book, { currentPage: page })}
       />
 
       <div className="mama-table-wrap">
