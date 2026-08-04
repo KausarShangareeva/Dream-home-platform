@@ -51,7 +51,6 @@ export default function BooksYearTracker({ books, goal }) {
             <div className="books-progress-wheel" style={{ '--pct': pct }}>
               <div className="books-progress-wheel-center">
                 <span className="books-progress-wheel-num">{list.length}/{goal}</span>
-                <span className="books-progress-wheel-label">{pct}%</span>
               </div>
             </div>
           </div>
