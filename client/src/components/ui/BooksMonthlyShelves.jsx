@@ -75,6 +75,8 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
           const daysLeft = shelf.isCurrent ? Math.max(1, shelf.days - now.getDate() + 1) : shelf.days;
           const todayPace = remainingPages > 0 ? Math.ceil(remainingPages / daysLeft) : 0;
           const onTrack = todayPace <= shelf.pagesPerDay;
+          const currentBook = shelf.isCurrent ? shelf.books.find(b => b.status !== 'done') : null;
+          const targetPageToday = currentBook ? Math.min(currentBook.pages, getPage(currentBook) + todayPace) : null;
 
           return (
             <div className={`shelf-card${shelf.allDone ? ' shelf-done' : ''}${shelf.isPast && !shelf.allDone ? ' shelf-missed' : ''}`} key={shelf.monthKey}>
@@ -96,6 +98,7 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
               {shelf.isCurrent && shelf.totalPages > 0 ? (
                 <div className={`shelf-pace-hint shelf-live-hint${onTrack ? ' shelf-hint-ok' : ' shelf-hint-behind'}`}>
                   {onTrack ? '✅ Успеваешь' : '⚠️ Отстаёшь'} — осталось {remainingPages} стр. за {daysLeft} дн. → сегодня <b>{todayPace} стр/день</b>
+                  {currentBook && <> → дочитай «{currentBook.title}» до стр. <b>{targetPageToday}</b></>}
                 </div>
               ) : shelf.totalPages > 0 && (
                 <div className="shelf-pace-hint">📄 {shelf.totalPages} стр. за {shelf.days} дн. — <b>{shelf.pagesPerDay} стр/день</b></div>
