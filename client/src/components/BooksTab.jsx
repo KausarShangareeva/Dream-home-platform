@@ -67,7 +67,11 @@ export default function BooksTab({ ownerId }) {
   const monthsLeft = Math.max(1, 12 - now.getMonth()); // getMonth() is 0-indexed; current month still counts as available
   const remainingBooks = Math.max(0, yearlyGoal - doneThisYear);
 
-  const baselinePace = yearlyGoal / 12; // ровный темп, если бы читали с начала года
+  const MONTH_NAMES = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+  const baselinePace = yearlyGoal / 12; // ровный темп, если бы читали с начала года (для прогноза ниже)
+  const basePace = Math.floor(yearlyGoal / 12);      // базовый темп на большинство месяцев
+  const extraMonths = yearlyGoal % 12;                // сколько месяцев должны читать на 1 книгу больше
+  const baseMonths = 12 - extraMonths;                // сколько месяцев читают базовый темп
   const projectedTotal = Math.floor(doneThisYear + baselinePace * monthsLeft); // куда придёшь, если продолжишь в обычном темпе
   const catchUpPace = Math.ceil(remainingBooks / monthsLeft); // сколько нужно читать, чтобы реально успеть
 
@@ -103,7 +107,14 @@ export default function BooksTab({ ownerId }) {
           <div className="books-pace-row books-pace-done">🎉 Цель уже выполнена!</div>
         ) : (
           <>
-            <div className="books-pace-row">📖 Обычный темп: <b>{Math.ceil(baselinePace)} книг/мес</b> — чтобы прочитать {yearlyGoal} за год</div>
+            {extraMonths === 0 ? (
+              <div className="books-pace-row">📖 Обычный темп: <b>{basePace} книг/мес</b> весь год — ровно {yearlyGoal} за год</div>
+            ) : (
+              <div className="books-pace-row">
+                📖 Обычный темп: <b>{basePace} книг/мес</b> ({MONTH_NAMES[0]}–{MONTH_NAMES[baseMonths - 1]}), потом{' '}
+                <b>{basePace + 1} книг/мес</b> ({MONTH_NAMES[baseMonths]}–{MONTH_NAMES[11]}) — ровно {yearlyGoal} за год
+              </div>
+            )}
             {projectedTotal >= yearlyGoal ? (
               <div className="books-pace-row books-pace-ok">✅ В этом темпе ты уложишься в цель</div>
             ) : (
