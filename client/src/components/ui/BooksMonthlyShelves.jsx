@@ -3,6 +3,10 @@ import { BOOK_STATUS_EMOJI } from '../../data/bookLabels.js';
 const MONTH_NAMES = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 const PACE_OPTIONS = [2, 4, 6, 8];
 
+function daysInMonth(year, monthIndex) {
+  return new Date(year, monthIndex + 1, 0).getDate();
+}
+
 function computeShelves(books, pace, overrides) {
   const now = new Date();
   const curY = now.getFullYear();
@@ -21,7 +25,10 @@ function computeShelves(books, pace, overrides) {
     const isCurrent = y === curY && m === curM;
     const isPast = y < curY || (y === curY && m < curM);
     const allDone = shelfBooks.length > 0 && shelfBooks.every(b => b.status === 'done');
-    shelves.push({ monthKey, label: `${MONTH_NAMES[m]} ${y}`, pace: monthPace, books: shelfBooks, isPast, isCurrent, allDone });
+    const totalPages = shelfBooks.reduce((sum, b) => sum + (b.pages || 0), 0);
+    const days = daysInMonth(y, m);
+    const pagesPerDay = totalPages > 0 ? Math.ceil(totalPages / days) : 0;
+    shelves.push({ monthKey, label: `${MONTH_NAMES[m]} ${y}`, pace: monthPace, books: shelfBooks, isPast, isCurrent, allDone, totalPages, days, pagesPerDay });
     m++; if (m > 11) { m = 0; y++; }
   }
   return shelves;
@@ -68,6 +75,10 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
               <option value="">По умолчанию ({pace})</option>
               {PACE_OPTIONS.map(n => <option key={n} value={n}>{n} книг в этот месяц</option>)}
             </select>
+
+            {shelf.totalPages > 0 && (
+              <div className="shelf-pace-hint">📄 {shelf.totalPages} стр. за {shelf.days} дн. — <b>{shelf.pagesPerDay} стр/день</b></div>
+            )}
 
             <ul className="shelf-book-list">
               {shelf.books.map(b => (
