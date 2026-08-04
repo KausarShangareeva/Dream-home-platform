@@ -93,8 +93,8 @@
   }
   .brand{padding:6px 8px 4px;}
   .brand .mark{
-    width:40px;height:40px;border-radius:50%;
-    background:linear-gradient(135deg,var(--rose),var(--purple));
+    width:40px;height:40px;border-radius:12px;
+    background:linear-gradient(135deg,var(--rose),var(--violet));
     display:flex;align-items:center;justify-content:center;
     font-size:19px; color:var(--on-accent); margin-bottom:10px;
     box-shadow:0 8px 18px -6px rgba(110,76,134,.6);

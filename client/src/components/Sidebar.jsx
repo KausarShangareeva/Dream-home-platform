@@ -44,7 +44,8 @@ export default function Sidebar({ activeTab, onChangeTab }) {
       <div className="brand">
         <div className="mark">
           <svg viewBox="0 0 40 40" width="26" height="26" xmlns="http://www.w3.org/2000/svg">
-            <text x="20" y="27" textAnchor="middle" fontFamily="Georgia, 'Playfair Display', serif" fontWeight="700" fontSize="18" fill="#fffdfb">ДМ</text>
+            <path d="M9 15 L20 7 L31 15" stroke="#fff" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+            <text x="20" y="31" textAnchor="middle" fontFamily="Montserrat, sans-serif" fontWeight="800" fontSize="16" fill="#fff" letterSpacing="-0.5">ДМ</text>
           </svg>
         </div>
         <h1>Дом мечты</h1>
