@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import BooksYearTracker from './ui/BooksYearTracker.jsx';
+import BooksMonthlyShelves from './ui/BooksMonthlyShelves.jsx';
 import LevelSelect from './ui/LevelSelect.jsx';
 import LanguageSelect from './ui/LanguageSelect.jsx';
 import { GENRE_LABEL, BOOK_STATUS_LABEL, BOOK_STATUS_EMOJI } from '../data/bookLabels.js';
@@ -84,6 +85,14 @@ export default function BooksTab({ ownerId }) {
     }
   };
   const updateGoal = async (value) => { await api.updateSettings(ownerId, { booksYearlyGoal: Number(value) }); load(); };
+  const updateShelfPace = async (n) => { await api.updateSettings(ownerId, { shelfPace: n }); load(); };
+  const updateMonthOverride = async (monthKey, value) => {
+    const overrides = { ...(settings.shelfMonthOverrides || {}) };
+    if (value === null) delete overrides[monthKey];
+    else overrides[monthKey] = value;
+    await api.updateSettings(ownerId, { shelfMonthOverrides: overrides });
+    load();
+  };
 
   const addBook = async () => {
     if (!newTitle.trim() || !newPages) return alert('Впишите название и число страниц');
@@ -128,6 +137,14 @@ export default function BooksTab({ ownerId }) {
       <div style={{ marginBottom: 18 }}>
         <BooksYearTracker books={books} goal={yearlyGoal} />
       </div>
+
+      <BooksMonthlyShelves
+        books={books}
+        pace={settings.shelfPace || 8}
+        overrides={settings.shelfMonthOverrides || {}}
+        onChangePace={updateShelfPace}
+        onChangeMonthOverride={updateMonthOverride}
+      />
 
       <div className="mama-table-wrap">
         <table className="mama-table books-table">

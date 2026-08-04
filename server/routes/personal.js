@@ -25,11 +25,16 @@ router.get('/:ownerId/settings', async (req, res) => {
   res.json(settings);
 });
 
-// PATCH /api/personal/:ownerId/settings  { hoursPerDay?, booksYearlyGoal? }
+// PATCH /api/personal/:ownerId/settings  { hoursPerDay?, booksYearlyGoal?, shelfPace?, shelfMonthOverrides? }
 router.patch('/:ownerId/settings', async (req, res) => {
   const settings = await ensureSettings(req.params.ownerId);
   if (req.body.hoursPerDay !== undefined) settings.hoursPerDay = Number(req.body.hoursPerDay);
   if (req.body.booksYearlyGoal !== undefined) settings.booksYearlyGoal = Number(req.body.booksYearlyGoal);
+  if (req.body.shelfPace !== undefined) settings.shelfPace = Number(req.body.shelfPace);
+  if (req.body.shelfMonthOverrides !== undefined) {
+    settings.shelfMonthOverrides = req.body.shelfMonthOverrides;
+    settings.markModified('shelfMonthOverrides');
+  }
   await settings.save();
   res.json(settings);
 });
