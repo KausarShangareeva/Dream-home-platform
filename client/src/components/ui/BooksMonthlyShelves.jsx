@@ -8,6 +8,19 @@ function daysInMonth(year, monthIndex) {
   return new Date(year, monthIndex + 1, 0).getDate();
 }
 
+// Walks the shelf's books in order and finds which book + page a given cumulative
+// page count lands on. Used to turn "you should have read N pages by now" into a
+// concrete "you should be on book X, page Y" — a target that only moves as days
+// pass, not every time you update your actual progress.
+function findPositionAtPage(shelfBooks, totalPages) {
+  let remaining = totalPages;
+  for (const b of shelfBooks) {
+    if (remaining <= b.pages) return { book: b, page: Math.max(0, Math.round(remaining)) };
+    remaining -= b.pages;
+  }
+  return null; // per the flat plan you should already be done with the whole shelf
+}
+
 function computeShelves(books, pace, overrides) {
   const now = new Date();
   const curY = now.getFullYear();
@@ -75,8 +88,12 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
           const daysLeft = shelf.isCurrent ? Math.max(1, shelf.days - now.getDate() + 1) : shelf.days;
           const todayPace = remainingPages > 0 ? Math.ceil(remainingPages / daysLeft) : 0;
           const onTrack = todayPace <= shelf.pagesPerDay;
-          const currentBook = shelf.isCurrent ? shelf.books.find(b => b.status !== 'done') : null;
-          const targetPageToday = currentBook ? Math.min(currentBook.pages, getPage(currentBook) + todayPace) : null;
+          // Stable target: where the flat plan says you should be by the end of TODAY,
+          // based only on the date — not on wherever your slider currently sits, so it
+          // doesn't creep forward every time you update your progress.
+          const elapsedDays = shelf.isCurrent ? now.getDate() : shelf.days;
+          const expectedCumulative = Math.min(shelf.totalPages, Math.round(shelf.pagesPerDay * elapsedDays));
+          const targetPosition = shelf.isCurrent ? findPositionAtPage(shelf.books, expectedCumulative) : null;
 
           return (
             <div className={`shelf-card${shelf.allDone ? ' shelf-done' : ''}${shelf.isPast && !shelf.allDone ? ' shelf-missed' : ''}`} key={shelf.monthKey}>
@@ -101,8 +118,10 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
 
               {shelf.isCurrent && shelf.totalPages > 0 && (
                 <div className={`shelf-pace-hint shelf-live-hint${onTrack ? ' shelf-hint-ok' : ' shelf-hint-behind'}`}>
-                  {onTrack ? '✅ Успеваешь' : '⚠️ Отстаёшь'} — осталось {remainingPages} стр. за {daysLeft} дн. → сегодня <b>{todayPace} стр/день</b>
-                  {currentBook && <> → дочитай «{currentBook.title}» до стр. <b>{targetPageToday}</b></>}
+                  {onTrack ? '✅ Успеваешь' : '⚠️ Отстаёшь'} — осталось {remainingPages} стр. за {daysLeft} дн. → нужно <b>{todayPace} стр/день</b>
+                  {targetPosition
+                    ? <> → на сегодня будь на «{targetPosition.book.title}», стр. <b>{targetPosition.page}</b></>
+                    : <> → по плану на сегодня весь этот месяц уже должен быть прочитан 🎉</>}
                 </div>
               )}
 
