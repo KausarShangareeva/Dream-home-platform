@@ -129,10 +129,19 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
                 {shelf.books.map((b, i) => {
                   const page = getPage(b);
                   const isDone = b.status === 'done';
+                  const showBadge = shelf.isCurrent && b.status === 'learning';
+                  const diff = pagesReadInShelf - expectedCumulative;
                   return (
                     <li key={b._id} className={isDone ? 'shelf-book-done' : ''}>
                       <div className="shelf-book-title-row">
-                        <span className="shelf-book-num">{i + 1}-</span> {BOOK_STATUS_EMOJI[b.status]}{b.title}
+                        <span className="shelf-book-title-text">
+                          <span className="shelf-book-num">{i + 1}-</span> {BOOK_STATUS_EMOJI[b.status]}{b.title}
+                        </span>
+                        {showBadge && (
+                          diff > 0 ? <span className="shelf-book-badge badge-ahead" title="Опережаешь график">😄 +{diff} стр.</span>
+                          : diff < 0 ? <span className="shelf-book-badge badge-behind" title="Отстаёшь от графика">😢 −{Math.abs(diff)} стр.</span>
+                          : <span className="shelf-book-badge badge-ontrack" title="Ровно по норме">😊 норма!</span>
+                        )}
                       </div>
                       {b.status === 'learning' && b.pages > 0 && (
                         <div className="shelf-book-slider-row">
