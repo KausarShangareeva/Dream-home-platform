@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { BOOK_STATUS_EMOJI } from '../../data/bookLabels.js';
 
 const MONTH_NAMES = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-const PACE_OPTIONS = [2, 4, 6, 8];
+const PACE_OPTIONS = [2, 3, 4, 5, 6, 7, 8, 9];
 
 function daysInMonth(year, monthIndex) {
   return new Date(year, monthIndex + 1, 0).getDate();
