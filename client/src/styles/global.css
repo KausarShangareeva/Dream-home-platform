@@ -501,6 +501,11 @@
   .shelf-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .shelf-card-title{font-weight:800;font-size:14.5px;color:var(--ink);}
   .shelf-status{font-size:16px;flex:none;}
+  .shelf-today-badge{
+    display:inline-flex;align-self:flex-start;font-size:11px;font-weight:800;color:var(--purple-deep);
+    background:var(--gold);background:color-mix(in srgb, var(--gold) 45%, var(--card-soft));
+    border-radius:999px;padding:5px 12px;
+  }
   .shelf-pace-hint{font-size:11.5px;color:var(--ink-soft);font-weight:600;line-height:1.5;}
   .shelf-pace-hint b{color:var(--purple-deep);font-weight:800;}
   .shelf-live-hint{padding:9px 12px;border-radius:10px;background:var(--card-soft);}

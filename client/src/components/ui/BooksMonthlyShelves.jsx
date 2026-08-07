@@ -103,6 +103,12 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
                 {shelf.isPast && !shelf.allDone && <span className="shelf-status shelf-status-bad" title="Не успели прочитать всё в этот месяц">😢</span>}
               </div>
 
+              {shelf.isCurrent && (
+                <div className="shelf-today-badge">
+                  📍 Сегодня: {now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </div>
+              )}
+
               <select
                 className="shelf-pace-select"
                 value={overrides?.[shelf.monthKey] ?? ''}
