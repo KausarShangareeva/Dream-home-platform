@@ -584,8 +584,8 @@
 
   /* BOOKS TABLE — explicit column widths (auto-layout was squeezing Жанр/Статус text
      while over-allocating space to the mostly-empty Завершила date column) */
-  table.books-table{table-layout:fixed;min-width:920px;}
-  table.books-table .col-lang{width:70px;}
+  table.books-table{table-layout:fixed;min-width:1000px;}
+  table.books-table .col-lang{width:150px;}
   table.books-table .col-genre{width:120px;}
   table.books-table .col-pages{width:82px;}
   table.books-table .col-diff{width:90px;}

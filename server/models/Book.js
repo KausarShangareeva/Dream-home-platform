@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const bookSchema = new mongoose.Schema({
   ownerId: { type: String, required: true, index: true },
   title: { type: String, required: true },
+  titleRu: { type: String, default: '' }, // Russian translation of the title, for quick reference
   author: { type: String, default: '' },
   language: { type: String, default: 'Русский' },
   pages: { type: Number, required: true },

@@ -279,7 +279,7 @@ export default function BooksTab({ ownerId }) {
             <tr>
               <th className="col-num">#</th>
               <th className="col-title">Книга</th>
-              <th className="mobile-hide col-lang">Язык</th>
+              <th className="mobile-hide col-lang">Перевод</th>
               <th className="mobile-hide col-genre">Жанр</th>
               <th className="mobile-hide col-pages">Стр.</th>
               <th className="col-diff">Сложность</th>
@@ -304,11 +304,12 @@ export default function BooksTab({ ownerId }) {
                     {b.author && <span className="bridge-note">{b.author}</span>}
                   </td>
                   <td className="mobile-hide col-lang">
-                    <LanguageSelect
-                      value={b.language || allLanguages[0]?.name}
-                      options={allLanguages}
-                      onChange={val => update(b, { language: val })}
-                      compact
+                    <input
+                      type="text" placeholder="перевод" defaultValue={b.titleRu || ''}
+                      onBlur={e => {
+                        const v = e.target.value.trim();
+                        if (v !== (b.titleRu || '')) update(b, { titleRu: v });
+                      }}
                     />
                   </td>
                   <td className="mobile-hide col-genre">
