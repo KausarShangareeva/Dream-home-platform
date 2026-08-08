@@ -6,6 +6,7 @@ const personSettingsSchema = new mongoose.Schema({
   booksYearlyGoal: { type: Number, default: 100 },
   shelfPace: { type: Number, default: 8 },              // books per month for the monthly-shelves planner
   shelfMonthOverrides: { type: mongoose.Schema.Types.Mixed, default: {} }, // { 'YYYY-MM': customPace }
+  mixLanguages: { type: [String], default: [] },         // languages included in the Books "Микс" view
 }, { timestamps: true });
 
 export default mongoose.model('PersonSettings', personSettingsSchema);

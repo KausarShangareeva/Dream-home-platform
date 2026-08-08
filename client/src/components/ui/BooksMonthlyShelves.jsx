@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BOOK_STATUS_EMOJI } from '../../data/bookLabels.js';
+import Flag from './Flag.jsx';
 
 const MONTH_NAMES = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 const PACE_OPTIONS = [2, 3, 4, 5, 6, 7, 8, 9];
@@ -141,7 +142,8 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
                     <li key={b._id} className={isDone ? 'shelf-book-done' : ''}>
                       <div className="shelf-book-title-row">
                         <span className="shelf-book-title-text">
-                          <span className="shelf-book-num">{i + 1}-</span> {BOOK_STATUS_EMOJI[b.status]}{b.title}
+                          <span className="shelf-book-num">{i + 1}-</span>{' '}
+                          {b._langKey && <Flag langKey={b._langKey} />} {BOOK_STATUS_EMOJI[b.status]}{b.title}
                         </span>
                         {showBadge && (
                           diff > 0 ? <span className="shelf-book-badge badge-ahead" title="Опережаешь график">😄 +{diff} стр.</span>

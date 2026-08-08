@@ -678,6 +678,18 @@
   .listening-lang-pill.active{background:var(--purple);border-color:var(--purple);color:var(--on-accent);}
   .listening-lang-pill.active span{color:var(--on-accent);}
 
+  /* BOOKS — Микс mode: mix pill + language picker panel */
+  .mix-pill{background:linear-gradient(135deg, var(--gold), var(--rose));color:var(--on-accent);border:none;font-weight:800;}
+  .mix-picker{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:16px;}
+  .mix-picker-label{font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:10px;}
+  .mix-picker-options{display:flex;flex-wrap:wrap;gap:8px;}
+  .mix-picker-chip{
+    display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--card-soft);
+    border-radius:999px;padding:7px 13px;font-size:12px;font-weight:700;color:var(--ink);cursor:pointer;
+  }
+  .mix-picker-chip.active{background:var(--purple);border-color:var(--purple);color:var(--on-accent);}
+  .mix-picker-hint{margin-top:8px;font-size:11.5px;color:var(--ink-soft);}
+
   /* LISTENING — link cell: editable URL input + a small button to actually open it */
   .listening-link-cell{display:flex;align-items:center;gap:6px;}
   .listening-link-cell input{flex:1;min-width:0;}

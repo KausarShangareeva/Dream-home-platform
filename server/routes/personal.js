@@ -35,6 +35,7 @@ router.patch('/:ownerId/settings', async (req, res) => {
     settings.shelfMonthOverrides = req.body.shelfMonthOverrides;
     settings.markModified('shelfMonthOverrides');
   }
+  if (req.body.mixLanguages !== undefined) settings.mixLanguages = req.body.mixLanguages;
   await settings.save();
   res.json(settings);
 });

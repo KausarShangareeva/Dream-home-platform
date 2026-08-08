@@ -11,6 +11,27 @@ import { KNOWN_READING_LANGUAGES } from '../data/readingLanguages.js';
 import { useDragReorder } from '../hooks/useDragReorder.js';
 import ReactCountryFlag from 'react-country-flag';
 
+// Round-robin merge: book[0] from each selected language, then book[1] from each, and so on —
+// languages that run out just get skipped, the rest keep alternating (англ-швед-англ-швед...).
+function interleaveByLanguage(books, languageNames, langKeyByName) {
+  const queues = languageNames.map(name => books.filter(b => b.language === name));
+  const result = [];
+  let idx = 0;
+  let anyLeft = true;
+  while (anyLeft) {
+    anyLeft = false;
+    for (let qi = 0; qi < queues.length; qi++) {
+      const q = queues[qi];
+      if (idx < q.length) {
+        result.push({ ...q[idx], _langKey: langKeyByName[languageNames[qi]] });
+        anyLeft = true;
+      }
+    }
+    idx++;
+  }
+  return result;
+}
+
 const AUTHORS = [
   ['Agatha Christie', 'GB', 'самый издаваемый автор детективов в истории.'],
   ['Arthur Conan Doyle', 'GB', 'создал Шерлока Холмса и жанр дедуктивного детектива.'],
@@ -66,12 +87,31 @@ export default function BooksTab({ ownerId }) {
     if (!selectedLanguage && books.length) setSelectedLanguage(books[0].language || allLanguages[0]?.name);
     else if (!selectedLanguage && allLanguages.length) setSelectedLanguage(allLanguages[0].name);
   }, [books, allLanguages, selectedLanguage]);
-  useEffect(() => { if (selectedLanguage) setNewLang(selectedLanguage); }, [selectedLanguage]);
+  useEffect(() => { if (selectedLanguage && selectedLanguage !== '__mix__') setNewLang(selectedLanguage); }, [selectedLanguage]);
 
   const booksForLanguage = useMemo(
     () => books.filter(b => b.language === selectedLanguage),
     [books, selectedLanguage]
   );
+
+  const langKeyByName = useMemo(
+    () => Object.fromEntries(allLanguages.map(l => [l.name, l.key])),
+    [allLanguages]
+  );
+  const mixLanguages = settings.mixLanguages || [];
+  const isMix = selectedLanguage === '__mix__';
+  const booksForMix = useMemo(
+    () => (isMix ? interleaveByLanguage(books, mixLanguages, langKeyByName) : []),
+    [isMix, books, mixLanguages, langKeyByName]
+  );
+  const shelfBooks = isMix ? booksForMix : booksForLanguage;
+
+  const toggleMixLanguage = async (name) => {
+    const next = mixLanguages.includes(name) ? mixLanguages.filter(n => n !== name) : [...mixLanguages, name];
+    await api.updateSettings(ownerId, { mixLanguages: next });
+    load();
+  };
+
   const { ordered, getRowProps } = useDragReorder(booksForLanguage, async (ids) => {
     await api.reorderBooks(ownerId, ids);
     load();
@@ -179,10 +219,37 @@ export default function BooksTab({ ownerId }) {
             <span>{totalsByLanguage[l.name] || 0}</span>
           </button>
         ))}
+        <button
+          type="button"
+          className={`listening-lang-pill mix-pill${isMix ? ' active' : ''}`}
+          onClick={() => setSelectedLanguage('__mix__')}
+          title="Читать сразу на нескольких языках"
+        >
+          🎨 Микс
+        </button>
       </div>
 
+      {isMix && (
+        <div className="mix-picker">
+          <div className="mix-picker-label">Каких языках сейчас читаешь одновременно:</div>
+          <div className="mix-picker-options">
+            {allLanguages.map(l => (
+              <button
+                key={l.key}
+                type="button"
+                className={`mix-picker-chip${mixLanguages.includes(l.name) ? ' active' : ''}`}
+                onClick={() => toggleMixLanguage(l.name)}
+              >
+                <Flag langKey={l.key} /> {l.name}
+              </button>
+            ))}
+          </div>
+          {mixLanguages.length === 0 && <div className="mix-picker-hint">Выбери хотя бы один язык выше.</div>}
+        </div>
+      )}
+
       <BooksMonthlyShelves
-        books={booksForLanguage}
+        books={shelfBooks}
         pace={settings.shelfPace || 8}
         overrides={settings.shelfMonthOverrides || {}}
         onChangePace={updateShelfPace}
