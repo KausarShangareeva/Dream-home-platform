@@ -9,17 +9,20 @@ import Flag from './ui/Flag.jsx';
 import { GENRE_LABEL, BOOK_STATUS_LABEL, BOOK_STATUS_EMOJI } from '../data/bookLabels.js';
 import { KNOWN_READING_LANGUAGES } from '../data/readingLanguages.js';
 import { useDragReorder } from '../hooks/useDragReorder.js';
+import ReactCountryFlag from 'react-country-flag';
 
 const AUTHORS = [
-  ['Agatha Christie', '🇬🇧', 'самый издаваемый автор детективов в истории.'],
-  ['Arthur Conan Doyle', '🇬🇧', 'создал Шерлока Холмса и жанр дедуктивного детектива.'],
-  ['George Orwell', '🇬🇧', '«1984», обязательное чтение почти во всех англоязычных школах.'],
-  ['Aldous Huxley', '🇬🇧', '«О дивный новый мир», вместе с Оруэллом — главные антиутопии XX века.'],
-  ['J. R. R. Tolkien', '🇬🇧', 'фактически создал жанр современного фэнтези.'],
-  ['Terry Pratchett', '🇬🇧', 'один из лучших англоязычных стилистов, мастер иронии.'],
-  ['Neil Gaiman', '🇬🇧', 'лауреат Hugo, Nebula, Locus, современный мастер сказки для взрослых.'],
-  ['Kazuo Ishiguro', '🇬🇧', 'лауреат Нобелевской премии по литературе (2017).'],
-  ['Susanna Clarke', '🇬🇧', '«Джонатан Стрендж и мистер Норрелл», одна из самых уважаемых книг жанра за 20 лет.'],
+  ['Agatha Christie', 'GB', 'самый издаваемый автор детективов в истории.'],
+  ['Arthur Conan Doyle', 'GB', 'создал Шерлока Холмса и жанр дедуктивного детектива.'],
+  ['George Orwell', 'GB', '«1984», обязательное чтение почти во всех англоязычных школах.'],
+  ['Aldous Huxley', 'GB', '«О дивный новый мир», вместе с Оруэллом — главные антиутопии XX века.'],
+  ['J. R. R. Tolkien', 'GB', 'фактически создал жанр современного фэнтези.'],
+  ['Terry Pratchett', 'GB', 'один из лучших англоязычных стилистов, мастер иронии.'],
+  ['Neil Gaiman', 'GB', 'лауреат Hugo, Nebula, Locus, современный мастер сказки для взрослых.'],
+  ['Kazuo Ishiguro', 'GB', 'лауреат Нобелевской премии по литературе (2017).'],
+  ['Susanna Clarke', 'GB', '«Джонатан Стрендж и мистер Норрелл», одна из самых уважаемых книг жанра за 20 лет.'],
+  ['Roald Dahl', 'GB', 'один из самых читаемых детских авторов XX века — «Матильда», «Чарли и шоколадная фабрика».'],
+  ['Hergé', 'BE', 'бельгийский автор комиксов «Приключения Тинтина» — классика европейской иллюстрированной литературы.'],
 ];
 
 export default function BooksTab({ ownerId }) {
@@ -292,11 +295,13 @@ export default function BooksTab({ ownerId }) {
       <div className="tip-card" style={{ marginTop: 18 }}>
         <div className="mama-strip-title" style={{ margin: '0 0 10px' }}>✍️ Авторы, которых стоит запомнить</div>
         <p style={{ margin: '0 0 12px', fontSize: 12.5, color: 'var(--ink-soft)', lineHeight: 1.6 }}>
-          Их книги входят в список выше — считаются классикой современной англоязычной литературы:
+          Их книги входят в список выше — считаются классикой мировой литературы:
         </p>
         <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.8, lineHeight: 1.85, color: 'var(--ink)' }}>
-          {AUTHORS.map(([name, flag, desc]) => (
-            <li key={name}><b>{name}</b> {flag} — {desc}</li>
+          {AUTHORS.map(([name, countryCode, desc]) => (
+            <li key={name}>
+              <b>{name}</b> <ReactCountryFlag countryCode={countryCode} svg style={{ width: '1.1em', height: '1.1em' }} /> — {desc}
+            </li>
           ))}
         </ul>
       </div>
