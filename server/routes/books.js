@@ -21,11 +21,11 @@ router.get('/:ownerId/books', async (req, res) => {
 
 // POST /api/personal/:ownerId/books  { title, author?, language?, pages }
 router.post('/:ownerId/books', async (req, res) => {
-  const { title, author, language, pages } = req.body;
+  const { title, author, language, pages, difficulty, genre } = req.body;
   if (!title || !pages) return res.status(400).json({ error: 'title and pages are required' });
   const maxOrder = await Book.find({ ownerId: req.params.ownerId }).sort({ order: -1 }).limit(1);
   const book = await Book.create({
-    ownerId: req.params.ownerId, title, author, language, pages,
+    ownerId: req.params.ownerId, title, author, language, pages, difficulty, genre,
     order: (maxOrder[0]?.order || 0) + 1,
   });
   res.status(201).json(book);
