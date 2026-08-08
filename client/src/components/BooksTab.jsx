@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { api } from '../api.js';
 import DeleteButton from './ui/DeleteButton.jsx';
 import BooksYearTracker from './ui/BooksYearTracker.jsx';
 import BooksMonthlyShelves from './ui/BooksMonthlyShelves.jsx';
 import LevelSelect from './ui/LevelSelect.jsx';
 import LanguageSelect from './ui/LanguageSelect.jsx';
+import Flag from './ui/Flag.jsx';
 import { GENRE_LABEL, BOOK_STATUS_LABEL, BOOK_STATUS_EMOJI } from '../data/bookLabels.js';
 import { KNOWN_READING_LANGUAGES } from '../data/readingLanguages.js';
 import { useDragReorder } from '../hooks/useDragReorder.js';
@@ -23,12 +24,14 @@ const AUTHORS = [
 
 export default function BooksTab({ ownerId }) {
   const [books, setBooks] = useState([]);
+  const [languages, setLanguages] = useState([]);
   const [settings, setSettings] = useState({ booksYearlyGoal: 100 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState(null);
   const [newTitle, setNewTitle] = useState('');
   const [newAuthor, setNewAuthor] = useState('');
-  const [newLang, setNewLang] = useState(KNOWN_READING_LANGUAGES[0].name);
+  const [newLang, setNewLang] = useState('');
   const [newPages, setNewPages] = useState('');
 
   const loadedOnceRef = useRef(false);
@@ -36,8 +39,8 @@ export default function BooksTab({ ownerId }) {
     if (!loadedOnceRef.current) setLoading(true);
     setError(null);
     try {
-      const [b, s] = await Promise.all([api.getBooks(ownerId), api.getSettings(ownerId)]);
-      setBooks(b); setSettings(s);
+      const [b, s, langs] = await Promise.all([api.getBooks(ownerId), api.getSettings(ownerId), api.getLanguages(ownerId)]);
+      setBooks(b); setSettings(s); setLanguages(langs);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -48,7 +51,25 @@ export default function BooksTab({ ownerId }) {
 
   useEffect(() => { load(); }, [load]);
 
-  const { ordered, getRowProps } = useDragReorder(books, async (ids) => {
+  // Reading languages = the ones she's actually learning, plus the original fixed set
+  // (Russian/Tatar aren't part of the learning chain but are still valid book languages).
+  const allLanguages = useMemo(() => {
+    const merged = [...KNOWN_READING_LANGUAGES];
+    languages.forEach(l => { if (!merged.some(m => m.name === l.name)) merged.push(l); });
+    return merged;
+  }, [languages]);
+
+  useEffect(() => {
+    if (!selectedLanguage && books.length) setSelectedLanguage(books[0].language || allLanguages[0]?.name);
+    else if (!selectedLanguage && allLanguages.length) setSelectedLanguage(allLanguages[0].name);
+  }, [books, allLanguages, selectedLanguage]);
+  useEffect(() => { if (selectedLanguage) setNewLang(selectedLanguage); }, [selectedLanguage]);
+
+  const booksForLanguage = useMemo(
+    () => books.filter(b => b.language === selectedLanguage),
+    [books, selectedLanguage]
+  );
+  const { ordered, getRowProps } = useDragReorder(booksForLanguage, async (ids) => {
     await api.reorderBooks(ownerId, ids);
     load();
   });
@@ -101,6 +122,10 @@ export default function BooksTab({ ownerId }) {
     load();
   };
 
+  const totalsByLanguage = {};
+  allLanguages.forEach(l => { totalsByLanguage[l.name] = 0; });
+  books.forEach(b => { totalsByLanguage[b.language] = (totalsByLanguage[b.language] || 0) + 1; });
+
   return (
     <div>
       <div className="form-row" style={{ marginTop: 0, marginBottom: 14, alignItems: 'center' }}>
@@ -138,8 +163,23 @@ export default function BooksTab({ ownerId }) {
         <BooksYearTracker books={books} goal={yearlyGoal} />
       </div>
 
+      <div className="listening-lang-rail" style={{ marginTop: 0 }}>
+        {allLanguages.map(l => (
+          <button
+            key={l.key}
+            type="button"
+            className={`listening-lang-pill${selectedLanguage === l.name ? ' active' : ''}`}
+            onClick={() => setSelectedLanguage(l.name)}
+            title={l.name}
+          >
+            <Flag langKey={l.key} />
+            <span>{totalsByLanguage[l.name] || 0}</span>
+          </button>
+        ))}
+      </div>
+
       <BooksMonthlyShelves
-        books={books}
+        books={booksForLanguage}
         pace={settings.shelfPace || 8}
         overrides={settings.shelfMonthOverrides || {}}
         onChangePace={updateShelfPace}
@@ -165,7 +205,7 @@ export default function BooksTab({ ownerId }) {
             </tr>
           </thead>
           <tbody>
-            {ordered.length === 0 && <tr><td colSpan={11} className="empty-state">Пока пусто — добавьте книгу ниже</td></tr>}
+            {ordered.length === 0 && <tr><td colSpan={11} className="empty-state">Пока пусто для этого языка — добавьте книгу ниже</td></tr>}
             {ordered.map((b, idx) => {
               const pagesPerDay = Math.max(1, Math.ceil(b.pages / Math.max(1, b.days)));
               const done = b.status === 'done';
@@ -179,8 +219,8 @@ export default function BooksTab({ ownerId }) {
                   </td>
                   <td className="mobile-hide col-lang">
                     <LanguageSelect
-                      value={b.language || KNOWN_READING_LANGUAGES[0].name}
-                      options={KNOWN_READING_LANGUAGES}
+                      value={b.language || allLanguages[0]?.name}
+                      options={allLanguages}
                       onChange={val => update(b, { language: val })}
                       compact
                     />
@@ -243,7 +283,7 @@ export default function BooksTab({ ownerId }) {
         <div className="mama-add-row">
           <input placeholder="Название" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
           <input placeholder="Автор" value={newAuthor} onChange={e => setNewAuthor(e.target.value)} />
-          <LanguageSelect value={newLang} options={KNOWN_READING_LANGUAGES} onChange={setNewLang} style={{ maxWidth: 150 }} />
+          <LanguageSelect value={newLang} options={allLanguages} onChange={setNewLang} style={{ maxWidth: 150 }} />
           <input type="number" min="1" placeholder="Страниц" style={{ maxWidth: 90 }} value={newPages} onChange={e => setNewPages(e.target.value)} />
           <button className="btn btn-sm btn-primary" onClick={addBook} type="button">+ Добавить</button>
         </div>
