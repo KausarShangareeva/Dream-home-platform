@@ -100,9 +100,16 @@ export default function BooksTab({ ownerId }) {
   );
   const mixLanguages = settings.mixLanguages || [];
   const isMix = selectedLanguage === '__mix__';
+  // A picked language only actually joins the interleaved queue once you've started it for
+  // real (some book past 'В планах') — otherwise picking it in advance would start pulling
+  // its books into this month's plan before you've even begun reading it.
+  const activeMixLanguages = useMemo(
+    () => mixLanguages.filter(name => books.some(b => b.language === name && b.status !== 'todo')),
+    [mixLanguages, books]
+  );
   const booksForMix = useMemo(
-    () => (isMix ? interleaveByLanguage(books, mixLanguages, langKeyByName) : []),
-    [isMix, books, mixLanguages, langKeyByName]
+    () => (isMix ? interleaveByLanguage(books, activeMixLanguages, langKeyByName) : []),
+    [isMix, books, activeMixLanguages, langKeyByName]
   );
   const shelfBooks = isMix ? booksForMix : booksForLanguage;
 
@@ -233,18 +240,27 @@ export default function BooksTab({ ownerId }) {
         <div className="mix-picker">
           <div className="mix-picker-label">Каких языках сейчас читаешь одновременно:</div>
           <div className="mix-picker-options">
-            {allLanguages.map(l => (
-              <button
-                key={l.key}
-                type="button"
-                className={`mix-picker-chip${mixLanguages.includes(l.name) ? ' active' : ''}`}
-                onClick={() => toggleMixLanguage(l.name)}
-              >
-                <Flag langKey={l.key} /> {l.name}
-              </button>
-            ))}
+            {allLanguages.map(l => {
+              const picked = mixLanguages.includes(l.name);
+              const started = activeMixLanguages.includes(l.name);
+              return (
+                <button
+                  key={l.key}
+                  type="button"
+                  className={`mix-picker-chip${started ? ' active' : ''}${picked && !started ? ' waiting' : ''}`}
+                  onClick={() => toggleMixLanguage(l.name)}
+                  title={picked && !started ? 'Отметь любую книгу на этом языке «Читаю», чтобы он подключился к плану' : undefined}
+                >
+                  <Flag langKey={l.key} /> {l.name}
+                  {picked && !started && <span className="mix-picker-waiting-dot" title="Ждёт начала — отметь книгу «Читаю»">⏳</span>}
+                </button>
+              );
+            })}
           </div>
           {mixLanguages.length === 0 && <div className="mix-picker-hint">Выбери хотя бы один язык выше.</div>}
+          {mixLanguages.length > 0 && activeMixLanguages.length === 0 && (
+            <div className="mix-picker-hint">Языки выбраны, но пока ни одна книга не отмечена «Читаю» — план пуст. Начни с любой книги в выбранном языке.</div>
+          )}
         </div>
       )}
 

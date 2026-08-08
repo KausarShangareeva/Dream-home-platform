@@ -688,6 +688,8 @@
     border-radius:999px;padding:7px 13px;font-size:12px;font-weight:700;color:var(--ink);cursor:pointer;
   }
   .mix-picker-chip.active{background:var(--purple);border-color:var(--purple);color:var(--on-accent);}
+  .mix-picker-chip.waiting{border-style:dashed;opacity:.75;}
+  .mix-picker-waiting-dot{font-size:10px;}
   .mix-picker-hint{margin-top:8px;font-size:11.5px;color:var(--ink-soft);}
 
   /* LISTENING — link cell: editable URL input + a small button to actually open it */
