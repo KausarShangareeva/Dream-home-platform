@@ -304,13 +304,7 @@ export default function BooksTab({ ownerId }) {
                     {b.author && <span className="bridge-note">{b.author}</span>}
                   </td>
                   <td className="mobile-hide col-lang">
-                    <input
-                      type="text" placeholder="перевод" defaultValue={b.titleRu || ''}
-                      onBlur={e => {
-                        const v = e.target.value.trim();
-                        if (v !== (b.titleRu || '')) update(b, { titleRu: v });
-                      }}
-                    />
+                    <span className="book-translation">{b.titleRu || '—'}</span>
                   </td>
                   <td className="mobile-hide col-genre">
                     <select value={b.genre || ''} onChange={e => update(b, { genre: e.target.value || null })} className="genre-select">
