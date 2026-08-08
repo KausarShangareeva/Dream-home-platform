@@ -5,6 +5,7 @@ import BooksYearTracker from './ui/BooksYearTracker.jsx';
 import BooksMonthlyShelves from './ui/BooksMonthlyShelves.jsx';
 import LevelSelect from './ui/LevelSelect.jsx';
 import LanguageSelect from './ui/LanguageSelect.jsx';
+import CountrySelect from './ui/CountrySelect.jsx';
 import Flag from './ui/Flag.jsx';
 import { GENRE_LABEL, BOOK_STATUS_LABEL, BOOK_STATUS_EMOJI } from '../data/bookLabels.js';
 import { KNOWN_READING_LANGUAGES } from '../data/readingLanguages.js';
@@ -31,6 +32,28 @@ function interleaveByLanguage(books, languageNames, langKeyByName) {
   }
   return result;
 }
+
+// Country of origin — mainly relevant for Arabic books, since the language spans many countries.
+const ARAB_COUNTRIES = [
+  { code: 'EG', name: 'Египет' },
+  { code: 'SA', name: 'Саудовская Аравия' },
+  { code: 'IQ', name: 'Ирак' },
+  { code: 'LB', name: 'Ливан' },
+  { code: 'SY', name: 'Сирия' },
+  { code: 'MA', name: 'Марокко' },
+  { code: 'PS', name: 'Палестина' },
+  { code: 'SD', name: 'Судан' },
+  { code: 'DZ', name: 'Алжир' },
+  { code: 'KW', name: 'Кувейт' },
+  { code: 'OM', name: 'Оман' },
+  { code: 'TN', name: 'Тунис' },
+  { code: 'JO', name: 'Иордания' },
+  { code: 'QA', name: 'Катар' },
+  { code: 'AE', name: 'ОАЭ' },
+  { code: 'YE', name: 'Йемен' },
+  { code: 'LY', name: 'Ливия' },
+  { code: 'BH', name: 'Бахрейн' },
+];
 
 const AUTHORS = [
   ['Agatha Christie', 'GB', 'самый издаваемый автор детективов в истории.'],
@@ -100,6 +123,7 @@ export default function BooksTab({ ownerId }) {
   );
   const mixLanguages = settings.mixLanguages || [];
   const isMix = selectedLanguage === '__mix__';
+  const isArabic = selectedLanguage === 'Арабский';
   // A picked language only actually joins the interleaved queue once you've started it for
   // real (some book past 'В планах') — otherwise picking it in advance would start pulling
   // its books into this month's plan before you've even begun reading it.
@@ -279,6 +303,7 @@ export default function BooksTab({ ownerId }) {
             <tr>
               <th className="col-num">#</th>
               <th className="col-title">Книга</th>
+              {isArabic && <th className="col-country">Страна</th>}
               <th className="mobile-hide col-lang">Перевод</th>
               <th className="mobile-hide col-genre">Жанр</th>
               <th className="mobile-hide col-pages">Стр.</th>
@@ -291,7 +316,7 @@ export default function BooksTab({ ownerId }) {
             </tr>
           </thead>
           <tbody>
-            {ordered.length === 0 && <tr><td colSpan={11} className="empty-state">Пока пусто для этого языка — добавьте книгу ниже</td></tr>}
+            {ordered.length === 0 && <tr><td colSpan={isArabic ? 12 : 11} className="empty-state">Пока пусто для этого языка — добавьте книгу ниже</td></tr>}
             {ordered.map((b, idx) => {
               const pagesPerDay = Math.max(1, Math.ceil(b.pages / Math.max(1, b.days)));
               const done = b.status === 'done';
@@ -303,6 +328,11 @@ export default function BooksTab({ ownerId }) {
                     <b>{BOOK_STATUS_EMOJI[b.status]}{b.title}</b>
                     {b.author && <span className="bridge-note">{b.author}</span>}
                   </td>
+                  {isArabic && (
+                    <td className="col-country">
+                      <CountrySelect value={b.country} options={ARAB_COUNTRIES} onChange={val => update(b, { country: val || null })} />
+                    </td>
+                  )}
                   <td className="mobile-hide col-lang">
                     <span className="book-translation">{b.titleRu || '—'}</span>
                   </td>

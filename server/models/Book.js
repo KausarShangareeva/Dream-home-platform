@@ -13,6 +13,7 @@ const bookSchema = new mongoose.Schema({
   status: { type: String, default: 'todo' },  // todo | learning | done
   difficulty: { type: String, default: null }, // A1-C2 / B1+ / B2+
   genre: { type: String, default: null },
+  country: { type: String, default: null }, // ISO country code — mainly for Arabic books (many countries share the language)
   order: { type: Number, default: 0 },
   currentPage: { type: Number, default: 0 }, // how far into the book you've read so far
 }, { timestamps: true });
