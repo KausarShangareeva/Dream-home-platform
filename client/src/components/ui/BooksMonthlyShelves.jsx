@@ -84,6 +84,8 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
 
       <div className="shelves-grid">
         {shelves.map(shelf => {
+          const hasStarted = shelf.books.some(b => b.status !== 'todo');
+          const isActive = shelf.isCurrent && hasStarted;
           const pagesReadInShelf = shelf.books.reduce((sum, b) => sum + getPage(b), 0);
           const remainingPages = Math.max(0, shelf.totalPages - pagesReadInShelf);
           const daysLeft = shelf.isCurrent ? Math.max(1, shelf.days - now.getDate() + 1) : shelf.days;
@@ -97,7 +99,7 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
           const targetPosition = shelf.isCurrent ? findPositionAtPage(shelf.books, expectedCumulative) : null;
 
           return (
-            <div className={`shelf-card${shelf.allDone ? ' shelf-done' : ''}${shelf.isPast && !shelf.allDone ? ' shelf-missed' : ''}`} key={shelf.monthKey}>
+            <div className={`shelf-card${shelf.allDone ? ' shelf-done' : ''}${shelf.isPast && !shelf.allDone ? ' shelf-missed' : ''}${!isActive ? ' shelf-inactive' : ''}`} key={shelf.monthKey}>
               <div className="shelf-card-head">
                 <span className="shelf-card-title">{shelf.label}</span>
                 {shelf.allDone && <span className="shelf-status shelf-status-ok" title="Всё прочитано вовремя">✅</span>}
@@ -123,7 +125,13 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
                 <div className="shelf-pace-hint">📄 {shelf.totalPages} стр. за {shelf.days} дн. — <b>{shelf.pagesPerDay} стр/день</b></div>
               )}
 
-              {shelf.isCurrent && shelf.totalPages > 0 && (
+              {shelf.isCurrent && !hasStarted && shelf.totalPages > 0 && (
+                <div className="shelf-pace-hint shelf-start-hint">
+                  👉 Отметь любую книгу статусом «Читаю», чтобы включить отслеживание по дням
+                </div>
+              )}
+
+              {isActive && shelf.totalPages > 0 && (
                 <div className={`shelf-pace-hint shelf-live-hint${onTrack ? ' shelf-hint-ok' : ' shelf-hint-behind'}`}>
                   {onTrack ? '✅ Успеваешь' : '⚠️ Отстаёшь'} — осталось {remainingPages} стр. за {daysLeft} дн. → нужно <b>{todayPace} стр/день</b>
                   {targetPosition
@@ -136,7 +144,7 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
                 {shelf.books.map((b, i) => {
                   const page = getPage(b);
                   const isDone = b.status === 'done';
-                  const showBadge = shelf.isCurrent && b.status === 'learning';
+                  const showBadge = isActive && b.status === 'learning';
                   const diff = pagesReadInShelf - expectedCumulative;
                   return (
                     <li key={b._id} className={isDone ? 'shelf-book-done' : ''}>
