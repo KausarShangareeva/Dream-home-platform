@@ -12,6 +12,7 @@ export const GENRE_LABEL = {
   dystopia: '🌆 Антиутопия', fantasy: '🧚 Фэнтези', romance: '💕 Романтика', scifi: '🚀 Фантастика',
   drama: '🎭 Драма', thriller: '🔪 Триллер', detective: '🕵️ Детектив',
   adventure: '⚔️ Приключения', classic: '📖 Классика', religion: '☪️ Религия',
+  family_caste: '🪷 Семья / запретная любовь / долг / касты и общество / женская судьба / жертва',
 };
 
 export const BOOK_STATUS_LABEL = { todo: 'В планах', learning: 'Читаю', done: 'Прочитано' };
