@@ -70,10 +70,10 @@ router.patch('/:ownerId/languages/reorder', async (req, res) => {
   res.json({ ok: true });
 });
 
-// PATCH /api/personal/:ownerId/languages/:id  { level?, status? }
+// PATCH /api/personal/:ownerId/languages/:id  { level?, status?, fromLevel?, chain?, bridge?, diff?, note? }
 router.patch('/:ownerId/languages/:id', async (req, res) => {
   const update = {};
-  ['level', 'status'].forEach(f => { if (req.body[f] !== undefined) update[f] = req.body[f]; });
+  ['level', 'status', 'fromLevel', 'chain', 'bridge', 'diff', 'note'].forEach(f => { if (req.body[f] !== undefined) update[f] = req.body[f]; });
   const lang = await Language.findOneAndUpdate({ _id: req.params.id, ownerId: req.params.ownerId }, update, { new: true });
   res.json(lang);
 });
