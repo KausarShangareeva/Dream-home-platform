@@ -4,6 +4,7 @@ import { PEOPLE } from '../data/people.js';
 import Avatar from './ui/Avatar.jsx';
 import mamaPhoto from '../assets/mama.jpg';
 import kausarPhoto from '../assets/kausar.jpg';
+import kayumPhoto from '../assets/kayum.jpg';
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Главная', icon: '🏠' },
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
 const PERSONAL_ITEMS = [
   { id: 'personal:mama', label: 'Личные цели мамы', icon: '🗺️', photo: mamaPhoto },
   { id: 'personal:kausar', label: 'Личные цели — Каусар', icon: '🌸', photo: kausarPhoto },
+  { id: 'personal:kayum', label: 'Личные цели — Каюм', icon: '📚', photo: kayumPhoto },
 ];
 
 export default function Sidebar({ activeTab, onChangeTab }) {
