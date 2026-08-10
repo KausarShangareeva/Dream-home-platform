@@ -51,6 +51,7 @@ router.patch('/:ownerId/books/:id', async (req, res) => {
     if (update.status !== current.status) {
       const blocking = await Book.findOne({
         ownerId: req.params.ownerId,
+        language: current.language,
         order: { $lt: current.order },
         status: { $ne: 'done' },
       });
