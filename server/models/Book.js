@@ -16,6 +16,8 @@ const bookSchema = new mongoose.Schema({
   country: { type: String, default: null }, // ISO country code — mainly for Arabic books (many countries share the language)
   order: { type: Number, default: 0 },
   currentPage: { type: Number, default: 0 }, // how far into the book you've read so far
+  pdfFileId: { type: mongoose.Schema.Types.ObjectId, default: null }, // GridFS file id, if a PDF was uploaded
+  pdfFileName: { type: String, default: null },
 }, { timestamps: true });
 
 export default mongoose.model('Book', bookSchema);

@@ -6,6 +6,7 @@ import BooksMonthlyShelves from './ui/BooksMonthlyShelves.jsx';
 import LevelSelect from './ui/LevelSelect.jsx';
 import LanguageSelect from './ui/LanguageSelect.jsx';
 import CountrySelect from './ui/CountrySelect.jsx';
+import PdfReaderModal from './ui/PdfReaderModal.jsx';
 import Flag from './ui/Flag.jsx';
 import { GENRE_LABEL, BOOK_STATUS_LABEL, BOOK_STATUS_EMOJI } from '../data/bookLabels.js';
 import { KNOWN_READING_LANGUAGES } from '../data/readingLanguages.js';
@@ -229,6 +230,34 @@ export default function BooksTab({ ownerId }) {
       alert(err.message);
     }
   };
+
+  const [readingBook, setReadingBook] = useState(null);
+  const [uploadingPdfId, setUploadingPdfId] = useState(null);
+
+  const handlePdfUpload = async (book, file) => {
+    if (!file) return;
+    if (file.type !== 'application/pdf') return alert('Нужен файл в формате PDF');
+    setUploadingPdfId(book._id);
+    try {
+      await api.uploadBookPdf(ownerId, book._id, file);
+      load();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setUploadingPdfId(null);
+    }
+  };
+
+  const handlePdfDelete = async (book) => {
+    if (!confirm(`Удалить прикреплённый PDF у «${book.title}»?`)) return;
+    try {
+      await api.deleteBookPdf(ownerId, book._id);
+      load();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   const updateGoal = async (value) => { await api.updateSettings(ownerId, { booksYearlyGoal: Number(value) }); load(); };
   const updateShelfPace = async (n) => { await api.updateSettings(ownerId, { shelfPace: n }); load(); };
   const updateMonthOverride = async (monthKey, value) => {
@@ -377,6 +406,24 @@ export default function BooksTab({ ownerId }) {
                   <td className="col-title">
                     <b>{BOOK_STATUS_EMOJI[b.status]}{b.title}</b>
                     {b.author && <span className="bridge-note">{b.author}</span>}
+                    <div className="book-pdf-controls">
+                      {b.pdfFileId ? (
+                        <>
+                          <button type="button" className="book-pdf-read-btn" onClick={() => setReadingBook(b)}>📖 Читать</button>
+                          <button type="button" className="book-pdf-remove-btn" title="Удалить PDF" onClick={() => handlePdfDelete(b)}>✕</button>
+                        </>
+                      ) : uploadingPdfId === b._id ? (
+                        <span className="book-pdf-uploading">⏳ загружаю…</span>
+                      ) : (
+                        <label className="book-pdf-upload-btn">
+                          📎 Загрузить PDF
+                          <input
+                            type="file" accept="application/pdf" style={{ display: 'none' }}
+                            onChange={e => handlePdfUpload(b, e.target.files?.[0])}
+                          />
+                        </label>
+                      )}
+                    </div>
                   </td>
                   {isArabic && (
                     <td className="col-country">
@@ -464,6 +511,14 @@ export default function BooksTab({ ownerId }) {
             ))}
           </ul>
         </div>
+      )}
+
+      {readingBook && (
+        <PdfReaderModal
+          title={readingBook.title}
+          pdfUrl={api.getBookPdfUrl(ownerId, readingBook._id)}
+          onClose={() => setReadingBook(null)}
+        />
       )}
     </div>
   );

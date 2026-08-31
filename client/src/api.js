@@ -64,6 +64,23 @@ export const api = {
   addBook: (ownerId, data) => request(`/personal/${ownerId}/books`, { method: 'POST', body: JSON.stringify(data) }),
   updateBook: (ownerId, id, data) => request(`/personal/${ownerId}/books/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteBook: (ownerId, id) => request(`/personal/${ownerId}/books/${id}`, { method: 'DELETE' }),
+  getBookPdfUrl: (ownerId, id) => `${BASE}/personal/${ownerId}/books/${id}/pdf`,
+  uploadBookPdf: async (ownerId, id, file) => {
+    const form = new FormData();
+    form.append('pdf', file);
+    let res;
+    try {
+      res = await fetch(`${BASE}/personal/${ownerId}/books/${id}/pdf`, { method: 'POST', body: form });
+    } catch {
+      throw new Error(`Сервер недоступен (${BASE}).`);
+    }
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `Сервер ответил ошибкой ${res.status}`);
+    }
+    return res.json();
+  },
+  deleteBookPdf: (ownerId, id) => request(`/personal/${ownerId}/books/${id}/pdf`, { method: 'DELETE' }),
   reorderBooks: (ownerId, ids) => request(`/personal/${ownerId}/books/reorder`, { method: 'PATCH', body: JSON.stringify({ ids }) }),
 
   getSurahs: (ownerId) => request(`/personal/${ownerId}/quran`),

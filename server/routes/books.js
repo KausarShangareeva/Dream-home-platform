@@ -1,8 +1,15 @@
 import { Router } from 'express';
+import mongoose from 'mongoose';
+import multer from 'multer';
 import Book from '../models/Book.js';
 import { defaultBooksFor } from '../seedData.js';
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 80 * 1024 * 1024 } }); // 80MB cap — plenty for a scanned book
+
+function pdfBucket() {
+  return new mongoose.mongo.GridFSBucket(mongoose.connection.db, { bucketName: 'bookPdfs' });
+}
 
 async function ensureBooksSeeded(ownerId) {
   const count = await Book.countDocuments({ ownerId });
@@ -67,8 +74,64 @@ router.patch('/:ownerId/books/:id', async (req, res) => {
 
 // DELETE /api/personal/:ownerId/books/:id
 router.delete('/:ownerId/books/:id', async (req, res) => {
+  const book = await Book.findOne({ _id: req.params.id, ownerId: req.params.ownerId });
+  if (book?.pdfFileId) {
+    try { await pdfBucket().delete(book.pdfFileId); } catch { /* file may already be gone, ignore */ }
+  }
   await Book.findOneAndDelete({ _id: req.params.id, ownerId: req.params.ownerId });
   res.status(204).end();
+});
+
+// ---- PDF: upload, read, remove ----
+
+// POST /api/personal/:ownerId/books/:id/pdf  (multipart/form-data, field name "pdf")
+router.post('/:ownerId/books/:id/pdf', upload.single('pdf'), async (req, res) => {
+  const book = await Book.findOne({ _id: req.params.id, ownerId: req.params.ownerId });
+  if (!book) return res.status(404).json({ error: 'Книга не найдена' });
+  if (!req.file) return res.status(400).json({ error: 'Файл не получен' });
+  if (req.file.mimetype !== 'application/pdf') return res.status(400).json({ error: 'Нужен файл в формате PDF' });
+
+  // Replace any previous PDF for this book.
+  if (book.pdfFileId) {
+    try { await pdfBucket().delete(book.pdfFileId); } catch { /* already gone, ignore */ }
+  }
+
+  const bucket = pdfBucket();
+  const uploadStream = bucket.openUploadStream(req.file.originalname, { contentType: 'application/pdf' });
+  uploadStream.end(req.file.buffer);
+
+  uploadStream.on('finish', async () => {
+    book.pdfFileId = uploadStream.id;
+    book.pdfFileName = req.file.originalname;
+    await book.save();
+    res.status(201).json(book);
+  });
+  uploadStream.on('error', (err) => res.status(500).json({ error: err.message }));
+});
+
+// GET /api/personal/:ownerId/books/:id/pdf  — streams the PDF for inline viewing
+router.get('/:ownerId/books/:id/pdf', async (req, res) => {
+  const book = await Book.findOne({ _id: req.params.id, ownerId: req.params.ownerId });
+  if (!book?.pdfFileId) return res.status(404).json({ error: 'PDF не найден' });
+
+  res.set('Content-Type', 'application/pdf');
+  res.set('Content-Disposition', `inline; filename="${encodeURIComponent(book.pdfFileName || 'book.pdf')}"`);
+  const downloadStream = pdfBucket().openDownloadStream(book.pdfFileId);
+  downloadStream.on('error', () => res.status(404).end());
+  downloadStream.pipe(res);
+});
+
+// DELETE /api/personal/:ownerId/books/:id/pdf — removes just the attached PDF, keeps the book
+router.delete('/:ownerId/books/:id/pdf', async (req, res) => {
+  const book = await Book.findOne({ _id: req.params.id, ownerId: req.params.ownerId });
+  if (!book) return res.status(404).json({ error: 'Книга не найдена' });
+  if (book.pdfFileId) {
+    try { await pdfBucket().delete(book.pdfFileId); } catch { /* already gone, ignore */ }
+    book.pdfFileId = null;
+    book.pdfFileName = null;
+    await book.save();
+  }
+  res.json(book);
 });
 
 export default router;
