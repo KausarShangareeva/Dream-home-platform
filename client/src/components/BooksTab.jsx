@@ -140,7 +140,15 @@ export default function BooksTab({ ownerId }) {
     setError(null);
     try {
       const [b, s, langs] = await Promise.all([api.getBooks(ownerId), api.getSettings(ownerId), api.getLanguages(ownerId)]);
-      setBooks(b); setSettings(s); setLanguages(langs);
+      setBooks(b); setLanguages(langs);
+      if (!s.shelfStartMonth) {
+        const now = new Date();
+        const anchor = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        const updated = await api.updateSettings(ownerId, { shelfStartMonth: anchor });
+        setSettings(updated);
+      } else {
+        setSettings(s);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -370,6 +378,7 @@ export default function BooksTab({ ownerId }) {
         books={shelfBooks}
         pace={settings.shelfPace || 8}
         overrides={settings.shelfMonthOverrides || {}}
+        startMonth={settings.shelfStartMonth}
         onChangePace={updateShelfPace}
         onChangeMonthOverride={updateMonthOverride}
         onChangePage={(book, page) => update(book, { currentPage: page })}

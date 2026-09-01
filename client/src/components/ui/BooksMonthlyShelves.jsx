@@ -22,13 +22,22 @@ function findPositionAtPage(shelfBooks, totalPages) {
   return null; // per the flat plan you should already be done with the whole shelf
 }
 
-function computeShelves(books, pace, overrides) {
+function computeShelves(books, pace, overrides, startMonth) {
   const now = new Date();
   const curY = now.getFullYear();
   const curM = now.getMonth(); // 0-indexed
+
+  // Shelf #1 is anchored to startMonth (set once, persisted) — NOT recalculated from
+  // today every time. Otherwise, once the calendar rolls to a new month, the exact
+  // same first batch of books would silently get relabeled from e.g. "Август" to
+  // "Сентябрь" instead of September getting the NEXT batch in the queue.
+  let y = curY, m = curM;
+  if (startMonth) {
+    const [sy, sm] = startMonth.split('-').map(Number);
+    if (sy && sm) { y = sy; m = sm - 1; }
+  }
+
   let cursor = 0;
-  let y = curY;
-  let m = curM;
   const shelves = [];
   let safety = 0;
   while (cursor < books.length && safety < 60) {
@@ -49,7 +58,7 @@ function computeShelves(books, pace, overrides) {
   return shelves;
 }
 
-export default function BooksMonthlyShelves({ books, pace, overrides, onChangePace, onChangeMonthOverride, onChangePage }) {
+export default function BooksMonthlyShelves({ books, pace, overrides, startMonth, onChangePace, onChangeMonthOverride, onChangePage }) {
   const [draftPages, setDraftPages] = useState({}); // bookId -> slider value while dragging, before it's saved
 
   const getPage = (b) => {
@@ -59,7 +68,7 @@ export default function BooksMonthlyShelves({ books, pace, overrides, onChangePa
   };
 
   const queue = books; // stable order — includes done books too, so shelf boundaries don't shift as you read
-  const shelves = computeShelves(queue, pace, overrides || {});
+  const shelves = computeShelves(queue, pace, overrides || {}, startMonth);
   const now = new Date();
 
   return (
