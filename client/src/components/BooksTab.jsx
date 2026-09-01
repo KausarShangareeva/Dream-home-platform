@@ -131,6 +131,8 @@ export default function BooksTab({ ownerId }) {
   const [newAuthor, setNewAuthor] = useState('');
   const [newLang, setNewLang] = useState('');
   const [newPages, setNewPages] = useState('');
+  const [readingBook, setReadingBook] = useState(null);
+  const [uploadingPdfId, setUploadingPdfId] = useState(null);
 
   const loadedOnceRef = useRef(false);
   const load = useCallback(async () => {
@@ -230,9 +232,6 @@ export default function BooksTab({ ownerId }) {
       alert(err.message);
     }
   };
-
-  const [readingBook, setReadingBook] = useState(null);
-  const [uploadingPdfId, setUploadingPdfId] = useState(null);
 
   const handlePdfUpload = async (book, file) => {
     if (!file) return;
