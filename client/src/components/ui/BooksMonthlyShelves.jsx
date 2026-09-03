@@ -40,14 +40,33 @@ function computeShelves(books, pace, overrides, startMonth) {
   let cursor = 0;
   const shelves = [];
   let safety = 0;
+  // Books left unfinished in months that have already ended — you can't go back and read
+  // an August book in September, so they roll forward into the current month's shelf.
+  const carriedOver = [];
   while (cursor < books.length && safety < 60) {
     safety++;
     const monthKey = `${y}-${String(m + 1).padStart(2, '0')}`;
     const monthPace = Math.max(0, overrides[monthKey] ?? pace);
-    const shelfBooks = books.slice(cursor, cursor + monthPace);
-    cursor += shelfBooks.length;
     const isCurrent = y === curY && m === curM;
     const isPast = y < curY || (y === curY && m < curM);
+
+    let shelfBooks;
+    if (isPast) {
+      // Fixed historical record — what WAS assigned to this month, regardless of outcome.
+      shelfBooks = books.slice(cursor, cursor + monthPace);
+      cursor += shelfBooks.length;
+      shelfBooks.filter(b => b.status !== 'done').forEach(b => carriedOver.push(b));
+    } else if (isCurrent) {
+      // Overdue books from past months take priority; whatever pace slots remain go to
+      // the next books in the queue.
+      const freshSlots = Math.max(0, monthPace - carriedOver.length);
+      shelfBooks = [...carriedOver, ...books.slice(cursor, cursor + freshSlots)];
+      cursor += Math.min(freshSlots, books.length - cursor);
+    } else {
+      shelfBooks = books.slice(cursor, cursor + monthPace);
+      cursor += shelfBooks.length;
+    }
+
     const allDone = shelfBooks.length > 0 && shelfBooks.every(b => b.status === 'done');
     const totalPages = shelfBooks.reduce((sum, b) => sum + (b.pages || 0), 0);
     const days = daysInMonth(y, m);
@@ -108,7 +127,7 @@ export default function BooksMonthlyShelves({ books, pace, overrides, startMonth
           const targetPosition = shelf.isCurrent ? findPositionAtPage(shelf.books, expectedCumulative) : null;
 
           return (
-            <div className={`shelf-card${shelf.allDone ? ' shelf-done' : ''}${shelf.isPast && !shelf.allDone ? ' shelf-missed' : ''}${!isActive ? ' shelf-inactive' : ''}`} key={shelf.monthKey}>
+            <div className={`shelf-card${shelf.allDone ? ' shelf-done' : ''}${shelf.isPast && !shelf.allDone ? ' shelf-missed' : ''}${!shelf.isCurrent ? ' shelf-inactive' : ''}${shelf.isCurrent ? ' shelf-current-glow' : ''}`} key={shelf.monthKey}>
               <div className="shelf-card-head">
                 <span className="shelf-card-title">{shelf.label}</span>
                 {shelf.allDone && <span className="shelf-status shelf-status-ok" title="Всё прочитано вовремя">✅</span>}

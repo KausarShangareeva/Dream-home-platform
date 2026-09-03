@@ -500,6 +500,10 @@
   .shelf-card.shelf-missed{border-color:#e2543b;background:color-mix(in srgb, #e2543b 8%, var(--card));}
   .shelf-card.shelf-inactive{opacity:.6;filter:saturate(.5);}
   .shelf-card.shelf-inactive:hover{opacity:.85;filter:saturate(.8);}
+  .shelf-card.shelf-current-glow{
+    border:2px solid var(--purple);box-shadow:0 0 0 4px color-mix(in srgb, var(--purple) 18%, transparent), 0 8px 24px -8px rgba(150,70,120,.4);
+    opacity:1 !important;filter:none !important;
+  }
   .shelf-start-hint{background:var(--card-soft);color:var(--ink-soft);font-style:italic;}
   .shelf-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .shelf-card-title{font-weight:800;font-size:14.5px;color:var(--ink);}
