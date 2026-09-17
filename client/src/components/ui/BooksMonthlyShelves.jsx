@@ -51,31 +51,38 @@ function computeShelves(books, pace, overrides, startMonth) {
     const isPast = y < curY || (y === curY && m < curM);
 
     let shelfBooks;
+    let nominalCount = 0; // how many books were originally planned here, for the ✅/😢 verdict
+    const monthStart = new Date(y, m, 1);
     const monthEnd = new Date(y, m + 1, 0, 23, 59, 59, 999);
     if (isPast) {
-      // Fixed historical record — what WAS assigned to this month, regardless of outcome.
-      shelfBooks = books.slice(cursor, cursor + monthPace);
-      cursor += shelfBooks.length;
-      // Not just "still unfinished" — a book finished LATE (after this month ended) also
-      // needs to show up in whichever month it actually got read, for credit. Only a book
-      // truly done by this month's own end counts as settled here.
-      shelfBooks.forEach(b => {
-        const doneOnTime = b.status === 'done' && b.doneDate && new Date(b.doneDate) <= monthEnd;
-        if (!doneOnTime) carriedOver.push(b);
+      // A book only stays listed under this month if it was actually finished within it.
+      // Anything not done on time moves entirely to wherever it really got finished (or to
+      // the current month, if still unfinished) — so it never shows twice.
+      const nominalBooks = books.slice(cursor, cursor + monthPace);
+      cursor += nominalBooks.length;
+      nominalCount = nominalBooks.length;
+      shelfBooks = [];
+      nominalBooks.forEach(b => {
+        const doneOnTime = b.status === 'done' && b.doneDate && new Date(b.doneDate) >= monthStart && new Date(b.doneDate) <= monthEnd;
+        if (doneOnTime) shelfBooks.push(b);
+        else carriedOver.push(b);
       });
     } else if (isCurrent) {
-      // Overdue books from past months take priority; whatever pace slots remain go to
-      // the next books in the queue.
+      // Carried-over books (overdue from past months, or finished late and belonging here
+      // by their real doneDate) take priority; remaining pace slots go to the next books
+      // in the queue.
       const freshSlots = Math.max(0, monthPace - carriedOver.length);
       shelfBooks = [...carriedOver, ...books.slice(cursor, cursor + freshSlots)];
       cursor += Math.min(freshSlots, books.length - cursor);
+      nominalCount = shelfBooks.length;
     } else {
       shelfBooks = books.slice(cursor, cursor + monthPace);
       cursor += shelfBooks.length;
+      nominalCount = shelfBooks.length;
     }
 
     const allDone = isPast
-      ? shelfBooks.length > 0 && shelfBooks.every(b => b.status === 'done' && b.doneDate && new Date(b.doneDate) <= monthEnd)
+      ? nominalCount > 0 && shelfBooks.length === nominalCount
       : shelfBooks.length > 0 && shelfBooks.every(b => b.status === 'done');
     const totalPages = shelfBooks.reduce((sum, b) => sum + (b.pages || 0), 0);
     const days = daysInMonth(y, m);
