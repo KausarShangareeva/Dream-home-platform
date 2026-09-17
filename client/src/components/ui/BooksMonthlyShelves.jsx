@@ -67,7 +67,10 @@ function computeShelves(books, pace, overrides, startMonth) {
       cursor += shelfBooks.length;
     }
 
-    const allDone = shelfBooks.length > 0 && shelfBooks.every(b => b.status === 'done');
+    const monthEnd = new Date(y, m + 1, 0, 23, 59, 59, 999);
+    const allDone = isPast
+      ? shelfBooks.length > 0 && shelfBooks.every(b => b.status === 'done' && b.doneDate && new Date(b.doneDate) <= monthEnd)
+      : shelfBooks.length > 0 && shelfBooks.every(b => b.status === 'done');
     const totalPages = shelfBooks.reduce((sum, b) => sum + (b.pages || 0), 0);
     const days = daysInMonth(y, m);
     const pagesPerDay = totalPages > 0 ? Math.ceil(totalPages / days) : 0;

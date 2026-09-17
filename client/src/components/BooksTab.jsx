@@ -399,11 +399,12 @@ export default function BooksTab({ ownerId }) {
               <th className="mobile-hide col-pace">Стр/день</th>
               <th className="col-status">Статус</th>
               <th className="col-done">Завершила</th>
+              <th className="mobile-hide col-actualdays">Дней (факт.)</th>
               <th className="col-del"></th>
             </tr>
           </thead>
           <tbody>
-            {ordered.length === 0 && <tr><td colSpan={isArabic ? 12 : 11} className="empty-state">Пока пусто для этого языка — добавьте книгу ниже</td></tr>}
+            {ordered.length === 0 && <tr><td colSpan={isArabic ? 13 : 12} className="empty-state">Пока пусто для этого языка — добавьте книгу ниже</td></tr>}
             {ordered.map((b, idx) => {
               const pagesPerDay = Math.max(1, Math.ceil(b.pages / Math.max(1, b.days)));
               const done = b.status === 'done';
@@ -485,6 +486,16 @@ export default function BooksTab({ ownerId }) {
                     {done && (
                       <input type="date" value={b.doneDate || ''} onChange={e => update(b, { doneDate: e.target.value })} />
                     )}
+                  </td>
+                  <td className="mobile-hide col-actualdays">
+                    {(() => {
+                      if (!done || !b.doneDate) return '—';
+                      const prevDoneDate = ordered[idx - 1]?.doneDate;
+                      const startRef = prevDoneDate || b.startDate;
+                      if (!startRef) return '—';
+                      const diff = Math.round((new Date(b.doneDate) - new Date(startRef)) / 86400000);
+                      return diff >= 0 ? `${diff} дн.` : '—';
+                    })()}
                   </td>
                   <td className="col-del"><DeleteButton onConfirm={async () => { await api.deleteBook(ownerId, b._id); load(); }} /></td>
                 </tr>
