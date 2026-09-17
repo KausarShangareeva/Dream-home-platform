@@ -51,11 +51,18 @@ function computeShelves(books, pace, overrides, startMonth) {
     const isPast = y < curY || (y === curY && m < curM);
 
     let shelfBooks;
+    const monthEnd = new Date(y, m + 1, 0, 23, 59, 59, 999);
     if (isPast) {
       // Fixed historical record — what WAS assigned to this month, regardless of outcome.
       shelfBooks = books.slice(cursor, cursor + monthPace);
       cursor += shelfBooks.length;
-      shelfBooks.filter(b => b.status !== 'done').forEach(b => carriedOver.push(b));
+      // Not just "still unfinished" — a book finished LATE (after this month ended) also
+      // needs to show up in whichever month it actually got read, for credit. Only a book
+      // truly done by this month's own end counts as settled here.
+      shelfBooks.forEach(b => {
+        const doneOnTime = b.status === 'done' && b.doneDate && new Date(b.doneDate) <= monthEnd;
+        if (!doneOnTime) carriedOver.push(b);
+      });
     } else if (isCurrent) {
       // Overdue books from past months take priority; whatever pace slots remain go to
       // the next books in the queue.
@@ -67,7 +74,6 @@ function computeShelves(books, pace, overrides, startMonth) {
       cursor += shelfBooks.length;
     }
 
-    const monthEnd = new Date(y, m + 1, 0, 23, 59, 59, 999);
     const allDone = isPast
       ? shelfBooks.length > 0 && shelfBooks.every(b => b.status === 'done' && b.doneDate && new Date(b.doneDate) <= monthEnd)
       : shelfBooks.length > 0 && shelfBooks.every(b => b.status === 'done');
