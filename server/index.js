@@ -18,7 +18,13 @@ import ratesRouter from './routes/rates.js';
 
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || '*' }));
+// CLIENT_ORIGIN may list several sites, comma-separated. The English study site
+// reads and updates the English book list, so it is always allowed as well.
+const STUDY_SITES = ['https://kausarshangareeva.github.io'];
+const allowed = process.env.CLIENT_ORIGIN
+  ? process.env.CLIENT_ORIGIN.split(',').map(s => s.trim()).filter(Boolean).concat(STUDY_SITES)
+  : '*';
+app.use(cors({ origin: allowed }));
 app.use(express.json({ limit: '5mb' })); // 5mb so custom-dream photos (data URLs) fit
 
 app.get('/', (req, res) => res.json({ ok: true, service: 'dream-home-server' }));
